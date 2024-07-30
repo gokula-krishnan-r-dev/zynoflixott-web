@@ -7,7 +7,7 @@ dotenv.config();
 
 console.log(process.env.NEXT_PUBLIC_API_URL, "api");
 
-const SERVER = "https://api.zynoflixott.com";
+const SERVER = "http://3.109.200.73:8080";
 
 // const SERVER = "http://65.0.55.141:8080";
 // const SERVER = "http://localhost:8080";
