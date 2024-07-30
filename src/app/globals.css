@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.bg-body {
+  --tw-bg-opacity: 1;
+  /* background-color: rgb(4 1 28 / var(--tw-bg-opacity)); */
+  background: #010314;
+}
+
+html {
+  scroll-behavior: smooth;
+
+  background: #010314;
+}
+
+.video-overlay {
+  background: linear-gradient(0deg, #00031c, #00031cb3 15.62%, #00031c00 31.32%),
+    linear-gradient(180deg, #00031c 83.03%, #00031c00 100%);
+  height: 100%;
+  left: 0;
+  opacity: 0.4;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+* {
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.bg-btn_bgcolor3 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(108 82 238 / var(--tw-bg-opacity));
+}
+
+.founder-card-img {
+  -webkit-mask-image: url("https://iko-next.vercel.app/_next/static/media/team-mask.538f1295.png");
+  mask-image: url("https://iko-next.vercel.app/_next/static/media/team-mask.538f1295.png");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  width: 140px;
+  height: 140px;
+}
+
+.border-cut {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 100% 100%, 0 85%);
+}
+.home-purple-gradient {
+  --tg-primary-color: #df86aa;
+  --tg-theme-color2: #5729d6;
+  --tg-black2: #10121d;
+  --tg-secondary-color: #010314;
+  --tg-secondary-color2: #0f101e;
+}
+.hero-bg-gradient {
+  position: absolute;
+  left: 50%;
+  z-index: -1;
+  background: linear-gradient(
+    0.41deg,
+    #df86aa 19.48%,
+    rgba(46, 32, 255, 0.27) -13.62%,
+    #10121d 267.11%
+  );
+  filter: blur(225px);
+  top: -1292px;
+  width: 100%;
+  height: 2191px;
+  transform: translate(-50%);
+  border-radius: 0 0 50% 50%;
+}
