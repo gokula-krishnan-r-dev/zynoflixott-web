@@ -202,7 +202,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
 
   return (
     <div>
-      <div className="px-8 py-4">
+      <div className="lg:px-8 px-2 py-4">
         <h1 className="py-2 text-2xl font-semibold">Add Banner Video </h1>
 
         <div className="px-2 pb-24 pt-4">
@@ -609,7 +609,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 <div className="">
                   {/* price 499 per video upload */}
                   <p className="text-lg font-semibold">
-                    Price: 499 per video upload
+                    Price: 1499 per video upload
                   </p>
                 </div>
               )}
