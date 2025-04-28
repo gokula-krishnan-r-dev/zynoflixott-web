@@ -8,6 +8,7 @@ const nextConfig = {
       "via.placeholder.com",
       "room-booking-infygru.s3.ap-south-1.amazonaws.com",
       "zynoflix.s3.ap-south-1.amazonaws.com",
+      "zynoflixott.blob.core.windows.net"
     ],
   },
 };
