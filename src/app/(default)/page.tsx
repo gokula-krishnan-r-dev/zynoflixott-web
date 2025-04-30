@@ -39,7 +39,7 @@ export default function Home() {
         />
         <meta name="author" content="ZynoflixOTT" />
         {/* add icon  */}
-        <link rel="icon" href="/logo_seo.png" sizes="any" />
+        <link rel="icon" href="/seo.png" sizes="any" />
         {/* <link rel="apple-touch-icon" href="/logo_sm.png" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href="https://zynoflixott.com" />

@@ -89,3 +89,21 @@ export function isMonthMembershipCompleted(startDate: string): boolean {
   // Check if the difference is 30 days or more
   return diffDays >= 30;
 }
+
+/**
+ * Converts seconds to minutes and seconds format
+ * @param seconds - Total seconds to convert
+ * @returns Formatted string in "X mins" or "X mins Y secs" format
+ */
+export function secondsToMinutes(seconds: number): string {
+  if (!seconds || seconds < 0) return "0 mins";
+  
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  
+  if (secs === 0) {
+    return `${mins} mins`;
+  }
+  
+  return `${mins} mins ${secs} secs`;
+}

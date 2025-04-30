@@ -609,7 +609,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 <div className="">
                   {/* price 499 per video upload */}
                   <p className="text-lg font-semibold">
-                    Price: 1499 per video upload
+                  UPLOADING CHARGE : 1499/- 
                   </p>
                 </div>
               )}
@@ -619,16 +619,51 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                     onClick={openPayModal}
                     className="px-6 py-3 rounded-3xl cursor-pointer border text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700"
                   >
-                    Payment
+                    UPLOAD NOW 
                   </div>
                 ) : (
                   <Button
                     className="px-6 py-3 rounded-3xl border text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700"
                     type="submit"
                   >
-                    {isLoading ? "Uploading..." : "Submit"}
+                    {isLoading ? "Uploading..." : "UPLOAD NOW"}
                   </Button>
                 )}
+              </div>
+              <div className="mt-6 flex items-center justify-between pt-3 ">
+                  <p className="text-white">IF YOU NEED ANY ASSISTANCE REACH: <a href="tel:+918270895609" className="text-blue-400 hover:underline">+91-8270895609</a></p>
+                </div>
+              {/* add document */}
+              <div className="mt-6 p-5 border border-gray-700 rounded-lg bg-gray-900/50">
+                <h3 className="text-xl font-bold mb-4 text-white">TERMS & CONDITIONS</h3>
+                
+                <p className="text-gray-300 mb-4">
+                  Whoever successfully uploads their short film to Zynoflix OTT will receive the following exclusive benefits from our company:
+                </p>
+                
+                <ol className="list-decimal pl-5 space-y-4 text-gray-300">
+                  <li>
+                    <span className="font-semibold text-white">Free Promotion:</span>
+                    <p>Get your short film promoted across our digital platforms at no cost, boosting your visibility and audience reach.</p>
+                  </li>
+                  
+                  <li>
+                    <span className="font-semibold text-white">Monetization Unlocked:</span>
+                    <p>We will unlock monetization for your first video, allowing you to start earning revenue immediately.</p>
+                  </li>
+                  
+                  <li>
+                    <span className="font-semibold text-white">Exclusive Interview Opportunity:</span>
+                    <p>Feature in a free, in-depth interview where you can share the story behind your short film, your creative process, and future projects.</p>
+                  </li>
+                  
+                  <li>
+                    <span className="font-semibold text-white">News Publication:</span>
+                    <p>Receive free media coverage with an official news article published about your short film, enhancing your public profile and credibility.</p>
+                  </li>
+                </ol>
+                
+               
               </div>
             </form>
           </Form>

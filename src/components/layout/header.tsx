@@ -28,7 +28,7 @@ const Header = () => {
               width={134}
               height={54}
               src="/logo/logo.png"
-              className="mr-3 w-full h-14 lg:h-20"
+              className="mr-3 w-full h-16 lg:h-20"
               alt="Flowbite Logo"
             />
           </Link>

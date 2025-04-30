@@ -180,33 +180,6 @@ const Footer: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div>
-              <h2 className="mb-6 text-sm font-semibold  uppercase text-white">
-                QUICK LINKS
-              </h2>
-              <ul className=" text-gray-400 font-medium">
-                <li>
-                  <a className="hover:underline" href="/profile">
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:underline" href="/profile?id=My Videos">
-                    My Uploaded Video
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:underline" href="/profile?id=My Purchase">
-                    My Purchased Video
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:underline" href="/profile">
-                    My Level
-                  </a>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
         <div id="google_translate_element"> </div>

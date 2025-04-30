@@ -8,6 +8,7 @@ import Loading from "@/components/ui/loading";
 import {
   convertMinutesToReadableFormat,
   isMonthMembershipCompleted,
+  secondsToMinutes,
   timeAgoString,
 } from "@/lib/time";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -254,25 +255,25 @@ export default function Page({ params }: { params: { videoId: string } }) {
               <div className="">
                 <h3 className="lg:text-xl text-lg font-bold">{video.title}</h3>
               </div>
-              <div className="flex lg:text-sm text-[10px] items-center flex-wrap gap-2">
-                <div className="bg-main">{video.views} Views</div>
-                <hr className="border-t h-0 w-4 rotate-90" />
-                <div className="bg-main">{video.certification}</div>
-                <hr className="border-t h-0 w-4 rotate-90" />
-                <div className="bg-main">{video.duration} mins</div>
-                <hr className="border-t h-0 w-4 rotate-90" />
-
-                <div className="bg-main">
-                  {/* {video.language  } */}
-                  Tamil
-                </div>
-
-                <hr className="border-t h-0 w-4 rotate-90" />
-                <div className="bg-main">
-                  {video?.category?.[0]?.split(",")[0] || "Short Film"}
-                </div>
-                <hr className="border-t h-0 w-4 rotate-90" />
-                <div className="bg-main">Block Blaster</div>
+              <div className="flex lg:text-sm text-xs items-center flex-wrap gap-2 mt-2 lg:mt-0">
+                {[
+                  { label: "Views", value: video.views },
+                  { label: "", value: video.certification },
+                  { label: "", value: secondsToMinutes(video.duration) },
+                  { label: "", value: video.language || "Tamil" },
+                  { label: "", value: video?.category?.[0]?.split(",")[0] || "Short Film" },
+                  { label: "", value: "Block Blaster" }
+                ].map((item, index) => (
+                  <React.Fragment key={index}>
+                    {index > 0 && (
+                      <div className="hidden lg:block h-4 w-px bg-gray-600" />
+                    )}
+                    <div className="bg-main px-2 py-1 rounded-md flex items-center">
+                      {item.label && <span className="mr-1">{item.label}:</span>}
+                      <span>{item.value}</span>
+                    </div>
+                  </React.Fragment>
+                ))}
               </div>
             </div>
             <div className="flex items-center lg:flex-row flex-col py-6 justify-between">
@@ -336,7 +337,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
             </div>
           </div>
         </div>
-        <div className="flex items-center lg:flex-row flex-col justify-start py-6 lg:justify-end">
+        {/* <div className="flex items-center lg:flex-row flex-col justify-start py-6 lg:justify-end">
           <div className="lg:pt-0 pt-4 lg:pb-0 pb-4">
             <Link
               href={isMembership ? "/membership" : "/profile"}
@@ -347,7 +348,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
                 : "you watching a orginal video"}
             </Link>
           </div>
-        </div>
+        </div> */}
         {/* <ProfileVideo
           refetch={refetch}
           userId={video.created_by_id}
