@@ -50,7 +50,15 @@ export default function Page({ params }: { params: { slug: string } }) {
     // redirect to chat room
     router.push("/chat/" + response.data.roomId);
   };
+  const handletoLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("isLogin");
+    localStorage.removeItem("transactionId");
 
+    router.push("/login");
+  };
   return (
     <main>
       <section className="w-full overflow-hidden dark:bg-gray-900">
@@ -128,6 +136,21 @@ export default function Page({ params }: { params: { slug: string } }) {
                   </button>
                 )}
               </div>
+
+              {/* delete account button */}
+              <button
+                onClick={ handletoLogout}
+                className="absolute top-0 left-0 bg-red-500 px-4 py-2 rounded-xl"
+              >
+                Delete Account
+              </button>
+
+              <button
+                onClick={handletoLogout}
+                className="absolute top-0 left-0 bg-blue-500 px-4 py-2 rounded-xl"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>

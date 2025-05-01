@@ -337,6 +337,12 @@ export default function Page({ params }: { params: { videoId: string } }) {
             </div>
           </div>
         </div>
+
+
+        <CategoryList
+            title={"Suggested for you"}
+            desc={"POPULAR TAMIL FILMS"}
+          />
         {/* <div className="flex items-center lg:flex-row flex-col justify-start py-6 lg:justify-end">
           <div className="lg:pt-0 pt-4 lg:pb-0 pb-4">
             <Link
@@ -364,6 +370,7 @@ import { useState } from "react";
 import { ChevronDown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VideoComment from "@/components/shared/video-comment";
+import CategoryList from "@/components/shared/category-list";
 
 const VOTE_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 

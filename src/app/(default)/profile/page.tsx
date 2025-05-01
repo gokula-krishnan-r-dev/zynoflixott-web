@@ -65,6 +65,10 @@ const Page = () => {
 
     router.push("/login");
   };
+
+  const handletoDeleteAccount = async () => {
+    handletoLogout();
+  };
   return (
     <main className="px-8">
       {isProduction === "production" ? (
@@ -86,6 +90,7 @@ const Page = () => {
                 />
               }
             />
+
 
             {/* User Profile Image */}
             <div className="w-full flex  justify-start pl-12">
@@ -149,6 +154,19 @@ const Page = () => {
                   No Videos Uploaded
                 </div>
               )}
+
+<button
+                onClick={handletoDeleteAccount}
+                className=" top-0 left-0 bg-red-500 px-4 py-2 rounded-xl"
+              >
+                Delete Account
+              </button>
+              <button
+                onClick={handletoLogout}
+                className=" top-0 left-0 bg-blue-500 px-4 py-2 rounded-xl"
+              >
+                Logout
+              </button>
 
               <div className="grid pt-8  gap-6 grid-cols-5">
                 {userVideos?.length > 0 &&

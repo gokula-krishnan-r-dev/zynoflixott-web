@@ -29,7 +29,15 @@ export default function ProductionProfile() {
 
   if (isLoading)
     return <Loading className="flex items-center h-screen justify-center" />;
+  const handletoLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("isLogin");
+    localStorage.removeItem("transactionId");
 
+    router.push("/login");
+  };
   const handletoCreateRoom = async () => {
     const response = await axios.post("/room", {
       name: user?.fullName,
@@ -44,6 +52,14 @@ export default function ProductionProfile() {
 
     // redirect to chat room
     router.push("/chat/" + response.data.roomId);
+  };
+
+
+  const handletoDeleteAccount = async () => {
+    const response = await axios.delete("/auth/production/user/" + userId);
+    if (response.status === 200) {
+      toast.success("Account deleted successfully");
+    }
   };
 
   return (
@@ -144,6 +160,20 @@ export default function ProductionProfile() {
                     </button>
                   }
                 ></DialogSocial>
+
+
+<button
+                onClick={ handletoLogout}
+                className=" top-0 left-0 bg-red-500 px-4 py-2 rounded-xl"
+              >
+                Delete Account
+              </button>
+              <button
+                onClick={handletoLogout}
+                className=" top-0 left-0 bg-blue-500 px-4 py-2 rounded-xl"
+              >
+                Logout
+              </button>
               </div>
             </div>
           </div>

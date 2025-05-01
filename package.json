@@ -18,7 +18,7 @@
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@types/video.js": "^7.3.58",
-    "@vidstack/react": "^1.11.22",
+    "@vidstack/react": "^1.12.13",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -47,6 +47,7 @@
     "vaul": "^0.9.1",
     "vercel": "^35.2.1",
     "video.js": "^8.22.0",
+    "vidstack": "^0.6.15",
     "zod": "^3.23.8"
   },
   "devDependencies": {

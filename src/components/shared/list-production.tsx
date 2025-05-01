@@ -72,7 +72,7 @@ const ListProduction = ({ url, title }: any) => {
 
   return (
     <div className="">
-      <h1 className="lg:text-xl text-xl font-bold mb-6">{title}</h1>
+      <h1 className="lg:text-xl text-base font-semibold mb-6">{title}</h1>
       {url === "production" ? (
         <div className="w-full">
           <Carousel className="w-full max-w-[91vw]   basis-12 lg:max-w-[94vw]">

@@ -79,6 +79,41 @@ function CustomVideoPlayer({
     }
   };
   
+  // Handle forward/backward
+  const handleSkipForward = () => {
+    if (videoRef.current) {
+      const newTime = Math.min(videoRef.current.currentTime + 10, videoRef.current.duration);
+      videoRef.current.currentTime = newTime;
+    }
+  };
+  
+  const handleSkipBackward = () => {
+    if (videoRef.current) {
+      const newTime = Math.max(videoRef.current.currentTime - 10, 0);
+      videoRef.current.currentTime = newTime;
+    }
+  };
+  
+  // Handle keyboard controls for skipping
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        handleSkipForward();
+      } else if (e.key === "ArrowLeft") {
+        handleSkipBackward();
+      } else if (e.key === " ") {
+        e.preventDefault();
+        togglePlay();
+      }
+    };
+    
+    document.addEventListener("keydown", handleKeyDown);
+    
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+  
   // Handle volume change
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
@@ -130,14 +165,24 @@ function CustomVideoPlayer({
         playsInline
       />
       
-      {/* Title overlay */}
-      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-10 flex justify-between">
-        <div className="text-white font-medium">{title}</div>
-        {duration && (
-          <div className="text-white bg-black/50 px-2 py-1 rounded-md text-sm">
-            {secondsToMinutes(duration)}
-          </div>
-        )}
+      {/* Backward/Forward buttons overlaid on video */}
+      <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
+        <button 
+          onClick={handleSkipBackward} 
+          className="p-3 bg-black/30 rounded-full hover:bg-black/50 pointer-events-auto transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" />
+          </svg>
+        </button>
+        <button 
+          onClick={handleSkipForward} 
+          className="p-3 bg-black/30 rounded-full hover:bg-black/50 pointer-events-auto transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path d="M4 18l8.5-6L4 6v12zm9.5-6l8.5 6V6l-8.5 6z" />
+          </svg>
+        </button>
       </div>
       
       {/* Play/pause overlay icon */}
@@ -162,17 +207,17 @@ function CustomVideoPlayer({
       >
         {/* Progress bar */}
         <div 
-          className="h-1 bg-white/30 rounded-full mb-4 cursor-pointer relative"
+          className="h-2 bg-white/30 rounded-full mb-4 cursor-pointer relative"
           onClick={handleProgressBarClick}
         >
           <div 
             ref={progressRef} 
-            className="h-full bg-red-600 rounded-full absolute top-0 left-0"
+            className="h-full bg-blue-600 rounded-full absolute top-0 left-0"
           ></div>
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Play/pause button */}
             <button onClick={togglePlay} className="text-white">
               {isPlaying ? (
@@ -185,6 +230,19 @@ function CustomVideoPlayer({
                   <polygon points="5,3 19,12 5,21" />
                 </svg>
               )}
+            </button>
+            
+            {/* Skip backward/forward buttons for bottom controls */}
+            <button onClick={handleSkipBackward} className="text-white bg-black/30 rounded-full p-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+              </svg>
+            </button>
+            
+            <button onClick={handleSkipForward} className="text-white bg-black/30 rounded-full p-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
+              </svg>
             </button>
             
             {/* Volume control */}
@@ -207,7 +265,7 @@ function CustomVideoPlayer({
                 step="0.1"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-16 h-1 bg-white/30 rounded-full appearance-none cursor-pointer accent-red-600"
+                className="w-16 h-1 bg-white/30 rounded-full appearance-none cursor-pointer accent-blue-600"
               />
             </div>
             
@@ -261,7 +319,7 @@ const VideoPlayer = ({
     <div className="pt-24">
       <div className="relative rounded-lg overflow-hidden shadow-2xl">
         {isLoaded ? (
-          <div className="lg:h-[850px] xl:h-[650px] md:h-[300px] sm:h-[300px] h-[250px] aspect-video w-full">
+          <div className="lg:h-[850px] xl:h-[850px] md:h-[500px] sm:h-[400px] h-[350px] aspect-video w-full">
             <CustomVideoPlayer 
               src={videoLink}
               title={video?.title}
@@ -270,7 +328,7 @@ const VideoPlayer = ({
             />
           </div>
         ) : (
-          <div className="flex justify-center items-center bg-black lg:h-[850px] xl:h-[650px] md:h-[300px] sm:h-[300px] h-[250px]">
+          <div className="flex justify-center items-center bg-black lg:h-[850px] xl:h-[850px] md:h-[500px] sm:h-[400px] h-[350px]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
           </div>
         )}
