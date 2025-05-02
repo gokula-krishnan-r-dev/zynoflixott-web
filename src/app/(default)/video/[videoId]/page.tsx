@@ -35,7 +35,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
     isLoading,
     error,
     refetch,
-  } = useQuery("video", async () => {
+  } = useQuery(["video", videoId], async () => {
     const response = await axios.get(`/video/${videoId}`);
     return response.data.video;
   });

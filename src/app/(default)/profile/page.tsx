@@ -4,7 +4,7 @@ import { UpdateImg } from "@/components/profile/update-img";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
 import { isLogin, isProduction, userId } from "@/lib/user";
-import { Edit, Edit2, VideoIcon } from "lucide-react";
+import { Edit, Edit2, LogOut, Trash2, VideoIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -70,7 +70,7 @@ const Page = () => {
     handletoLogout();
   };
   return (
-    <main className="px-8">
+    <main className="px-3 sm:px-4 md:px-6 lg:px-8">
       {isProduction === "production" ? (
         <div className="">
           <ProductionProfile />
@@ -86,89 +86,101 @@ const Page = () => {
                 <img
                   src={user?.backgroundPic}
                   alt="User Cover"
-                  className="w-full xl:h-[20rem] object-cover lg:h-[22rem] md:h-[16rem] sm:h-[13rem] xs:h-[9.5rem]"
+                  className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover"
                 />
               }
             />
 
-
             {/* User Profile Image */}
-            <div className="w-full flex  justify-start pl-12">
+            <div className="w-full flex justify-center sm:justify-start sm:pl-6 md:pl-8 lg:pl-12">
               <div className="relative">
                 <img
                   src={user.profilePic}
                   alt="User Profile"
-                  className="rounded-full object-cover w-44 h-44 xl:w-[16rem] xl:h-[16rem] lg:w-[16rem] lg:h-[16rem] md:w-[12rem] md:h-[12rem] sm:w-[10rem] sm:h-[10rem] xs:w-[8rem] xs:h-[8rem] outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl relative xl:bottom-[7rem] lg:bottom-[8rem] md:bottom-[6rem] sm:bottom-[5rem] xs:bottom-[4.3rem]"
+                  className="rounded-full object-cover 
+                    w-24 h-24 
+                    sm:w-28 sm:h-28 
+                    md:w-32 md:h-32 
+                    lg:w-36 lg:h-36 
+                    xl:w-40 xl:h-40
+                    outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl 
+                    relative -mt-12 sm:-mt-14 md:-mt-16 lg:-mt-20 xl:-mt-24"
                 />
                 <UpdateImg
                   refetch={refetch}
                   id="profilePic"
                   name="profilePic"
                   button={
-                    <button className="absolute -top-20 -right-0 bg-gray-800 rounded-full p-1 cursor-pointer">
-                      <Edit className="w-6 h-6 text-white " />
+                    <button className="absolute bottom-0 right-0 bg-gray-800 rounded-full p-1 cursor-pointer">
+                      <Edit className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                     </button>
                   }
                 />
               </div>
             </div>
 
-            <div className="xl:w-[80%] lg:w-[90%] md:w-[94%] sm:w-[96%] xs:w-[92%] mx-auto flex flex-col gap-4 justify-center items-center relative xl:-top-[6rem] lg:-top-[6rem] md:-top-[4rem] sm:-top-[3rem] xs:-top-[2.2rem]">
-              <button
-                onClick={handletoLogout}
-                className="absolute top-0 left-0 bg-blue-500 px-4 py-2 rounded-xl"
-              >
-                Logout
-              </button>
-              {/* add Follower Count  */}
-              <div className="">
-                <div className="text-3xl text-gray-100 dark:text-gray-400">
+            <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 mx-auto flex flex-col gap-3 md:gap-4 mt-4 sm:mt-6">
+              {/* Logout button on top right */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handletoLogout}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm flex items-center gap-1.5 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+              </div>
+              
+              {/* Follower count */}
+              <div className="flex justify-center sm:justify-start">
+                <div className="text-xl sm:text-2xl md:text-3xl text-gray-100 dark:text-gray-400">
                   {follower?.count || 0} Followers
                 </div>
               </div>
+              
               {/* FullName */}
-              <h1 className="text-center text-white font-bold text-4xl">
+              <h1 className="text-center sm:text-left text-white font-bold text-2xl sm:text-3xl md:text-4xl">
                 {user.full_name}
               </h1>
+              
               {/* About */}
-              <p className="w-full text-gray-400 text-md text-pretty sm:text-center xs:text-justify">
+              <p className="w-full text-gray-400 text-sm sm:text-md text-pretty text-center sm:text-left">
                 {user.description || "No description provided"}
               </p>
-            </div>
-            <div className="">
-              {/* List and add email */}
-              <div className="flex flex-col items-center px-12 py-0">
-                <h3 className="text-xl font-bold text-white">Email</h3>
-                {user.email}
+              
+              {/* Email */}
+              <div className="flex flex-col items-center sm:items-start mt-2">
+                <h3 className="text-lg sm:text-xl font-bold text-white">Email</h3>
+                <span className="text-gray-300 text-sm sm:text-base break-all">{user.email}</span>
               </div>
             </div>
 
-            <div className="py-8 px-12">
-              <button className="flex items-center bg-green-500 text-black rounded-xl px-6 py-3 gap-3">
-                <VideoIcon className="w-6 h-6" />
-                my Video
-              </button>
+            <div className="py-6 px-4 sm:px-6 md:px-8 lg:px-12">
+              {/* Action buttons */}
+              <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                <button className="flex items-center bg-green-500 hover:bg-green-600 text-black rounded-xl px-4 py-2 sm:px-6 sm:py-3 gap-2 transition-colors">
+                  <VideoIcon className="w-5 h-5" />
+                  My Videos
+                </button>
+
+                <button
+                  onClick={handletoDeleteAccount}
+                  className="flex items-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl gap-2 transition-colors"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  Delete Account
+                </button>
+              </div>
 
               {userVideos?.length === 0 && (
-                <div className="flex items-center justify-center text-white text-2xl font-bold mt-8">
+                <div className="flex items-center justify-center text-white text-xl sm:text-2xl font-bold mt-8">
                   No Videos Uploaded
                 </div>
               )}
 
-<button
-                onClick={handletoDeleteAccount}
-                className=" top-0 left-0 bg-red-500 px-4 py-2 rounded-xl"
-              >
-                Delete Account
-              </button>
-              <button
-                onClick={handletoLogout}
-                className=" top-0 left-0 bg-blue-500 px-4 py-2 rounded-xl"
-              >
-                Logout
-              </button>
-
-              <div className="grid pt-8  gap-6 grid-cols-5">
+              {/* Video grid */}
+              <div className="grid pt-8 gap-3 sm:gap-4 md:gap-5 lg:gap-6 
+                grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {userVideos?.length > 0 &&
                   userVideos?.map((video: any, index: number) => (
                     <VideoCard

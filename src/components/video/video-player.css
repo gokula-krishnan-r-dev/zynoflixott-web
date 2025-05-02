@@ -1,0 +1,45 @@
+/* Custom video player styles */
+.media-player-container {
+  position: relative;
+  padding-top: 6rem;
+}
+
+/* Make play button larger and more prominent */
+.vds-play-button {
+  transform: scale(1.5);
+  opacity: 1 !important;
+}
+
+/* Keep controls visible */
+.vds-controls {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Style the play button icon */
+.vds-play-button svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Center the play button when video is paused */
+.vds-media-player[data-paused] .vds-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(2);
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 20px;
+}
+
+/* Hide other controls and only show play button when paused */
+.vds-media-player[data-paused] .vds-controls > *:not(.vds-play-controls) {
+  opacity: 0;
+}
+
+.vds-poster {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+} 

@@ -32,6 +32,10 @@ export default function RootLayout({
           src="//code.tidio.co/10qdqbeh4bzacrayxyrxave4vbbqqj6y.js"
           async
         ></script>
+          <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
         <Header />
         <AuthProvider>
           <ClientLayout>

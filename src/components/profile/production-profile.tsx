@@ -3,7 +3,7 @@ import { UpdateImg } from "@/components/profile/update-img";
 import { SocialButtons } from "@/components/shared/list-production";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
-import { Edit, MessageCircle, Plus } from "lucide-react";
+import { Edit, LogOut, MessageCircle, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { useQuery } from "react-query";
@@ -77,50 +77,70 @@ export default function ProductionProfile() {
                 title="Edit Background Image"
                 src={user?.backgroundImage}
                 alt="User Cover"
-                className="w-full xl:h-[20rem] hover:cursor-pointer object-cover lg:h-[22rem] md:h-[16rem] sm:h-[13rem] xs:h-[9.5rem]"
+                className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover"
               />
             }
           />
 
           {/* User Profile Image */}
-          <div className="w-full flex  justify-start pl-12">
+          <div className="w-full flex justify-center sm:justify-start sm:pl-6 md:pl-8 lg:pl-12">
             <div className="relative">
               <Image
-                width={1920}
-                height={1080}
+                width={200}
+                height={200}
                 src={user?.logo}
                 alt="User Profile"
-                className="rounded-full w-44 h-44 object-cover xl:w-[16rem] xl:h-[16rem] lg:w-[16rem] lg:h-[16rem] md:w-[12rem] md:h-[12rem] sm:w-[10rem] sm:h-[10rem] xs:w-[8rem] xs:h-[8rem] outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl relative xl:bottom-[7rem] lg:bottom-[8rem] md:bottom-[6rem] sm:bottom-[5rem] xs:bottom-[4.3rem]"
+                className="rounded-full object-cover 
+                  w-24 h-24 
+                  sm:w-28 sm:h-28 
+                  md:w-32 md:h-32 
+                  lg:w-36 lg:h-36 
+                  xl:w-40 xl:h-40
+                  outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl 
+                  relative -mt-12 sm:-mt-14 md:-mt-16 lg:-mt-20 xl:-mt-24"
               />
               <UpdateImg
                 refetch={refetch}
                 id="profilePic"
                 name="profilePic"
                 button={
-                  <button className="absolute -top-20 -right-0 bg-gray-800 rounded-full p-1 cursor-pointer">
-                    <Edit className="w-6 h-6 text-white " />
+                  <button className="absolute bottom-0 right-0 bg-gray-800 rounded-full p-1 cursor-pointer">
+                    <Edit className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                   </button>
                 }
               />
             </div>
           </div>
-          <div className="xl:w-[80%] lg:w-[90%] md:w-[94%] sm:w-[96%] xs:w-[92%] mx-auto flex flex-col gap-4 justify-center items-center relative xl:-top-[6rem] lg:-top-[6rem] md:-top-[4rem] sm:-top-[3rem] xs:-top-[2.2rem]">
+          
+          <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 mx-auto flex flex-col gap-3 md:gap-4 mt-4 sm:mt-6">
+            {/* Logout button on top right */}
+            <div className="flex justify-end">
+              <button
+                onClick={handletoLogout}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm flex items-center gap-1.5 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </div>
+            
             {/* FullName */}
-            <h1 className="text-center text-white font-bold text-4xl">
+            <h1 className="text-center sm:text-left text-white font-bold text-2xl sm:text-3xl md:text-4xl">
               {user?.name || "No name provided"}
             </h1>
-            <div className="flex items-center pt-2 gap-8">
+            
+            <div className="flex flex-col sm:flex-row items-center pt-2 gap-4 sm:gap-8">
               {/* Founder Name */}
-              <div className="">
-                {/* Founder Name  */}
-                <h2 className="text-center text-white font-bold text-xl">
+              <div className="text-center sm:text-left">
+                <h2 className="text-white font-bold text-lg sm:text-xl">
                   {user?.founderName || "No founder name provided"}
                 </h2>
-                <p className="text-center text-gray-400 text-md">
+                <p className="text-gray-400 text-sm sm:text-md">
                   Founder & CEO
                 </p>
               </div>
-              <div className="">
+              
+              <div className="mt-2 sm:mt-0">
                 <SocialButtons
                   facebook={user?.socialMedia?.facebook}
                   twitter={user?.socialMedia?.twitter}
@@ -131,49 +151,57 @@ export default function ProductionProfile() {
             </div>
 
             {/* About */}
-            <p className="w-full text-gray-400 text-md text-pretty sm:text-center xs:text-justify">
+            <p className="w-full text-gray-400 text-sm sm:text-md text-pretty text-center sm:text-left mt-2">
               {user?.about || "No description provided"}
             </p>
 
-            <div className="">
-              {/* add Chat Button */}
-
-              <div className="flex items-center gap-4">
+            {/* Action Buttons */}
+            <div className="mt-4 sm:mt-6">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                 <button
                   onClick={handletoCreateRoom}
-                  className="bg-green-500 text-white flex items-center gap-3 px-4 py-2 rounded-xl"
+                  className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-colors"
                 >
-                  <MessageCircle className="w-6 h-6" />
-                  Chat
+                  <MessageCircle className="w-5 h-5" />
+                  <span>Chat</span>
                 </button>
+                
                 <DialogSocial
                   button={
-                    <button className="bg-green-500 text-white flex items-center gap-3 px-4 py-2 rounded-xl">
+                    <button className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-colors">
                       {user?.socialMedia?.facebook ? (
-                        <Edit className="w-6 h-6" />
+                        <Edit className="w-5 h-5" />
                       ) : (
-                        <Plus className="w-6 h-6" />
+                        <Plus className="w-5 h-5" />
                       )}
-                      {!user?.socialMedia?.facebook
-                        ? "Add Social Media Links"
-                        : "Edit A Social Media Link"}
+                      <span className="hidden sm:inline">
+                        {!user?.socialMedia?.facebook
+                          ? "Add Social Media Links"
+                          : "Edit Social Media Links"}
+                      </span>
+                      <span className="sm:hidden">
+                        {!user?.socialMedia?.facebook ? "Add Links" : "Edit Links"}
+                      </span>
                     </button>
                   }
-                ></DialogSocial>
+                />
 
+                <button
+                  onClick={handletoDeleteAccount}
+                  className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-colors"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  <span className="hidden sm:inline">Delete Account</span>
+                  <span className="sm:hidden">Delete</span>
+                </button>
 
-<button
-                onClick={ handletoLogout}
-                className=" top-0 left-0 bg-red-500 px-4 py-2 rounded-xl"
-              >
-                Delete Account
-              </button>
-              <button
-                onClick={handletoLogout}
-                className=" top-0 left-0 bg-blue-500 px-4 py-2 rounded-xl"
-              >
-                Logout
-              </button>
+                <button
+                  onClick={handletoLogout}
+                  className="md:hidden bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
+                </button>
               </div>
             </div>
           </div>
@@ -233,7 +261,7 @@ export function DialogSocial({ button }: { button: React.ReactNode }) {
   return (
     <Dialog>
       <DialogTrigger asChild>{button}</DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="w-[90vw] max-w-[625px] sm:w-auto">
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
@@ -242,8 +270,8 @@ export function DialogSocial({ button }: { button: React.ReactNode }) {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="instagram" className="text-right">
+          <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+            <Label htmlFor="instagram" className="sm:text-right">
               Instagram
             </Label>
             <Input
@@ -251,11 +279,11 @@ export function DialogSocial({ button }: { button: React.ReactNode }) {
               value={instagram}
               placeholder="https://www.instagram.com/username/"
               onChange={(e) => setInstagram(e.target.value)}
-              className="col-span-3"
+              className="sm:col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="facebook" className="text-right">
+          <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+            <Label htmlFor="facebook" className="sm:text-right">
               Facebook
             </Label>
             <Input
@@ -263,11 +291,11 @@ export function DialogSocial({ button }: { button: React.ReactNode }) {
               placeholder="https://www.facebook.com/username/"
               value={facebook}
               onChange={(e) => setFacebook(e.target.value)}
-              className="col-span-3"
+              className="sm:col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="youtube" className="text-right">
+          <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+            <Label htmlFor="youtube" className="sm:text-right">
               YouTube
             </Label>
             <Input
@@ -275,11 +303,11 @@ export function DialogSocial({ button }: { button: React.ReactNode }) {
               id="youtube"
               value={youtube}
               onChange={(e) => setYoutube(e.target.value)}
-              className="col-span-3"
+              className="sm:col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="twitter" className="text-right">
+          <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+            <Label htmlFor="twitter" className="sm:text-right">
               Twitter
             </Label>
             <Input
@@ -287,13 +315,13 @@ export function DialogSocial({ button }: { button: React.ReactNode }) {
               placeholder="https://twitter.com/username/"
               value={twitter}
               onChange={(e) => setTwitter(e.target.value)}
-              className="col-span-3"
+              className="sm:col-span-3"
             />
           </div>
         </div>
-        {error && <div className="text-red-500">{error}</div>}
+        {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
         <DialogFooter>
-          <Button type="button" onClick={handleSubmit}>
+          <Button type="button" onClick={handleSubmit} className="w-full sm:w-auto">
             Save changes
           </Button>
         </DialogFooter>

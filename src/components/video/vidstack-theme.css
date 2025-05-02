@@ -1,0 +1,83 @@
+/* Video Player Custom Theme */
+.vidstack-player-container {
+  --media-brand: #2196F3;  /* Primary color */
+  --media-focus-ring-color: #2196F3;
+}
+
+/* Override default Vidstack styles */
+media-player {
+  --media-focus-ring: 3px solid var(--media-brand);
+  --media-control-hover-bg: rgba(33, 150, 243, 0.3); /* Primary with transparency */
+  --media-control-background: rgb(0 0 0 / 0.5);
+  --media-control-hover-background: rgb(0 0 0 / 0.7);
+  --media-tooltip-background: rgb(0 0 0 / 0.8);
+  --media-buffering-color: var(--media-brand);
+  --media-range-track-height: 4px;
+  --media-range-thumb-size: 14px;
+  --media-range-track-color-fill: var(--media-brand);
+  --media-range-track-color-fill-opacity: 1;
+  --media-range-thumb-border: 2px solid rgb(255 255 255 / 1);
+  --media-range-thumb-bg: var(--media-brand);
+  --media-menu-min-width: 260px;
+  --media-menu-background: rgb(0 0 0 / 0.9);
+  --media-menu-item-text-color-focus: var(--media-brand);
+  --media-menu-item-icon-color-focus: var(--media-brand);
+  --media-menu-item-bg-color-focus: rgba(33, 150, 243, 0.2);
+  --media-tooltip-text-color: #fff;
+  --media-tooltip-arrow: url();
+  --media-chapter-progress-color: var(--media-brand);
+}
+
+/* Time Preview tooltip */
+.vds-time-slider .vds-slider-preview {
+  --media-slider-preview-bg: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(33, 150, 243, 0.5);
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+}
+
+/* Buffering animation */
+.vds-buffering-indicator {
+  --media-buffering-size: 84px;
+  --media-buffering-width: 4px;
+  --media-buffering-opacity: 0.8;
+}
+
+/* Thumbnails */
+.vds-thumbnail-preview img {
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Customize time slider */
+.vds-time-slider {
+  --media-range-track-color: rgba(255, 255, 255, 0.3);
+  --media-slider-height: 40px; /* Increase height for easier touch */
+}
+
+/* Make thumbnails responsive */
+.vds-thumbnail-preview {
+  max-width: 180px;
+  height: auto;
+}
+
+/* Enhance controls visibility */
+.vds-controls {
+  padding-bottom: 8px;
+}
+
+/* Fix fullscreen in Safari */
+.vds-fullscreen {
+  overflow: hidden;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.vds-controls {
+  animation: fadeIn 0.2s ease-in-out;
+} 

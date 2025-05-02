@@ -12,6 +12,9 @@ import { useQuery } from "react-query";
 import Loading from "../ui/loading";
 import { Ivideo } from "../types/video";
 import Link from "next/link";
+import { Suspense, useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import { ZYNOPROD } from "@/lib/config";
 
 // Mock API function
 const fetchBannerVideo = async () => {
@@ -22,7 +25,123 @@ const fetchBannerVideo = async () => {
   return response.data;
 };
 
-export function BannerCarousel() {
+// Optimized video component with progressive loading
+function OptimizedBannerVideo({ video }: { video: Ivideo }) {
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [posterLoaded, setPosterLoaded] = useState(false);
+
+  // Set up intersection observer to load video only when in viewport
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      setInView(entry.isIntersecting);
+      
+      if (entry.isIntersecting) {
+        // When in view, try to play video after a short delay
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.play()
+              .then(() => setIsPlaying(true))
+              .catch(err => console.error("Error playing video:", err));
+          }
+        }, 500);
+      } else {
+        // Pause when out of view
+        if (videoRef.current) {
+          videoRef.current.pause();
+          setIsPlaying(false);
+        }
+      }
+    }, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.3
+    });
+    
+    observer.observe(containerRef.current);
+    
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, []);
+
+  // Handle video loaded state
+  const handleVideoLoaded = () => {
+    setIsVideoLoaded(true);
+    if (inView && videoRef.current) {
+      videoRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(err => console.error("Error playing video:", err));
+    }
+  };
+
+  // Handle poster loaded state
+  const handlePosterLoaded = () => {
+    setPosterLoaded(true);
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-full lg:h-[650px] h-[350px]">
+      {/* Hidden poster preloader */}
+      <Image 
+        src={ZYNOPROD + video.processedImages.medium.path} 
+        alt={video.title} 
+        fill 
+        className="hidden" 
+        onLoad={handlePosterLoaded}
+        priority
+      />
+      
+      {/* Visible poster image (shown while video loads) */}
+      <div className={`absolute inset-0 transition-opacity duration-500 ${isVideoLoaded && isPlaying ? 'opacity-0' : 'opacity-100'}`}>
+        <Image 
+          src={video.thumbnail} 
+          alt={video.title} 
+          fill 
+          className="object-cover"
+          priority
+        />
+        
+        {/* Loading indicator shown on top of poster */}
+        {!isVideoLoaded && inView && (
+          <div className="absolute bottom-4 right-4 flex items-center bg-black/50 px-3 py-1 rounded-full">
+            <div className="w-4 h-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+            <span className="text-white text-xs">Loading video...</span>
+          </div>
+        )}
+      </div>
+      
+      {/* Video element - loaded progressively */}
+      {inView && (
+        <video
+          ref={videoRef}
+          playsInline
+          autoPlay
+          loop
+          muted
+          poster={ZYNOPROD + video.processedImages.medium.path}
+          className={`w-full h-full object-cover transition-opacity duration-500 ${isVideoLoaded && isPlaying ? 'opacity-100' : 'opacity-0'}`}
+          controls={false}
+          preload="auto"
+          onLoadedData={handleVideoLoaded}
+        >
+          <source src={video.preview_video} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+    </div>
+  );
+}
+
+function BannerCarousel() {
   const { data, error, isLoading } = useQuery("banner", fetchBannerVideo);
 
   if (isLoading)
@@ -37,21 +156,7 @@ export function BannerCarousel() {
         {data.video.map((video: Ivideo, index: number) => (
           <CarouselItem key={index} className="">
             <div className="relative">
-              <video
-                preload="auto"
-                playsInline
-                autoPlay
-                loop
-                muted
-                poster={video.processedImages.medium.path}
-                width="320"
-                className="w-full lg:h-[650px] h-[350px] aspect-auto object-cover"
-                height="240"
-                controls={false}
-              >
-                <source src={video.preview_video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <OptimizedBannerVideo video={video} />
               <div className="video-overlay"></div>
               <div className="absolute top-[60%] lg:top-[45%] left-3 lg:left-12  right-0">
                 <div className="">
@@ -109,11 +214,11 @@ export function PlaySVG() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g
         id="SVGRepo_tracerCarrier"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       ></g>
       <g id="SVGRepo_iconCarrier">
         <path
@@ -124,3 +229,5 @@ export function PlaySVG() {
     </svg>
   );
 }
+
+export default BannerCarousel;

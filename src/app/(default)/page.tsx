@@ -1,6 +1,5 @@
 "use client";
 
-import { BannerCarousel } from "@/components/shared/banner-carousel";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { NextSeo } from "next-seo";
@@ -8,6 +7,13 @@ import LanguageList from "@/components/shared/list-language";
 
 const CategoryList = dynamic(
   () => import("@/components/shared/category-list"),
+  {
+    ssr: false,
+  }
+);
+
+const BannerCarousel = dynamic(
+  () => import("@/components/shared/banner-carousel"),
   {
     ssr: false,
   }
