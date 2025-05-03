@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useRef, useEffect } from "react";
 import { Ivideo } from "../types/video";
 import "./video-player.css";
@@ -45,11 +46,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 2;
 
-  // Handle if video is null
-  if (!video) return null;
-  
   // Video source based on membership
-  const videoLink = isMembership ? video?.original_video : video?.preview_video;
+  const videoLink = video ? (isMembership ? video?.original_video : video?.preview_video) : '';
   
   // Handle video source issues
   const retryVideoLoad = () => {
@@ -91,7 +89,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
   
-  const proxiedVideoUrl = getProxiedVideoUrl(videoLink);
+  const proxiedVideoUrl = videoLink ? getProxiedVideoUrl(videoLink) : '';
 
   // Format time (convert seconds to MM:SS format)
   const formatTime = (timeInSeconds: number): string => {
@@ -100,50 +98,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const seconds = Math.floor(timeInSeconds % 60);
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
-
-  // Initialize video
-  useEffect(() => {
-    const initializeVideo = async () => {
-      try {
-        if (videoRef.current) {
-          const video = videoRef.current;
-          
-          // Manually load metadata if needed
-          if (video.readyState === 0) {
-            console.log("Manually loading video metadata...");
-            video.load();
-            
-            // Wait for metadata to load
-            if (!video.duration) {
-              await new Promise<void>((resolve) => {
-                const metadataHandler = () => {
-                  console.log("Metadata loaded via Promise:", {
-                    duration: video.duration,
-                    readyState: video.readyState
-                  });
-                  video.removeEventListener('loadedmetadata', metadataHandler);
-                  resolve();
-                };
-                video.addEventListener('loadedmetadata', metadataHandler);
-              });
-            }
-          }
-          
-          // Set duration once available
-          if (video.duration) {
-            setDuration(video.duration);
-            setVideoReady(true);
-            console.log("Video initialized with duration:", video.duration);
-          }
-        }
-      } catch (error) {
-        console.error("Error initializing video:", error);
-        setVideoError("Failed to initialize video player");
-      }
-    };
-    
-    initializeVideo();
-  }, [videoLink]);
 
   // Toggle play/pause
   const togglePlay = () => {
@@ -223,129 +177,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const video = videoRef.current;
     return video && video.readyState > 0 && video.duration > 0;
   };
-
-  // Handle video events
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    
-    if (!videoElement) return;
-
-    const handleLoadedMetadata = () => {
-      console.log("Video metadata loaded:", {
-        duration: videoElement.duration,
-        videoWidth: videoElement.videoWidth,
-        videoHeight: videoElement.videoHeight,
-        readyState: videoElement.readyState,
-        paused: videoElement.paused
-      });
-      
-      setDuration(videoElement.duration);
-      setLoadedData(true);
-      setVideoReady(true);
-    };
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(videoElement.currentTime);
-    };
-
-    const handleEnded = () => {
-      setIsPlaying(false);
-    };
-
-    const handlePlay = () => {
-      setIsPlaying(true);
-    };
-
-    const handlePause = () => {
-      setIsPlaying(false);
-    };
-
-    const handleWaiting = () => {
-      setIsBuffering(true);
-    };
-
-    const handleCanPlay = () => {
-      console.log("Video can play:", {
-        currentTime: videoElement.currentTime,
-        duration: videoElement.duration,
-        readyState: videoElement.readyState
-      });
-      
-      setIsBuffering(false);
-      setVideoReady(true);
-    };
-
-    const handleLoadedData = () => {
-      console.log("Video data loaded:", {
-        duration: videoElement.duration,
-        readyState: videoElement.readyState
-      });
-      setVideoReady(true);
-    };
-
-    const handleSeeked = () => {
-      console.log("Video seeked to:", videoElement.currentTime);
-    };
-
-    const handleError = (e: Event) => {
-      console.error("Video error:", (e.target as HTMLVideoElement).error);
-    };
-
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    // Add event listeners
-    videoElement.addEventListener('loadedmetadata', handleLoadedMetadata);
-    videoElement.addEventListener('loadeddata', handleLoadedData);
-    videoElement.addEventListener('seeked', handleSeeked);
-    videoElement.addEventListener('timeupdate', handleTimeUpdate);
-    videoElement.addEventListener('ended', handleEnded);
-    videoElement.addEventListener('play', handlePlay);
-    videoElement.addEventListener('pause', handlePause);
-    videoElement.addEventListener('waiting', handleWaiting);
-    videoElement.addEventListener('canplay', handleCanPlay);
-    videoElement.addEventListener('error', handleError);
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-    // Controls visibility timer
-    let controlsTimer: NodeJS.Timeout;
-    
-    const hideControls = () => {
-      if (isPlaying) {
-        setShowControls(false);
-      }
-    };
-
-    const handleMouseMove = () => {
-      setShowControls(true);
-      clearTimeout(controlsTimer);
-      controlsTimer = setTimeout(hideControls, 3000);
-    };
-
-    playerRef.current?.addEventListener('mousemove', handleMouseMove);
-    playerRef.current?.addEventListener('mouseleave', hideControls);
-    playerRef.current?.addEventListener('mouseenter', handleMouseMove);
-
-    // Clean up
-    return () => {
-      videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      videoElement.removeEventListener('loadeddata', handleLoadedData);
-      videoElement.removeEventListener('seeked', handleSeeked);
-      videoElement.removeEventListener('timeupdate', handleTimeUpdate);
-      videoElement.removeEventListener('ended', handleEnded);
-      videoElement.removeEventListener('play', handlePlay);
-      videoElement.removeEventListener('pause', handlePause);
-      videoElement.removeEventListener('waiting', handleWaiting);
-      videoElement.removeEventListener('canplay', handleCanPlay);
-      videoElement.removeEventListener('error', handleError);
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      playerRef.current?.removeEventListener('mousemove', handleMouseMove);
-      playerRef.current?.removeEventListener('mouseleave', hideControls);
-      playerRef.current?.removeEventListener('mouseenter', handleMouseMove);
-      clearTimeout(controlsTimer);
-    };
-  }, [isPlaying]);
 
   // Skip forward/backward with fallback methods
   const skipForward = () => {
@@ -453,6 +284,188 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
 
+  // Initialize video
+  useEffect(() => {
+    if (!video) return;
+    
+    const initializeVideo = async () => {
+      try {
+        if (videoRef.current) {
+          const video = videoRef.current;
+          
+          // Manually load metadata if needed
+          if (video.readyState === 0) {
+            console.log("Manually loading video metadata...");
+            video.load();
+            
+            // Wait for metadata to load
+            if (!video.duration) {
+              await new Promise<void>((resolve) => {
+                const metadataHandler = () => {
+                  console.log("Metadata loaded via Promise:", {
+                    duration: video.duration,
+                    readyState: video.readyState
+                  });
+                  video.removeEventListener('loadedmetadata', metadataHandler);
+                  resolve();
+                };
+                video.addEventListener('loadedmetadata', metadataHandler);
+              });
+            }
+          }
+          
+          // Set duration once available
+          if (video.duration) {
+            setDuration(video.duration);
+            setVideoReady(true);
+            console.log("Video initialized with duration:", video.duration);
+          }
+        }
+      } catch (error) {
+        console.error("Error initializing video:", error);
+        setVideoError("Failed to initialize video player");
+      }
+    };
+    
+    initializeVideo();
+  }, [videoLink, video]);
+  
+  // Handle video events
+  useEffect(() => {
+    if (!video) return;
+    
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    const handleLoadedMetadata = () => {
+      console.log("Video metadata loaded:", {
+        duration: videoElement.duration,
+        videoWidth: videoElement.videoWidth,
+        videoHeight: videoElement.videoHeight,
+        readyState: videoElement.readyState,
+        paused: videoElement.paused
+      });
+      
+      setDuration(videoElement.duration);
+      setLoadedData(true);
+      setVideoReady(true);
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(videoElement.currentTime);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+    };
+
+    const handlePlay = () => {
+      setIsPlaying(true);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    const handleWaiting = () => {
+      setIsBuffering(true);
+    };
+
+    const handleCanPlay = () => {
+      console.log("Video can play:", {
+        currentTime: videoElement.currentTime,
+        duration: videoElement.duration,
+        readyState: videoElement.readyState
+      });
+      
+      setIsBuffering(false);
+      setVideoReady(true);
+    };
+
+    const handleLoadedData = () => {
+      console.log("Video data loaded:", {
+        duration: videoElement.duration,
+        readyState: videoElement.readyState
+      });
+      setVideoReady(true);
+    };
+
+    const handleSeeked = () => {
+      console.log("Video seeked to:", videoElement.currentTime);
+    };
+
+    const handleError = (e: Event) => {
+      console.error("Video error:", (e.target as HTMLVideoElement).error);
+    };
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    // Add event listeners
+    videoElement.addEventListener('loadedmetadata', handleLoadedMetadata);
+    videoElement.addEventListener('loadeddata', handleLoadedData);
+    videoElement.addEventListener('seeked', handleSeeked);
+    videoElement.addEventListener('timeupdate', handleTimeUpdate);
+    videoElement.addEventListener('ended', handleEnded);
+    videoElement.addEventListener('play', handlePlay);
+    videoElement.addEventListener('pause', handlePause);
+    videoElement.addEventListener('waiting', handleWaiting);
+    videoElement.addEventListener('canplay', handleCanPlay);
+    videoElement.addEventListener('error', handleError);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    // Controls visibility timer
+    let controlsTimer: NodeJS.Timeout;
+    
+    const hideControls = () => {
+      if (isPlaying) {
+        setShowControls(false);
+      }
+    };
+
+    const handleMouseMove = () => {
+      setShowControls(true);
+      clearTimeout(controlsTimer);
+      controlsTimer = setTimeout(hideControls, 3000);
+    };
+
+    // Store a reference to the current player element for cleanup
+    const currentPlayerRef = playerRef.current;
+
+    if (currentPlayerRef) {
+      currentPlayerRef.addEventListener('mousemove', handleMouseMove);
+      currentPlayerRef.addEventListener('mouseleave', hideControls);
+      currentPlayerRef.addEventListener('mouseenter', handleMouseMove);
+    }
+
+    // Clean up
+    return () => {
+      videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      videoElement.removeEventListener('loadeddata', handleLoadedData);
+      videoElement.removeEventListener('seeked', handleSeeked);
+      videoElement.removeEventListener('timeupdate', handleTimeUpdate);
+      videoElement.removeEventListener('ended', handleEnded);
+      videoElement.removeEventListener('play', handlePlay);
+      videoElement.removeEventListener('pause', handlePause);
+      videoElement.removeEventListener('waiting', handleWaiting);
+      videoElement.removeEventListener('canplay', handleCanPlay);
+      videoElement.removeEventListener('error', handleError);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      
+      if (currentPlayerRef) {
+        currentPlayerRef.removeEventListener('mousemove', handleMouseMove);
+        currentPlayerRef.removeEventListener('mouseleave', hideControls);
+        currentPlayerRef.removeEventListener('mouseenter', handleMouseMove);
+      }
+      
+      clearTimeout(controlsTimer);
+    };
+  }, [isPlaying, video]);
+
+  // Handle if video is null
+  if (!video) return null;
+
   return (
     <div 
       className="video-player-container" 
@@ -520,10 +533,37 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         />
       </video>
 
-      {/* Loading Spinner */}
+      {/* Loading Spinner with Enhanced Animation */}
       {isBuffering && (
         <div className="buffering-overlay">
-          <div className="spinner"></div>
+          <div className="spinner" style={{
+            animation: "buffering-spin 1.2s linear infinite, buffering-pulse 2s ease-in-out infinite"
+          }}>
+            <style jsx>{`
+              @keyframes buffering-spin {
+                0% {
+                  transform: rotate(0deg);
+                }
+                100% {
+                  transform: rotate(360deg);
+                }
+              }
+              @keyframes buffering-pulse {
+                0% {
+                  opacity: 0.6;
+                  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+                }
+                50% {
+                  opacity: 1;
+                  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+                }
+                100% {
+                  opacity: 0.6;
+                  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+                }
+              }
+            `}</style>
+          </div>
         </div>
       )}
 

@@ -1,15 +1,14 @@
 "use client";
 
-import { UpdateImg } from "@/components/profile/update-img";
+import VideoCard from "@/components/card/video-card";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
 import { isProduction, userId } from "@/lib/user";
-import { Edit, Edit2, VideoIcon } from "lucide-react";
+import { VideoIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import React from "react";
 import { useQuery } from "react-query";
 
-const VideoCard = dynamic(() => import("@/components/card/video-card"));
 
 const ProductionProfile = dynamic(
   () => import("@/components/profile/production-profile")
@@ -29,7 +28,7 @@ export default async function Page({ params }: { params: any }) {
     data: userVideos,
     isLoading: videoLoading,
     error: videoError,
-  } = useQuery("video", async () => {
+  } = useQuery(["video" , params.slug], async () => {
     const response = await axios.get(`/profile/video`);
     return response.data.video;
   });
@@ -88,7 +87,7 @@ export default async function Page({ params }: { params: any }) {
               </p>
             </div>
             <div className="py-8 px-12">
-              {/* <button className="flex items-center bg-green-500 rounded-xl px-6 py-3 gap-3">
+              <button className="flex items-center bg-green-500 rounded-xl px-6 py-3 gap-3">
                 <VideoIcon className="w-6 h-6" />
                 my Video
               </button>
@@ -97,14 +96,14 @@ export default async function Page({ params }: { params: any }) {
                 <div className="flex items-center justify-center text-white text-2xl font-bold mt-8">
                   No Videos Uploaded
                 </div>
-              )} */}
+              )}
 
-              {/* <div className="grid pt-8 gap-6 grid-cols-5">
+              <div className="grid pt-8 gap-6 grid-cols-5">
                 {userVideos?.length > 0 &&
                   userVideos?.map((video: any, index: number) => (
                     <VideoCard key={index} index={index} video={video} />
                   ))}
-              </div> */}
+              </div>
             </div>
           </div>
         </section>
