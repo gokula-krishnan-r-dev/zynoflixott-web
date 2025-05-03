@@ -11,6 +11,13 @@ const nextConfig = {
       "zynoflixott.blob.core.windows.net"
     ],
   },
+  experimental: {
+    serverActions: {
+      // Allow streaming responses for video data
+      allowedOrigins: ['*'],
+      allowedForwardedHosts: ['*'],
+    },
+  },
 };
 
 export default nextConfig;

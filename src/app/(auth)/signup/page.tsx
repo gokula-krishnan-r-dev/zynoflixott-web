@@ -56,7 +56,7 @@ const page = () => {
                     <span className="ml-4">Production Company Signup</span>
                   </Link>
                   <Link
-                    href={"/signup/production"}
+                    href={"/signup/director"}
                     className="w-full mt-4 max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
                   >
                     <span className="ml-4">Director Signup</span>

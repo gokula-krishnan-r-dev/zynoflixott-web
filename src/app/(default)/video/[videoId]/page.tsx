@@ -1,15 +1,11 @@
 "use client";
 import React, { useEffect } from "react";
-import "@vidstack/react/player/styles/base.css";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "@/lib/axios";
-import dynamic from "next/dynamic";
 import Loading from "@/components/ui/loading";
 import {
-  convertMinutesToReadableFormat,
   isMonthMembershipCompleted,
   secondsToMinutes,
-  timeAgoString,
 } from "@/lib/time";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -17,18 +13,9 @@ import { authId, isLogin, userId } from "@/lib/user";
 import { toast } from "sonner";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-const ProfileVideo = dynamic(() => import("@/components/video/profile-video"), {
-  ssr: false,
-});
-
-const VideoPlayer = dynamic(() => import("@/components/video/video-player"), {
-  ssr: false,
-});
+import VideoPlayer from "@/components/video/video-player";
 
 export default function Page({ params }: { params: { videoId: string } }) {
-  const ModeParams = useSearchParams();
-  const mode = ModeParams.get("mode");
-
   const videoId = params.videoId;
   const {
     data: video,
@@ -245,8 +232,8 @@ export default function Page({ params }: { params: { videoId: string } }) {
 
   return (
     <main>
-      <div className="">
-        <VideoPlayer isMembership={isMembership} mode={mode} video={video} />
+      <div className="pt-16 lg:pt-24">
+        <VideoPlayer isMembership={isMembership}  video={video} />
       </div>
       <div className="lg:p-6 p-3">
         <div className="w-full mt-4 flex lg:flex-row flex-col pb-3 justify-between items-start lg:items-center">
