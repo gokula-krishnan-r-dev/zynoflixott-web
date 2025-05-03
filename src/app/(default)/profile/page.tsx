@@ -67,7 +67,27 @@ const Page = () => {
   };
 
   const handletoDeleteAccount = async () => {
-    handletoLogout();
+    const response = await axios.delete(`/auth/user/${userId}`);
+    if (response.status === 200) {
+      toast.success("Account deleted successfully");
+      handletoLogout();
+    }
+
+    if (response.status === 400) {
+      toast.error("Account deletion failed");
+    }
+
+    if (response.status === 401) {
+      toast.error("Unauthorized");
+    }
+
+    if (response.status === 500) {
+      toast.error("Internal server error");
+    }
+
+    if (response.status === 404) {
+      toast.error("User not found");
+    }
   };
   return (
     <main className="px-3 sm:px-4 md:px-6 lg:px-8">
