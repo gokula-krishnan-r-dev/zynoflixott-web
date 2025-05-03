@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import { Button } from "../ui/button";
 
 export interface FooterLink {
   label: string;
@@ -164,8 +163,12 @@ const Footer: React.FC = () => {
                   </a>
                 </li> */}
                 <li>
-                  {/* FILM CALL */}
-                  <Button className="bg-main text-black">Film Call</Button>
+                  <a
+                    className="hover:underline"
+                    href="/film-call"
+                  >
+                    Film Call
+                  </a>
                 </li>
               </ul>
             </div>
