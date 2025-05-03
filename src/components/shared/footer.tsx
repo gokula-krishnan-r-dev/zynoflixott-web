@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { Button } from "../ui/button";
 
 export interface FooterLink {
   label: string;
@@ -163,20 +164,8 @@ const Footer: React.FC = () => {
                   </a>
                 </li> */}
                 <li>
-                  <a
-                    className="hover:underline"
-                    href="https://zynoflix.com/sponsorship"
-                  >
-                    Sponsorship
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="hover:underline"
-                    href="https://zynoflix.com/awards"
-                  >
-                    Awards
-                  </a>
+                  {/* FILM CALL */}
+                  <Button className="bg-main text-black">Film Call</Button>
                 </li>
               </ul>
             </div>

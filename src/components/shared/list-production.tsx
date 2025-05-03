@@ -86,7 +86,26 @@ const ListProduction = ({ url, title }: any) => {
                     <Link href={"/production/" + company._id} className="">
                       <div className="flex  items-center gap-2 lg:gap-8 ">
                         <div className=" relative w-max z-20">
-                          <div className="bg-red-500 w-4 h-4 rounded-full z-50 absolute -top-1 lg:top-1 right-1 lg:right-2" />
+                          <div className="bg-red-500 w-4 h-4 rounded-full z-50 absolute -top-1 lg:top-1 right-1 lg:right-2 animate-dot-pulse" style={{
+                            animation: "dot-pulse 2s infinite ease-in-out",
+                          }}>
+                            <style jsx>{`
+                              @keyframes dot-pulse {
+                                0% {
+                                  transform: scale(1);
+                                  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                                }
+                                70% {
+                                  transform: scale(1.1);
+                                  box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+                                }
+                                100% {
+                                  transform: scale(1);
+                                  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                                }
+                              }
+                            `}</style>
+                          </div>
                           <Image
                             width={180}
                             height={180}
@@ -104,7 +123,27 @@ const ListProduction = ({ url, title }: any) => {
                               version="1.1"
                               xmlns="http://www.w3.org/2000/svg"
                               fill="#2600ff"
+                              className="animate-pulse-live"
+                              style={{
+                                animation: "pulse-live 1.5s infinite ease-in-out",
+                              }}
                             >
+                              <style jsx>{`
+                                @keyframes pulse-live {
+                                  0% {
+                                    opacity: 1;
+                                    transform: scale(1);
+                                  }
+                                  50% {
+                                    opacity: 0.7;
+                                    transform: scale(1.05);
+                                  }
+                                  100% {
+                                    opacity: 1;
+                                    transform: scale(1);
+                                  }
+                                }
+                              `}</style>
                               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                               <g
                                 id="SVGRepo_tracerCarrier"
@@ -139,7 +178,23 @@ const ListProduction = ({ url, title }: any) => {
                                 </g>{" "}
                               </g>
                             </svg>
-                            <span className="text-red-500">LIVE</span>
+                            <span className="text-red-500 font-bold animate-live-text" style={{
+                              animation: "live-text-blink 1.5s infinite alternate",
+                            }}>
+                              <style jsx>{`
+                                @keyframes live-text-blink {
+                                  0% {
+                                    color: #ef4444;
+                                    text-shadow: 0 0 0px rgba(239, 68, 68, 0.7);
+                                  }
+                                  100% {
+                                    color: #f87171;
+                                    text-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
+                                  }
+                                }
+                              `}</style>
+                              LIVE
+                            </span>
                           </p>
                           <h2 className="lg:text-xl lg:w-max w-full text-lg pl-2 font-bold mb-2">
                             {company.name}
@@ -179,7 +234,26 @@ const ListProduction = ({ url, title }: any) => {
                     <Link href={"/production/" + company._id} className="">
                       <div className="flex flex-col items-center gap-2 lg:gap-8">
                         <div className=" relative w-max z-20">
-                          <div className="bg-red-500 w-4 h-4 rounded-full z-50 absolute -top-1 lg:top-1 right-1 lg:right-2" />
+                          <div className="bg-red-500 w-4 h-4 rounded-full z-50 absolute -top-1 lg:top-1 right-1 lg:right-2 animate-dot-pulse" style={{
+                            animation: "dot-pulse 2s infinite ease-in-out",
+                          }}>
+                            <style jsx>{`
+                              @keyframes dot-pulse {
+                                0% {
+                                  transform: scale(1);
+                                  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                                }
+                                70% {
+                                  transform: scale(1.1);
+                                  box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+                                }
+                                100% {
+                                  transform: scale(1);
+                                  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                                }
+                              }
+                            `}</style>
+                          </div>
                           <Image
                             width={180}
                             height={180}

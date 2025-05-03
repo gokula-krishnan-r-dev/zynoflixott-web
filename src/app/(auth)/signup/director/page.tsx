@@ -26,7 +26,7 @@ const page = () => {
               </h1>
               <div className="w-full mt-8">
                 <div className="mx-auto max-w-xl">
-                  <ProductionForm />
+                  <ProductionForm type="director" />
                   <p className="mt-6 text-xs text-gray-600 text-center">
                     I agree to abide by templatana
                     <a

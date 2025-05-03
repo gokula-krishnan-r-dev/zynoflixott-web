@@ -15,7 +15,7 @@ interface ProductionCompanyFormData {
   logo?: File;
 }
 
-const ProductionForm: React.FC = () => {
+const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
   const router = useRouter();
   const [formData, setFormData] = useState<ProductionCompanyFormData>({
     name: "",
@@ -23,7 +23,7 @@ const ProductionForm: React.FC = () => {
     about: "",
     email: "",
     contactNumber: "",
-    profile_type: "production",
+    profile_type: type,
     password: "",
     logo: undefined,
   });
@@ -224,6 +224,7 @@ const ProductionForm: React.FC = () => {
         <select
           id="profile_type"
           name="profile_type"
+          defaultValue={formData.profile_type}
           value={formData.profile_type}
           onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
@@ -259,7 +260,7 @@ const ProductionForm: React.FC = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-2 px-4 bg-green-500 text-black font-bold rounded-xl hover:bg-green-500"
+        className="w-full py-2 px-4 bg-main text-black font-bold rounded-xl transition-all duration-300 ease-in-out"
       >
         {isSubmitting ? "Submitting..." : "Submit"}
       </button>

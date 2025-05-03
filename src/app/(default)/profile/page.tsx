@@ -163,6 +163,15 @@ const Page = () => {
                   My Videos
                 </button>
 
+                {/* //logout */}
+                <button
+                  onClick={handletoLogout}
+                  className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl gap-2 transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Logout
+                </button>
+
                 <button
                   onClick={handletoDeleteAccount}
                   className="flex items-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl gap-2 transition-colors"
