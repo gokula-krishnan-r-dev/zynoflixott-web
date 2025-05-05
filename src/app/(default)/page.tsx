@@ -2,8 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import { NextSeo } from "next-seo";
 import LanguageList from "@/components/shared/list-language";
+import SEO from "@/lib/next-seo.config";
 
 const CategoryList = dynamic(
   () => import("@/components/shared/category-list"),
@@ -34,64 +34,32 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center">
       <Head>
-        <title>ZynoflixOTT</title>
-        <meta
-          name="description"
-          content="Watch and upload short films on ZynoflixOTT, the premier OTT platform for independent filmmakers."
+        <title>ZynoflixOTT - Premier Platform for Short Films & Independent Filmmakers</title>
+        <meta 
+          name="description" 
+          content="Discover, watch and upload high-quality short films on ZynoflixOTT. The leading OTT platform for independent filmmakers featuring curated content in multiple languages including Tamil, English, and Kannada." 
         />
-        <meta
-          name="keywords"
-          content="OTT, short films, independent films, streaming"
+        <meta 
+          name="keywords" 
+          content="ZynoflixOTT, short films, independent filmmakers, Tamil, English, Kannada, OTT platform, curated content" 
         />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="author" content="ZynoflixOTT" />
-        {/* add icon  */}
-        <link rel="icon" href="/seo.png" sizes="any" />
-        {/* <link rel="apple-touch-icon" href="/logo_sm.png" />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href="https://zynoflixott.com" />
-        <meta property="og:title" content="ZynoflixOTT" />
-        <meta
-          property="og:description"
-          content="Watch and upload short films on ZynoflixOTT, the premier OTT platform for independent filmmakers."
-        />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://zynoflixott.com" />
-        <meta property="og:image" content="/logo_sm.png" />
-        <meta property="og:image:width" content="400" />
-        <meta property="og:image:height" content="400" />
+        <meta property="og:url" content="https://zynoflixott.com/" />
+        <meta property="og:title" content="ZynoflixOTT - Premier Platform for Short Films & Independent Filmmakers" />
+        <meta property="og:description" content="Discover, watch and upload high-quality short films on ZynoflixOTT. The leading OTT platform for independent filmmakers featuring curated content in multiple languages including Tamil, English, and Kannada." />
+        <meta property="og:image" content="/og-image.jpg" />
         <meta property="og:site_name" content="ZynoflixOTT" />
-        <meta property="og:locale" content="en_US" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:site" content="@zynoflix" />
-        <meta name="twitter:creator" content="@zynoflix" />
-        <meta name="twitter:title" content="ZynoflixOTT" />
-        <meta
-          name="twitter:description"
-          content="Watch and upload short films on ZynoflixOTT, the premier OTT platform for independent filmmakers."
-        />
-        <meta name="twitter:image" content="/logo_sm.png" />
-        <meta name="twitter:image:width" content="400" />
-        <meta name="twitter:image:height" content="400" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="msapplication-TileColor" content="#000000" />
-        <meta name="msapplication-config" content="/browserconfig.xml" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <meta name="apple-mobile-web-app-title" content="ZynoflixOTT" />
-        <meta name="application-name" content="ZynoflixOTT" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-        /> */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@zynoflixott" />
+        <meta name="twitter:title" content="ZynoflixOTT - Premier Platform for Short Films & Independent Filmmakers" />
+        <meta name="twitter:description" content="Discover, watch and upload high-quality short films on ZynoflixOTT. The leading OTT platform for independent filmmakers featuring curated content in multiple languages including Tamil, English, and Kannada." />
+        <meta name="twitter:image" content="/og-image.jpg" />
+        <link rel="icon" href="/seo.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="canonical" href="https://zynoflixott.com/" />
       </Head>
 
       <div className="w-full">

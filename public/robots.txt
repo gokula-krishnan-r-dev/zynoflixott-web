@@ -1,0 +1,10 @@
+# Allow all robots to index the site
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /dashboard/
+
+# XML Sitemap location
+Sitemap: https://zynoflixott.com/sitemap.xml 

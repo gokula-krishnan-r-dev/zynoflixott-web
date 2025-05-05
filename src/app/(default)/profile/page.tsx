@@ -103,11 +103,20 @@ const Page = () => {
               id="backgroundPic"
               name="backgroundPic"
               button={
-                <img
-                  src={user?.backgroundPic}
-                  alt="User Cover"
-                  className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover"
-                />
+                <div className="relative w-full group">
+                  <img
+                    src={user?.backgroundPic || "https://placehold.co/1200x400/1f2937/374151?text=Add+Background+Image"}
+                    alt="User Cover hhjhj"
+                    className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
+                  />
+                  <div className=" inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                    <div className="bg-main p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                      <Edit2 className="w-5 h-5 text-gray-800" />
+                      fddjskfhjkdshfjk
+                    </div>
+                    {/* <span className="absolute bottom-4 text-white font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-3 py-1 rounded-full">Edit Cover</span> */}
+                  </div>
+                </div>
               }
             />
 

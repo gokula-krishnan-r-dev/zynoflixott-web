@@ -54,7 +54,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name) newErrors.name = "Name is required";
+    // if (!formData.name) newErrors.name = "Name is required";
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.logo) newErrors.logo = "Logo is required";
     if (!formData.password) newErrors.password = "Password is required";
@@ -79,6 +79,10 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
     setIsSubmitting(true);
 
     const submissionData = new FormData();
+
+
+    submissionData.append("name" , formData.founderName as any)
+
     Object.keys(formData).forEach((key) => {
       if (formData[key as keyof ProductionCompanyFormData]) {
         submissionData.append(
@@ -130,7 +134,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="name" className="block mb-2 font-bold">
           Name of Company:
         </label>
@@ -144,10 +148,10 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
           className="w-full px-3 py-2 border border-gray-300  bg-transparent rounded-xl focus:outline-none focus:border-blue-500"
         />
         {errors.name && <p className="text-red-500">{errors.name}</p>}
-      </div>
+      </div> */}
       <div className="mb-4">
         <label htmlFor="founderName" className="block mb-2 font-bold">
-          Founder Name:
+        Director name:
         </label>
         <input
           type="text"
@@ -161,10 +165,10 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       </div>
       <div className="mb-4">
         <label htmlFor="about" className="block mb-2 font-bold">
-          Few Words About Your Company:
+          Few Words About You:
         </label>
         <textarea
-          placeholder="Enter a few words about your company"
+          placeholder="Enter a few words About you"
           rows={6}
           id="about"
           name="about"
@@ -235,7 +239,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       </div>
       <div className="mb-4">
         <label htmlFor="logo" className="block mb-2 font-bold">
-          Logo:
+Profile Pic:
         </label>
         <input
           type="file"

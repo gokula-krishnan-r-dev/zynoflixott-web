@@ -3,7 +3,7 @@ import { UpdateImg } from "@/components/profile/update-img";
 import { SocialButtons } from "@/components/shared/list-production";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
-import { Edit, LogOut, MessageCircle, Plus, Trash2 } from "lucide-react";
+import { Edit, Edit2, LogOut, MessageCircle, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { useQuery } from "react-query";
@@ -66,21 +66,26 @@ export default function ProductionProfile() {
     <main>
       <section className="w-full overflow-hidden dark:bg-gray-900">
         <div className="w-full mx-auto">
-          <UpdateImg
-            refetch={refetch}
-            id="backgroundPic"
-            name="backgroundPic"
-            button={
-              <Image
-                width={1920}
-                height={1080}
-                title="Edit Background Image"
-                src={user?.backgroundImage}
-                alt="User Cover"
-                className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover"
-              />
-            }
-          />
+        <UpdateImg
+              refetch={refetch}
+              id="backgroundPic"
+              name="backgroundPic"
+              button={
+                <div className="relative w-full group">
+                  <img
+                    src={user?.backgroundPic || "https://placehold.co/1200x400/1f2937/374151?text=Add+Background+Image"}
+                    alt="User Cover"
+                    className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
+                  />
+                  <div className=" absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                    <div className="bg-white p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                      <Edit2 className="w-5 h-5 text-gray-800" />
+                    </div>
+                    <span className="absolute bottom-4 text-white font-medium text-sm  group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-3 py-1 rounded-full">Edit Cover</span>
+                  </div>
+                </div>
+              }
+            />
 
           {/* User Profile Image */}
           <div className="w-full flex justify-center sm:justify-start sm:pl-6 md:pl-8 lg:pl-12">

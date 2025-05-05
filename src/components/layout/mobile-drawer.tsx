@@ -6,9 +6,10 @@ const menuItems = [
   { label: "Home", href: "#", isActive: true },
   { label: "Upload a Video", href: "/video-upload" },
   { label: "Chat", href: "/chat" },
-  { label: "profile", href: "/profile" },
+  { label: "Profile", href: "/profile" },
   { label: "Membership", href: "/membership" },
   { label: "Login", href: "/login" },
+  { label: "Flim Call", href: "/flim-call" },
 ];
 
 export function SheetMobile() {

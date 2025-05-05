@@ -249,7 +249,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
                   { label: "", value: secondsToMinutes(video.duration) },
                   { label: "", value: video.language || "Tamil" },
                   { label: "", value: video?.category?.[0]?.split(",")[0] || "Short Film" },
-                  { label: "", value: "Block Blaster" }
+                  { label: "", value: "Block Buster" }
                 ].map((item, index) => (
                   <React.Fragment key={index}>
                     {index > 0 && (
