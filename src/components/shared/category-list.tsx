@@ -5,8 +5,8 @@ import { useQuery } from "react-query";
 import dynamic from "next/dynamic";
 const VideoCarousel = dynamic(() => import("../shared/video-scroll"));
 
-const fetchCategories = async () => {
-  const response = await axios.get("/videos");
+const fetchCategories = async (langage: string) => {
+  const response = await axios.get(`/videos?language=${langage}`);
   if (response.status !== 200) {
     throw new Error("Error loading categories");
   }
@@ -14,12 +14,14 @@ const fetchCategories = async () => {
   return response.data.videos;
 };
 
-const CategoryList = ({ title, desc }: any) => {
-  const { data, isLoading, error } = useQuery("video", fetchCategories);
+const CategoryList = ({ title, desc, langage }: any) => {
+  const { data, isLoading, error } = useQuery(["video", langage], () => fetchCategories(langage));
   if (isLoading) return <p>Loading...</p>;
 
+  if (data.length === 0) return null;
+
   return (
-    <div className="">
+    <div className="pt-4">
       <div className="">
         <div className="pb-8">
           <h2 className="lg:text-xl text-base font-semibold">{title}</h2>

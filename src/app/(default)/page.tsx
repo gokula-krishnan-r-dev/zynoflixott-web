@@ -72,18 +72,133 @@ export default function Home() {
           />
           <CategoryList title={"SHORT FILMS"} desc={"TOP-RATED SHORT FILMS"} />
           <LanguageList />
-          <CategoryList
-            title={"TAMIL SHORT FILMS"}
-            desc={"POPULAR TAMIL FILMS"}
+          
+          {/* Indian Languages */}
+          <div className="py-4">
+            {/* <h2 className="text-2xl font-bold mb-8">INDIAN LANGUAGE SHORT FILMS</h2> */}
+            
+            <CategoryList langage={"Hindi"}
+              title={"HINDI SHORT FILMS"}
+              desc={"BEST HINDI FILMS"}
+            />
+            
+            <CategoryList langage={"Tamil"}
+              title={"TAMIL SHORT FILMS"}
+              desc={"POPULAR TAMIL FILMS"}
+            />
+            
+            <CategoryList langage={"Telugu"}
+              title={"TELUGU SHORT FILMS"}
+              desc={"BEST TELUGU FILMS"}
+            />
+            
+            <CategoryList langage={"Malayalam"}
+              title={"MALAYALAM SHORT FILMS"}
+              desc={"BEST MALAYALAM FILMS"}
+            />
+            
+            <CategoryList langage={"Kannada"}
+              title={"KANNADA SHORT FILMS"}
+              desc={"FAMOUS KANNADA FILMS"}
+            />
+            
+            <CategoryList langage={"Bengali"}
+              title={"BENGALI SHORT FILMS"}
+              desc={"BEST BENGALI FILMS"}
+            />
+            
+            <CategoryList langage={"Marathi"}
+              title={"MARATHI SHORT FILMS"}
+              desc={"BEST MARATHI FILMS"}
+            />
+            
+            <CategoryList langage={"Punjabi"}
+              title={"PUNJABI SHORT FILMS"}
+              desc={"TRENDING PUNJABI FILMS"}
+            />
+            
+            <CategoryList langage={"Gujarati"}
+              title={"GUJARATI SHORT FILMS"}
+              desc={"POPULAR GUJARATI FILMS"}
+            />
+            
+            <CategoryList langage={"Odia"}
+              title={"ODIA SHORT FILMS"}
+              desc={"FEATURED ODIA FILMS"}
+            />
+            
+            <CategoryList langage={"Urdu"}
+              title={"URDU SHORT FILMS"}
+              desc={"ACCLAIMED URDU FILMS"}
+            />
+          </div>
+          
+          {/* Global Languages */}
+          <div className="py-4">
+            {/* <h2 className="text-2xl font-bold mb-8">GLOBAL LANGUAGE SHORT FILMS</h2> */}
+            
+            <CategoryList langage={"English"}
+              title={"ENGLISH SHORT FILMS"}
+              desc={"BEST ENGLISH FILMS"}
+            />
+            
+            <CategoryList langage={"Spanish"}
+              title={"SPANISH SHORT FILMS"}
+              desc={"TRENDING SPANISH FILMS"}
+            />
+            
+            <CategoryList langage={"French"}
+              title={"FRENCH SHORT FILMS"}
+              desc={"ARTISTIC FRENCH FILMS"}
+            />
+            
+            <CategoryList langage={"German"}
+              title={"GERMAN SHORT FILMS"}
+              desc={"ACCLAIMED GERMAN FILMS"}
+            />
+            
+            <CategoryList langage={"Italian"}
+              title={"ITALIAN SHORT FILMS"}
+              desc={"FEATURED ITALIAN FILMS"}
+            />
+            
+            <CategoryList langage={"Portuguese"}
+              title={"PORTUGUESE SHORT FILMS"}
+              desc={"POPULAR PORTUGUESE FILMS"}
+            />
+            
+            <CategoryList langage={"Russian"}
+              title={"RUSSIAN SHORT FILMS"}
+              desc={"OUTSTANDING RUSSIAN FILMS"}
+            />
+            
+            <CategoryList langage={"Japanese"}
+              title={"JAPANESE SHORT FILMS"}
+              desc={"EXCEPTIONAL JAPANESE FILMS"}
+            />
+            
+            <CategoryList langage={"Chinese"}
+              title={"CHINESE SHORT FILMS"}
+              desc={"CAPTIVATING CHINESE FILMS"}
+            />
+            
+            <CategoryList langage={"Arabic"}
+              title={"ARABIC SHORT FILMS"}
+              desc={"REMARKABLE ARABIC FILMS"}
+            />
+            
+            <CategoryList langage={"Korean"}
+              title={"KOREAN SHORT FILMS"}
+              desc={"TRENDING KOREAN FILMS"}
+            />
+          </div>
+          
+          {/* All languages */}
+          <CategoryList langage={"All"}
+            title={"ALL SHORT FILMS"}
+            desc={"EXPLORE ALL SHORT FILMS"}
           />
-          <CategoryList
-            title={"ENGLISH SHORT FILMS"}
-            desc={"BEST ENGLISH FILMS"}
-          />
-          <CategoryList
-            title={"KANNADA SHORT FILMS"}
-            desc={"FAMOUS KANNADA FILMS"}
-          />
+          
           <AdsCard />
         </section>
       </div>
