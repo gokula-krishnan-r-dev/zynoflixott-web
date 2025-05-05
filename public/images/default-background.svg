@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="pattern" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M0,30 L60,30" stroke="#2a3655" stroke-width="1" fill="none" />
+      <path d="M30,0 L30,60" stroke="#2a3655" stroke-width="1" fill="none" />
+    </pattern>
+  </defs>
+  
+  <!-- Background with gradient -->
+  <rect width="1920" height="1080" fill="url(#grad)" />
+  
+  <!-- Pattern overlay -->
+  <rect width="1920" height="1080" fill="url(#pattern)" />
+  
+  <!-- Film strip elements -->
+  <rect x="160" y="340" width="1600" height="400" fill="#111827" opacity="0.5" rx="20" />
+  <rect x="200" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="360" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="520" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="680" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="840" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="1000" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="1160" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="1320" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="1480" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  <rect x="1640" y="380" width="120" height="320" fill="#1f2937" rx="5" />
+  
+  <!-- Centered text -->
+  <text x="960" y="800" font-family="Arial, sans-serif" font-size="50" fill="#f59e0b" text-anchor="middle">PRODUCTION COMPANY</text>
+  <text x="960" y="870" font-family="Arial, sans-serif" font-size="80" fill="white" text-anchor="middle" font-weight="bold">ZYNOFLIX</text>
+</svg> 

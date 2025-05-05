@@ -9,6 +9,8 @@ import React from "react";
 import { useQuery } from "react-query";
 import { userId } from "@/lib/user";
 import { useRouter } from "next/navigation";
+import { getBackgroundImage, getProfileImage } from "@/lib/utils";
+
 const fetchCategories = async (id: string) => {
   const response = await axios.get("/auth/production/user/" + id);
   if (response.status !== 200) {
@@ -29,6 +31,7 @@ export default function ProductionProfile() {
 
   if (isLoading)
     return <Loading className="flex items-center h-screen justify-center" />;
+  
   const handletoLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
@@ -61,7 +64,7 @@ export default function ProductionProfile() {
       toast.success("Account deleted successfully");
     }
   };
-
+console.log(user?.logo , "user?.logo")
   return (
     <main>
       <section className="w-full overflow-hidden dark:bg-gray-900">
@@ -73,7 +76,7 @@ export default function ProductionProfile() {
               button={
                 <div className="relative w-full group">
                   <img
-                    src={user?.backgroundPic || "https://placehold.co/1200x400/1f2937/374151?text=Add+Background+Image"}
+                    src={getBackgroundImage(user?.backgroundPic, user?.name)}
                     alt="User Cover"
                     className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
                   />
@@ -93,7 +96,7 @@ export default function ProductionProfile() {
               <Image
                 width={200}
                 height={200}
-                src={user?.logo}
+                src={getProfileImage(user?.logo, user?.name)}
                 alt="User Profile"
                 className="rounded-full object-cover 
                   w-24 h-24 

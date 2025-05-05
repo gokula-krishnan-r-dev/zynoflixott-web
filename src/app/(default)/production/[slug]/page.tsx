@@ -4,11 +4,16 @@ import { SocialButtons } from "@/components/shared/list-production";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
 import { Edit, MessageCircle } from "lucide-react";
-import Image from "next/image";
 import React from "react";
 import { useQuery } from "react-query";
 import { isLogin, userId } from "@/lib/user";
 import { useRouter } from "next/navigation";
+import { getBackgroundImage, getProfileImage } from "@/lib/utils";
+
+// Default image constants
+const DEFAULT_BACKGROUND = "https://placehold.co/1200x400/0f172a/f59e0b?text=ZYNOFLIX+PRODUCTION+COMPANY&font=montserrat";
+const DEFAULT_LOGO = "https://placehold.co/400x400/1f2937/f59e0b?text=ZYNOFLIX&font=montserrat";
+
 const fetchCategories = async (id: string) => {
   const response = await axios.get("/auth/production/user/" + id);
   if (response.status !== 200) {
@@ -63,38 +68,33 @@ export default function Page({ params }: { params: { slug: string } }) {
     <main>
       <section className="w-full overflow-hidden dark:bg-gray-900">
         <div className="w-full mx-auto">
-          <Image
-            width={1920}
-            height={1080}
-            title="Edit Background Image"
-            src={user?.backgroundImage}
+          <img
+            src={getBackgroundImage(user?.backgroundPic, user?.name)}
             alt="User Cover"
-            className="w-full xl:h-[20rem] hover:cursor-pointer object-cover lg:h-[22rem] md:h-[16rem] sm:h-[13rem] h-[15.5rem]"
+            className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
           />
 
           {/* User Profile Image */}
-          <div className="w-full flex lg:pt-0 pt-6  items-center justify-center lg:justify-start pl-2 lg:pl-12">
+          <div className="w-full flex lg:pt-0 pt-6 items-center justify-center lg:justify-start pl-2 lg:pl-12">
             <div className="relative">
-              <Image
-                width={1920}
-                height={1080}
-                src={user?.logo}
-                alt="User Profile"
-                className="rounded-full object-cover w-6  h-6 xl:w-[16rem] xl:h-[16rem] lg:w-[16rem] lg:h-[16rem] md:w-[12rem] md:h-[12rem] sm:w-[10rem] sm:h-[10rem] xs:w-[8rem] xs:h-[8rem] outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl relative xl:bottom-[7rem] lg:bottom-[8rem] md:bottom-[6rem] sm:bottom-[5rem] xs:bottom-[4.3rem]"
+              <img
+                src={getProfileImage(user?.logo, user?.name)}
+                alt="Company Logo"
+                className="rounded-full object-cover w-44 h-44 xl:w-[16rem] xl:h-[16rem] lg:w-[16rem] lg:h-[16rem] md:w-[12rem] md:h-[12rem] sm:w-[10rem] sm:h-[10rem] xs:w-[8rem] xs:h-[8rem] outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl relative xl:bottom-[7rem] lg:bottom-[8rem] md:bottom-[6rem] sm:bottom-[5rem] xs:bottom-[4.3rem]"
               />
             </div>
           </div>
           <div className="xl:w-[80%] pt-6 lg:pt-0 lg:w-[90%] md:w-[94%] sm:w-[96%] xs:w-[92%] mx-auto flex flex-col gap-4 justify-center items-center relative xl:-top-[6rem] lg:-top-[6rem] md:-top-[4rem] sm:-top-[3rem] xs:-top-[2.2rem]">
             {/* FullName */}
             <h1 className="text-center text-white font-bold text-4xl">
-              {user?.name || "No name provided"}
+              {user?.name || "Company Name"}
             </h1>
             <div className="flex items-center pt-2 gap-8">
               {/* Founder Name */}
               <div className="">
                 {/* Founder Name  */}
                 <h2 className="text-center text-white font-bold text-xl">
-                  {user?.founderName || "No founder name provided"}
+                  {user?.founderName || "Founder"}
                 </h2>
                 <p className="text-center text-gray-400 text-md">
                   Founder & CEO
@@ -112,12 +112,11 @@ export default function Page({ params }: { params: { slug: string } }) {
 
             {/* About */}
             <p className="w-full px-8 lg:px-0 text-gray-400 text-md text-pretty sm:text-center xs:text-justify">
-              {user?.about || "No description provided"}
+              {user?.about || "No company description available yet."}
             </p>
 
             <div className="pb-24">
               {/* add Chat Button */}
-
               <div className="flex items-center gap-4">
                 {isLogin ? (
                   <button
@@ -136,21 +135,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                   </button>
                 )}
               </div>
-
-              {/* delete account button */}
-              <button
-                onClick={ handletoLogout}
-                className="absolute top-0 left-0 bg-red-500 px-4 py-2 rounded-xl"
-              >
-                Delete Account
-              </button>
-
-              <button
-                onClick={handletoLogout}
-                className="absolute top-0 left-0 bg-blue-500 px-4 py-2 rounded-xl"
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>

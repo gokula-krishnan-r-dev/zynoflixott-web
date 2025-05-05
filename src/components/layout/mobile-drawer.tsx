@@ -9,7 +9,7 @@ const menuItems = [
   { label: "Profile", href: "/profile" },
   { label: "Membership", href: "/membership" },
   { label: "Login", href: "/login" },
-  { label: "Flim Call", href: "/flim-call" },
+  { label: "Flim Call", href: "/film-call" },
 ];
 
 export function SheetMobile() {

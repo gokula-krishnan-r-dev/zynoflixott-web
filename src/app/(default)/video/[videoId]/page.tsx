@@ -65,10 +65,12 @@ export default function Page({ params }: { params: { videoId: string } }) {
   });
 
   const profileId = video?.created_by_id || null;
-  const { data: userprofile } = useQuery(["user", profileId], async () => {
+  const { data: userprofile} = useQuery(["user-video", profileId], async () => {
     const response = await axios.get(`/auth/user/${profileId}`);
-    return response.data.user;
+    return response.data.user
   });
+
+  console.log(userprofile, profileId, "userprofile");
 
   console.log(follower?.[0]?.user_id, "follower");
   const router = useRouter();

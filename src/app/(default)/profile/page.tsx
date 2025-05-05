@@ -89,13 +89,10 @@ const Page = () => {
       toast.error("User not found");
     }
   };
+
+  
   return (
     <main className="px-3 sm:px-4 md:px-6 lg:px-8">
-      {isProduction === "production" ? (
-        <div className="">
-          <ProductionProfile />
-        </div>
-      ) : (
         <section className="w-full overflow-hidden dark:bg-gray-900">
           <div className="w-full mx-auto">
             <UpdateImg
@@ -112,7 +109,6 @@ const Page = () => {
                   <div className=" inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
                     <div className="bg-main p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300">
                       <Edit2 className="w-5 h-5 text-gray-800" />
-                      fddjskfhjkdshfjk
                     </div>
                     {/* <span className="absolute bottom-4 text-white font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-3 py-1 rounded-full">Edit Cover</span> */}
                   </div>
@@ -232,7 +228,6 @@ const Page = () => {
             </div>
           </div>
         </section>
-      )}
     </main>
   );
 };
