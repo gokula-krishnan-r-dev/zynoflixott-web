@@ -41,11 +41,13 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
   }, [mode]);
 
   const validateEmail = (email: string): string => {
+    if (!email.trim()) return "Email is required";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email) ? "" : "Invalid email address";
   };
 
   const validatePassword = (password: string): string => {
+    if (!password.trim()) return "Password is required";
     return password.length >= 6 ? "" : "Password must be at least 6 characters";
   };
 
@@ -53,22 +55,52 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
     password: string,
     confirmPassword?: string
   ): string => {
+    if (mode === "signup" && !confirmPassword?.trim()) return "Confirm password is required";
     return password === confirmPassword ? "" : "Passwords do not match";
   };
 
   const validatePhone = (phone?: string): string => {
+    if (mode === "signup" && !phone?.trim()) return "Phone number is required";
     const phoneRegex = /^\d{10}$/;
     return phone && phoneRegex.test(phone) ? "" : "Invalid phone number";
+  };
+
+  const validateFullName = (fullName?: string): string => {
+    if (mode === "signup" && !fullName?.trim()) return "Full name is required";
+    return "";
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Validate field on change
+    if (name === "email") {
+      setErrors(prev => ({ ...prev, email: validateEmail(value) }));
+    } else if (name === "password") {
+      setErrors(prev => ({ ...prev, password: validatePassword(value) }));
+      if (mode === "signup" && formData.confirmPassword) {
+        setErrors(prev => ({
+          ...prev,
+          confirmPassword: validateConfirmPassword(value, formData.confirmPassword)
+        }));
+      }
+    } else if (name === "confirmPassword") {
+      setErrors(prev => ({
+        ...prev,
+        confirmPassword: validateConfirmPassword(formData.password, value)
+      }));
+    } else if (name === "contact") {
+      setErrors(prev => ({ ...prev, contact: validatePhone(value) }));
+    } else if (name === "full_name") {
+      setErrors(prev => ({ ...prev, full_name: validateFullName(value) }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const fullNameError = validateFullName(formData.full_name);
     const emailError = validateEmail(formData.email);
     const passwordError = validatePassword(formData.password);
     const confirmPasswordError =
@@ -77,9 +109,9 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
         : "";
     const phoneError = mode === "signup" ? validatePhone(formData.contact) : "";
 
-    if (emailError || passwordError || confirmPasswordError || phoneError) {
+    if (fullNameError || emailError || passwordError || confirmPasswordError || phoneError) {
       setErrors({
-        full_name: "",
+        full_name: fullNameError,
         email: emailError,
         password: passwordError,
         confirmPassword: confirmPasswordError,
@@ -148,15 +180,18 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
       <form onSubmit={handleSubmit} noValidate>
         {mode === "signup" && (
           <div className="mb-4">
+            <label className="block text-sm mb-1">
+              Full Name <span className="text-red-500">*</span>
+            </label>
             <input
-              className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${
-                errors.full_name ? "border-red-500" : "border-gray-200"
-              } placeholder-gray-500 text-sm focus:outline-none  `}
+              className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${errors.full_name ? "border-red-500" : "border-gray-200"
+                } placeholder-gray-500 text-sm focus:outline-none  `}
               type="text"
               name="full_name"
               value={formData.full_name}
               onChange={handleChange}
               placeholder="Full Name"
+              required
             />
             {errors.full_name && (
               <p className="text-red-500 text-xs mt-2">{errors.full_name}</p>
@@ -164,30 +199,36 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
           </div>
         )}
         <div className="mb-4">
+          <label className="block text-sm mb-1">
+            Email <span className="text-red-500">*</span>
+          </label>
           <input
-            className={`w-full px-8 py-4 rounded-lg font-medium  bg-transparent  border-2 ${
-              errors.email ? "border-red-500" : "border-gray-200"
-            } text-sm focus:outline-none `}
+            className={`w-full px-8 py-4 rounded-lg font-medium  bg-transparent  border-2 ${errors.email ? "border-red-500" : "border-gray-200"
+              } text-sm focus:outline-none `}
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             placeholder="Email"
+            required
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-2">{errors.email}</p>
           )}
         </div>
         <div className="mb-4">
+          <label className="block text-sm mb-1">
+            Password <span className="text-red-500">*</span>
+          </label>
           <input
-            className={`w-full px-8 py-4 rounded-lg font-medium bg-transparent  border-2 ${
-              errors.password ? "border-red-500" : "border-gray-200"
-            }  text-sm focus:outline-none  mt-5`}
+            className={`w-full px-8 py-4 rounded-lg font-medium bg-transparent  border-2 ${errors.password ? "border-red-500" : "border-gray-200"
+              }  text-sm focus:outline-none  mt-1`}
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
             placeholder="Password"
+            required
           />
           {errors.password && (
             <p className="text-red-500 text-xs mt-2">{errors.password}</p>
@@ -196,15 +237,18 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
         {mode === "signup" && (
           <>
             <div className="mb-4">
+              <label className="block text-sm mb-1">
+                Confirm Password <span className="text-red-500">*</span>
+              </label>
               <input
-                className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${
-                  errors.confirmPassword ? "border-red-500" : "border-gray-200"
-                }  text-sm focus:outline-none  mt-5`}
+                className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${errors.confirmPassword ? "border-red-500" : "border-gray-200"
+                  }  text-sm focus:outline-none  mt-1`}
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm Password"
+                required
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-xs mt-2">
@@ -213,15 +257,18 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
               )}
             </div>
             <div className="mb-4">
+              <label className="block text-sm mb-1">
+                Phone Number <span className="text-red-500">*</span>
+              </label>
               <input
-                className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${
-                  errors.contact ? "border-red-500" : "border-gray-200"
-                }  text-sm focus:outline-none  mt-5`}
+                className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${errors.contact ? "border-red-500" : "border-gray-200"
+                  }  text-sm focus:outline-none  mt-1`}
                 type="tel"
                 name="contact"
                 value={formData.contact}
                 onChange={handleChange}
                 placeholder="Phone Number"
+                required
               />
               {errors.contact && (
                 <p className="text-red-500 text-xs mt-2">{errors.contact}</p>

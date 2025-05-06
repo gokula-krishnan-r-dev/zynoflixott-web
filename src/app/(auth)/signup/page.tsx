@@ -73,14 +73,14 @@ const page = () => {
                   <p className="mt-6 text-xs text-gray-100 text-center">
                     I agree to abide by templatanas
                     <a
-                      href="#"
+                      href="/legal-policy"
                       className="border-b border-gray-500 border-dotted"
                     >
                       Terms of Service
                     </a>
                     and its
                     <a
-                      href="#"
+                      href="/privacy-policy"
                       className="border-b border-gray-500 border-dotted"
                     >
                       Privacy Policy
