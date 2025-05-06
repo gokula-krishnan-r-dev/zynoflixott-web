@@ -27,6 +27,8 @@ const Page = () => {
     localStorage.setItem("transactionId", response.data.order._id);
   };
   const processPayment = async (e: any) => {
+
+   
     e.preventDefault();
     if (isLogin) {
       toast.warning(
@@ -123,6 +125,15 @@ const Page = () => {
     document.body.appendChild(script);
   }, []);
 
+
+  const isIOS = () => {
+    if (typeof window !== 'undefined') {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test(userAgent) || 
+             (userAgent.includes('mac') && 'ontouchend' in document);
+    }
+    return false;
+  };
   return (
     <main>
       <Script
@@ -232,12 +243,20 @@ const Page = () => {
                         INR
                       </span>
                     </p>
-                    <button
+                    {!isIOS() ? (
+                      <button
+                        className="px-6 text-white font-semibold rounded-xl py-3 my-4 bg-blue-500 "
+                      >
+                        Pay Now
+                      </button>
+                    ) : (
+                      <button
                       onClick={(e) => processPayment(e)}
                       className="px-6 text-white font-semibold rounded-xl py-3 my-4 bg-blue-500 "
                     >
                       Pay Now
                     </button>
+                    )}
                     <p className="mt-6 text-xs leading-5 ">
                       Invoices and receipts available for easy company
                       reimbursement

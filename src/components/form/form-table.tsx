@@ -110,6 +110,18 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
     ),
   });
 
+
+  // Function to detect if the current device is iOS
+  const isIOS = () => {
+    if (typeof window !== 'undefined') {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test(userAgent) || 
+             (userAgent.includes('mac') && 'ontouchend' in document);
+    }
+    return false;
+  };
+
+
   async function onSubmit(values: z.infer<typeof dynamicFormSchema>) {
     setIsLoading(true);
     try {
@@ -605,7 +617,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 </div>
               ))}
 
-              {isSuccessful && (
+              {isIOS() && isSuccessful && (
                 <div className="">
                   {/* price 499 per video upload */}
                   <p className="text-lg font-semibold">
@@ -614,7 +626,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 </div>
               )}
               <div className="flex items-end justify-end">
-                {isSuccessful ? (
+                {isIOS() && isSuccessful ? (
                   <div
                     onClick={openPayModal}
                     className="px-6 py-3 rounded-3xl cursor-pointer border text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700"
