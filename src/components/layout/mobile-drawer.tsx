@@ -7,7 +7,7 @@ const menuItems = [
   { label: "Upload a Video", href: "/video-upload" },
   { label: "Chat", href: "/chat" },
   { label: "Profile", href: "/profile" },
-  { label: "Membership", href: "/membership" },
+  // { label: "Membership", href: "/membership" },
   { label: "Login", href: "/login" },
   { label: "Flim Call", href: "/film-call" },
 ];
