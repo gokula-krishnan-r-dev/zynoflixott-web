@@ -13,7 +13,7 @@ import { languageD } from "@/constants/language";
 const LanguageList = () => {
   return (
     <section>
-      <div className="">
+      <div className="px-4">
         <div className="pb-8">
           <h2 className="lg:text-xl text-base font-semibold uppercase">Languages</h2>
         </div>
@@ -31,7 +31,7 @@ const LanguageList = () => {
                     color: lang.textColor, // Dynamic text color
                   }}
                 >
-                  <h3 className="uppercase text-base font-bold">{lang.name}</h3>
+                  <h3 className="uppercase text-xs lg:text-sm font-bold">{lang.name}</h3>
                 </div>
               </CarouselItem>
             ))}

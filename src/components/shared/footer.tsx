@@ -107,7 +107,7 @@ const Footer: React.FC = () => {
               </h2>
               <ul className=" text-gray-400 font-medium">
                 <li className="">
-                  <a className="hover:underline " href="/legal-policy">
+                  <a className="hover:underline " href="/terms-condition">
                     Terms and Condition
                   </a>
                 </li>
@@ -134,6 +134,16 @@ const Footer: React.FC = () => {
                     Team
                   </a>
                 </li>
+
+                <li>
+                  <a
+                    className="hover:underline"
+                    href="/legal-policy"
+                  >
+                    Legal policy
+                  </a>
+                </li>
+
               </ul>
             </div>
             <div>

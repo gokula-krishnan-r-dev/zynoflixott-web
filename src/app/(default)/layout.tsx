@@ -9,7 +9,7 @@ export default function Layout({
 }>) {
   const [queryClient] = React.useState(() => new QueryClient());
   return (
-    <div className="bg-body text-white">
+    <div className="bg-background-dark text-white">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </div>
   );

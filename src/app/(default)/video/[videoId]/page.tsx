@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "@/lib/axios";
 import Loading from "@/components/ui/loading";
@@ -7,13 +7,49 @@ import {
   isMonthMembershipCompleted,
   secondsToMinutes,
 } from "@/lib/time";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authId, isLogin, userId } from "@/lib/user";
 import { toast } from "sonner";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import VideoPlayer from "@/components/video/video-player";
+import { ChevronDown, Heart, Lock, Play, PlayCircle, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import VideoComment from "@/components/shared/video-comment";
+import CategoryList from "@/components/shared/category-list";
+import DescriptionCard from "@/components/ui/description-card";
+import { motion } from "framer-motion";
+
+// Format view count to K, M, B format
+const formatViewCount = (count: number): string => {
+  if (!count) return "0";
+
+  if (count >= 1000000000) {
+    return `${(count / 1000000000).toFixed(1).replace(/\.0$/, '')}B`;
+  }
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+  }
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}K`;
+  }
+  return count.toString();
+};
+
+// View counter component
+const ViewCounter = ({ count }: { count: number }) => {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      transition={{ duration: 0.2 }}
+      className="bg-gradient-to-r from-[#4e6fff] to-[#7e5cff] text-white px-5 py-2 rounded-full flex items-center gap-2 shadow-lg"
+    >
+      <span className="font-bold text-sm sm:text-base">Views:</span>
+      <span className="font-bold text-sm sm:text-base">{formatViewCount(count)}</span>
+    </motion.div>
+  );
+};
 
 export default function Page({ params }: { params: { videoId: string } }) {
   const videoId = params.videoId;
@@ -65,7 +101,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
   });
 
   const profileId = video?.created_by_id || null;
-  const { data: userprofile} = useQuery(["user-video", profileId], async () => {
+  const { data: userprofile } = useQuery(["user-video", profileId], async () => {
     const response = await axios.get(`/auth/user/${profileId}`);
     return response.data.user
   });
@@ -143,6 +179,9 @@ export default function Page({ params }: { params: { videoId: string } }) {
   // React Query client instance
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   // Fetch the rating data
   const { data: ratings } = useQuery<any>(
     ["rating", videoId],
@@ -167,18 +206,11 @@ export default function Page({ params }: { params: { videoId: string } }) {
       if (userRating) {
         setRating(userRating.rating);
       }
-
-      // if (true) {
-      //   setRating(ratings.rating);
-      // }
     }
   }, [ratings, authId]);
-  console.log(ratings, "ratings");
 
   // Set up local state for rating
   const [rating, setRating] = useState<number>(0);
-
-  // Update local rating state when data is fetched
 
   // Mutation for posting a new rating
   const postRating = async (newRating: number) => {
@@ -217,236 +249,323 @@ export default function Page({ params }: { params: { videoId: string } }) {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  console.log(ratings, "ratings");
-
-  const numberOfStars = Math.max(
-    0,
-    Math.min(5, Math.floor(ratings?.rating || 0))
-  );
-  // Use numberOfStars safely here, ensuring it's a valid number between 0 and 5
-
-  if (isLoading)
     return <Loading className="h-screen flex items-center justify-center" />;
+  }
 
-  if (error) return <p>Error: </p>;
+  if (error) return <p>Error loading video</p>;
+
+  const avgRating = ratings?.rating || 0;
+  const displayRating = Number(avgRating.toFixed(1));
+
+  const truncateDescription = (text: string, maxLength = 150) => {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.substr(0, maxLength) + "...";
+  };
+
+  const displayDuration = secondsToMinutes(video.duration);
 
   return (
-    <main>
-      <div className="pt-16 lg:pt-24">
-        <VideoPlayer isMembership={isMembership}  video={video} />
-      </div>
-      <div className="lg:p-6 p-3">
-        <div className="w-full mt-4 flex lg:flex-row flex-col pb-3 justify-between items-start lg:items-center">
-          <div className="lg:w-full w-full">
-            <div className="flex items-start space-y-2 lg:space-y-0 lg:items-center lg:flex-row flex-col justify-between">
-              <div className="">
-                <h3 className="lg:text-xl text-lg font-bold">{video.title}</h3>
-              </div>
-              <div className="flex lg:text-sm text-xs items-center flex-wrap gap-2 mt-2 lg:mt-0">
-                {[
-                  { label: "Views", value: video.views },
-                  { label: "", value: video.certification },
-                  { label: "", value: secondsToMinutes(video.duration) },
-                  { label: "", value: video.language || "Tamil" },
-                  { label: "", value: video?.category?.[0]?.split(",")[0] || "Short Film" },
-                  { label: "", value: "Block Buster" }
-                ].map((item, index) => (
-                  <React.Fragment key={index}>
-                    {index > 0 && (
-                      <div className="hidden lg:block h-4 w-px bg-gray-600" />
-                    )}
-                    <div className="bg-main px-2 py-1 rounded-md flex items-center">
-                      {item.label && <span className="mr-1">{item.label}:</span>}
-                      <span>{item.value}</span>
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
+    <main className="lg:pt-1 pt-20 pb-10">
+      {/* Mobile design - Movie Card UI */}
+      <div className="lg:hidden mx-auto px-0 max-w-md">
+        <div className="">
+          <VideoPlayer isMembership={isMembership} video={video} />
+
+          {/* Title and heart icon */}
+          <div className="p-5 space-y-4">
+            <div className="flex justify-between items-start">
+              <h1 className="lg:text-2xl text-sm font-bold text-white">{video.title}</h1>
+              <button
+                onClick={() => setIsFavorite(!isFavorite)}
+                className="text-white p-1"
+              >
+                <Heart className={cn("h-6 w-6", isFavorite ? "fill-white" : "")} />
+              </button>
             </div>
-            <div className="flex items-center lg:flex-row flex-col py-6 justify-between">
-              <div className="flex items-center w-full lg:justify-start justify-between gap-4">
-                <Link
-                  href={`/profile/${video?.user}`}
-                  className="flex items-center gap-3"
-                >
-                  <Image
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 rounded-full object-cover"
-                    src={userprofile?.profilePic}
-                    alt=""
-                  />
-                  <div>{userprofile?.full_name}</div>
-                  <div className="font-medium dark:text-white">
-                    <div className="card dark:text-gray-400">
-                      {follower?.[0]?.user_id.length || 0}
-                    </div>
-                  </div>
-                </Link>
-                <button
-                  onClick={handletoFollow}
-                  className={cn(
-                    "border-2 border-green-500 flex-shrink-0  lg:flex duration-300 justify-center gap-2 py-2 px-4 text-xs lg:text-base items-center rounded-full lg:rounded-xl  z-50 relative  font-semibold capitalize",
-                    follower?.[0]?.user_id.includes(authId)
-                      ? " bg-green-500 text-white"
-                      : "bg-transparent "
-                  )}
-                >
-                  {follower?.[0]?.user_id.includes(authId)
-                    ? "Following"
-                    : "Follow"}
-                </button>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2">
+              <div className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm">
+                {video?.category?.[0]?.split(",")[0] || "Action"}
               </div>
-              <div className="lg:w-[70%] w-full">
-                <VotePoll
-                  rating={rating}
-                  handleRatingChange={handleRatingChange}
-                  numberOfStars={numberOfStars}
+              <div className="bg-purple-500 text-white px-3 py-1 rounded-md text-sm">
+                {displayDuration || "2:30 Hour"}
+              </div>
+              <div className="bg-yellow-500 text-white px-3 py-1 rounded-md flex items-center gap-1 text-sm">
+                <span>{displayRating}</span>
+                <Star className="h-4 w-4 fill-white" />
+              </div>
+              <ViewCounter count={video.views} />
+            </div>
+
+            {/* Profile with follow button - Mobile */}
+            <div className="flex items-center justify-between bg-purple-900 bg-opacity-30 rounded-xl p-3">
+              <Link
+                href={`/profile/${video?.user}`}
+                className="flex items-center gap-2 flex-1"
+              >
+                <Image
+                  width={36}
+                  height={36}
+                  className="w-9 h-9 rounded-full object-cover"
+                  src={userprofile?.profilePic}
+                  alt=""
                 />
-              </div>
-            </div>
-            <div className="border-t">
-              <div className="w-full">
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="px-4 w-full text-start py-6 bg-gray-900 my-5 rounded-3xl"
-                >
-                  <h2 className="uppercase text-sm lg:text-xl font-semibold">
-                    Comment
-                  </h2>
-                </button>
-                {isOpen && (
-                  <div className="">
-                    <VideoComment videoId={video._id} />
+                <div className="flex flex-col">
+                  <div className="text-sm font-medium">{userprofile?.full_name}</div>
+                  <div className="text-xs text-gray-400">
+                    {follower?.[0]?.user_id.length || 0} followers
                   </div>
+                </div>
+              </Link>
+              <button
+                onClick={handletoFollow}
+                className={cn(
+                  "border-2 border-green-500 text-xs px-3 py-1.5 rounded-full duration-200 font-medium capitalize",
+                  follower?.[0]?.user_id.includes(authId)
+                    ? "bg-green-500 text-white"
+                    : "bg-transparent text-green-500"
                 )}
-              </div>
+              >
+                {follower?.[0]?.user_id.includes(authId) ? "Following" : "Follow"}
+              </button>
             </div>
+
+            {/* Description */}
+            <DescriptionCard
+              description={video.description || "This is a superhero film based on the Marvel Comics superhero team the Avengers. Produced by Marvel Studios and distributed by Walt Disney Studios."}
+              maxLength={150}
+              className="my-4"
+            />
           </div>
         </div>
 
-
-        <CategoryList
-            title={"Suggested for you"}
-            desc={"POPULAR TAMIL FILMS"}
+        {/* Additional sections for mobile */}
+        <div className="mt-0">
+          <VotePoll
+            rating={rating}
+            handleRatingChange={handleRatingChange}
+            numberOfStars={Math.floor(displayRating)}
           />
-        {/* <div className="flex items-center lg:flex-row flex-col justify-start py-6 lg:justify-end">
-          <div className="lg:pt-0 pt-4 lg:pb-0 pb-4">
-            <Link
-              href={isMembership ? "/membership" : "/profile"}
-              className="lg:text-base capitalize border px-4 py-1.5 rounded-full text-sm font-semibold"
-            >
-              {isMembership
-                ? "Watch Full Film"
-                : "you watching a orginal video"}
-            </Link>
+
+          <div className="mt-6">
+            <VideoComment videoId={video._id} />
           </div>
-        </div> */}
-        {/* <ProfileVideo
-          refetch={refetch}
-          userId={video.created_by_id}
-          video={video}
-          videoId={video?._id}
-        /> */}
+
+          <div className="mt-8">
+            <CategoryList
+              title={"Suggested for you"}
+              desc={"POPULAR FILMS"}
+            />
+          </div>
+        </div>
       </div>
-    </main>
+
+      {/* Desktop design - keep existing layout */}
+      <div className="hidden lg:block">
+        <div className="pt-24">
+          <VideoPlayer isMembership={isMembership} video={video} />
+        </div>
+        <div className="p-6">
+          <div className="w-full mt-4 flex flex-row pb-3 justify-between items-center">
+            <div className="w-full">
+              <div className="flex items-center flex-row justify-between">
+                <div className="">
+                  <h3 className="text-xl font-bold">{video.title}</h3>
+                </div>
+                <div className="flex text-sm items-center flex-wrap gap-2">
+                  {[
+                    { label: "", value: <ViewCounter count={video.views} /> },
+                    { label: "", value: video.certification },
+                    { label: "", value: secondsToMinutes(video.duration) },
+                    { label: "", value: video.language || "Tamil" },
+                    { label: "", value: video?.category?.[0]?.split(",")[0] || "Short Film" },
+                    { label: "", value: "Block Buster" }
+                  ].map((item, index) => (
+                    <React.Fragment key={index}>
+                      {index > 0 && (
+                        <div className="h-4 w-px bg-gray-600" />
+                      )}
+                      <div className={cn("px-2 py-1 rounded-md flex items-center",
+                        typeof item.value !== "object" ? "bg-main" : "bg-transparent")}>
+                        {item.label && <span className="mr-1">{item.label}</span>}
+                        {item.value}
+                      </div>
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center flex-row py-6 justify-between">
+                <div className="flex items-center w-full justify-start gap-4">
+                  <Link
+                    href={`/profile/${video?.user}`}
+                    className="flex items-center gap-3"
+                  >
+                    <Image
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover"
+                      src={userprofile?.profilePic}
+                      alt=""
+                    />
+                    <div>{userprofile?.full_name}</div>
+                    <div className="font-medium dark:text-white">
+                      <div className="card dark:text-gray-400">
+                        {follower?.[0]?.user_id.length || 0}
+                      </div>
+                    </div>
+                  </Link>
+                  <button
+                    onClick={handletoFollow}
+                    className={cn(
+                      "border-2 border-green-500 flex-shrink-0 flex duration-300 justify-center gap-2 py-2 px-4 text-base items-center rounded-xl z-50 relative font-semibold capitalize",
+                      follower?.[0]?.user_id.includes(authId)
+                        ? " bg-green-500 text-white"
+                        : "bg-transparent "
+                    )}
+                  >
+                    {follower?.[0]?.user_id.includes(authId)
+                      ? "Following"
+                      : "Follow"}
+                  </button>
+                </div>
+                <div className="w-[70%] !mt-0">
+                  <VotePoll
+                    rating={rating}
+                    handleRatingChange={handleRatingChange}
+                    numberOfStars={Math.floor(displayRating)}
+                  />
+                </div>
+              </div>
+              <div className="border-t">
+                <div className="w-full">
+                  <div className="my-8">
+                    <VideoComment videoId={video._id} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <CategoryList langage={video.language || "Tamil"}
+            title={"Suggested for you"}
+            desc={"POPULAR FILMS"}
+          />
+        </div>
+      </div>
+
+    </main >
   );
 }
-
-import { useState } from "react";
-import { ChevronDown, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import VideoComment from "@/components/shared/video-comment";
-import CategoryList from "@/components/shared/category-list";
 
 const VOTE_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const getNumberColor = (num: number) => {
-  switch (num) {
-    case 1:
-      return "bg-red-500 hover:bg-red-600";
-    case 2:
-      return "bg-rose-500 hover:bg-rose-600";
-    case 3:
-      return "bg-orange-500 hover:bg-orange-600";
-    case 4:
-      return "bg-yellow-500 hover:bg-yellow-600";
-    case 5:
-      return "bg-lime-500 hover:bg-lime-600";
-    case 6:
-      return "bg-green-500 hover:bg-green-600";
-    case 7:
-      return "bg-emerald-500 hover:bg-emerald-600";
-    case 8:
-      return "bg-blue-500 hover:bg-blue-600";
-    case 9:
-      return "bg-indigo-500 hover:bg-indigo-600";
-    case 10:
-      return "bg-violet-500 hover:bg-violet-600";
-    default:
-      return "bg-gray-500 hover:bg-gray-600";
-  }
+  // Base gradient for all numbers with varying opacity based on value
+  return `bg-gradient-to-r from-[#3a1a78] to-[#7b61ff] opacity-${Math.min(100, num * 10)}`;
 };
 
 function VotePoll({ numberOfStars, handleRatingChange, rating }: any) {
   const [selectedNumber, setSelectedNumber] = useState<number | null>(rating);
   const votes = numberOfStars;
+  const [isAnimating, setIsAnimating] = useState(false);
   const [isLocked] = useState(true);
 
-  return (
-    <div className="w-full max-w-5xl p-4 space-y-4 rounded-lg ">
-      <div className="flex items-center lg:flex-row flex-col gap-6 justify-between">
-        <Button
-          variant="ghost"
-          className=" text-white hover:bg-purple-800 hover:text-white px-6"
-        >
-          VOTE POLL
-          <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
+  const handleVote = (number: number) => {
+    setIsAnimating(true);
+    setSelectedNumber(number);
+    handleRatingChange(number);
 
-        <div className="grid grid-cols-10 w-full gap-1">
+    // Reset animation state after animation completes
+    setTimeout(() => setIsAnimating(false), 700);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full max-w-5xl space-y-4 rounded-xl bg-[rgba(25,28,51,0.5)] backdrop-blur-sm border border-[#292c41]/50 p-4 sm:p-6"
+    >
+      <div className="flex items-center justify-between flex-col lg:flex-row gap-4">
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="flex items-center gap-2 bg-[rgba(123,97,255,0.2)] px-4 py-2 rounded-lg"
+        >
+          <h3 className="text-white font-medium">RATE THIS VIDEO</h3>
+          <ChevronDown className="h-4 w-4 text-[#7b61ff]" />
+        </motion.div>
+
+        <div className="grid grid-cols-5 sm:grid-cols-10 w-full lg:w-auto gap-1.5">
           {VOTE_NUMBERS.map((number) => (
-            <Button
+            <motion.button
               key={number}
-              onClick={() => {
-                setSelectedNumber(number);
-                handleRatingChange(number);
-              }}
-              className={cn(
-                "h-10 p-0 text-white font-medium",
-                getNumberColor(number),
-                selectedNumber === number && "ring-2 ring-white"
-              )}
+              onClick={() => handleVote(number)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              animate={selectedNumber === number && isAnimating ?
+                { scale: [1, 1.2, 1], transition: { duration: 0.6 } } :
+                {}}
+              className={`
+                h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center
+                ${selectedNumber === number
+                  ? `bg-gradient-to-r from-[#3a1a78] to-[#7b61ff] ring-2 ring-white/70 shadow-lg shadow-purple-900/30`
+                  : `bg-[rgba(25,28,51,0.8)] hover:bg-[rgba(123,97,255,0.3)] text-gray-200`}
+                transition-all duration-200
+              `}
             >
-              {number}
-            </Button>
+              <span className="font-bold text-lg">{number}</span>
+            </motion.button>
           ))}
         </div>
       </div>
 
-      <div className="flex items-center lg:flex-row flex-col justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <Button
-            disabled
-            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium"
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#ff8a00] to-[#ff4d6d] rounded-lg text-white font-medium text-sm"
           >
-            EARN 50K VOTE SCRATCH
-          </Button>
-          <Button
-            disabled={isLocked}
-            className="bg-red-500 hover:bg-red-600 text-white font-medium flex items-center gap-2"
-          >
-            50,000/-
+            <span>EARN 50K VOTE SCRATCH</span>
             {isLocked && <Lock className="h-4 w-4" />}
-          </Button>
-          <span>Locked</span>
+          </motion.button>
+
+          <div className="flex items-center gap-2">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-[#7b61ff] font-medium bg-[rgba(123,97,255,0.1)] px-3 py-1 rounded-lg text-sm"
+            >
+              50,000/-
+            </motion.span>
+            <span className="text-gray-400 text-sm">
+              {isLocked ? "Locked" : "Available"}
+            </span>
+          </div>
         </div>
-        <div className="text-white bg-gray-700 rounded-xl px-4 py-2 font-medium">
-          {votes.toLocaleString()} VOTES
-        </div>
+
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="flex items-center gap-2 bg-gradient-to-r from-[#1a0733] to-[#2c1157] px-5 py-2.5 rounded-xl shadow-lg"
+        >
+          <span className="text-white font-bold">{votes?.toLocaleString() || 0}</span>
+          <span className="text-gray-300 text-sm">VOTES</span>
+        </motion.div>
       </div>
-    </div>
+
+      {selectedNumber && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="pt-3 border-t border-[#292c41]/50 mt-3"
+        >
+          <p className="text-center text-gray-300 text-sm">
+            Thank you for rating this video! Your feedback helps creators improve their content.
+          </p>
+        </motion.div>
+      )}
+    </motion.div>
   );
 }

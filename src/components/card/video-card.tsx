@@ -8,14 +8,15 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "sonner";
+import { Heart, Play } from "lucide-react";
+
 const fetchWatchLater = async () => {
   const response = await axios.get("/watch-later", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${
-        typeof window !== "undefined" && localStorage.getItem("accessToken")
-      }`,
+      Authorization: `Bearer ${typeof window !== "undefined" && localStorage.getItem("accessToken")
+        }`,
     },
   });
   if (response.status !== 200) {
@@ -24,8 +25,10 @@ const fetchWatchLater = async () => {
 
   return response.data;
 };
-const VideoCard = ({ video, index, hiddenNew }: any) => {
+
+const VideoCard = ({ video, index, hiddenNew, isLarge = false }: any) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const {
     data: watchLaterData,
@@ -34,6 +37,8 @@ const VideoCard = ({ video, index, hiddenNew }: any) => {
   } = useQuery("watch-later", fetchWatchLater);
   const router = useRouter();
   const handletoWatch = async (id: any) => {
+    setIsAnimating(true);
+
     if (isLogin) {
       toast.warning(
         "You need to login to add comment. Please login to add comment"
@@ -50,9 +55,8 @@ const VideoCard = ({ video, index, hiddenNew }: any) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            typeof window !== "undefined" && localStorage.getItem("accessToken")
-          }`,
+          Authorization: `Bearer ${typeof window !== "undefined" && localStorage.getItem("accessToken")
+            }`,
         },
       }
     );
@@ -61,6 +65,11 @@ const VideoCard = ({ video, index, hiddenNew }: any) => {
     }
     refetch();
     toast.success("Video added to watch later list");
+
+    // Reset animation after a delay
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 1000);
   };
 
   const language =
@@ -68,120 +77,157 @@ const VideoCard = ({ video, index, hiddenNew }: any) => {
       ? video.language[0].split(",")[0]
       : "Unknown";
 
-  return (
-    <div
-      className="relative w-full hover:scale-100 z-50  h-full "
-      key={index}
-      onMouseEnter={() => setHoveredIndex(index)}
-      onMouseLeave={() => setHoveredIndex(null)}
-    >
-      <div className="h-auto">
-        {/* <button
-          onClick={() => handletoWatch(video._id)}
-          className="absolute top-2 lg:top-4 z-50 right-2 lg:right-4"
-        >
-          <Heart
-            className="text-red-500"
-            size={24}
-            fill={
-              watchLaterData?.some((item: any) => item.video_id === video._id)
-                ? "fill"
-                : "none"
-            }
-            stroke="red"
-            color={
-              watchLaterData?.some((item: any) => item.video_id === video._id)
-                ? "red"
-                : "white"
-            }
-          />
-        </button> */}
-        {/* {!hiddenNew && (
-          <div className="absolute top-2 lg:top-2 z-50 left-2 lg:left-2">
-            <div className="border-cut shadow-2xl flex items-center flex-col rounded-t-md bg-[#00ffff] px-1  lg:px-2 py-2 lg:py-3">
-              <span className="text-black text-xs lg:text-sm font-bold">
-                NEW
-              </span>
-              <span className="text-black text-[10px] lg:text-xs font-extrabold">
-                {video.certification}
-              </span>
-            </div>
-          </div>
-        )} */}
-        <Link href={`/video/${video?._id}`} className="">
-          <div className={"duration-300"}>
-            <div className="relative">
-              {hoveredIndex === index ? (
-                <video
-                  preload="auto"
-                  playsInline
-                  autoPlay
-                  loop
-                  muted
-                  poster={video.thumbnail}
-                  className={cn("object-cover rounded-xl ", videoRatio)}
-                  controls={false}
-                >
-                  <source src={video.preview_video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <Image
-                  className={cn("rounded-xl object-cover", videoRatio)}
-                  src={video.thumbnail}
-                  alt={video.title}
-                  width={310}
-                  height={194}
-                />
-              )}
-              <div className="video-overlay !opacity-45"></div>
-              {/* <div className={cn("absolute bottom-3 left-0 right-0")}> */}
-              {/* <div className="px-2"> */}
-              {/* <div className="flex items-center">
-                    <div className="bg-red-500 w-8 rounded-3xl h-1 rotate-90"></div>
-                    <h5 className="lg:text-xs text-[10px] font-bold uppercase">
-                      {video.category}
-                    </h5>
-                  </div> */}
-              {/* <h1 className="line-clamp-1 text-sm mt-3 font-bold">
-                    {video.title}
-                  </h1> */}
-              {/* </div> */}
-              {/* </div> */}
-            </div>
-          </div>
+  const isLiked = watchLaterData?.some((item: any) => item.video_id === video._id);
 
-          {/* <div className="">
-            <div className="flex items-center mt-2 gap-4">
-              <img
-                className="lg:w-10 lg:h-10 h-7 w-7 rounded-full"
-                src={video?.user?.profilePic}
-                alt={video?.user?.full_name}
+  return (
+    <>
+      {/* Mobile view card */}
+      <div className={`sm:hidden ${videoRatio} movie-card-mobile ${isLarge ? 'movie-card-large' : ''}`}>
+        {/* Heart Button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handletoWatch(video._id);
+          }}
+          className="absolute top-2 right-2 z-50"
+        >
+          <div className={`p-1.5 rounded-full ${isLiked ? 'bg-pink-500' : 'bg-black/50'} backdrop-blur-sm ${isAnimating ? 'scale-125' : ''} transition-all duration-300`}>
+            <Heart
+              className={`${isLiked ? 'heart-liked' : 'text-white'} ${isAnimating ? 'animate-ping' : ''}`}
+              size={18}
+              fill={isLiked ? "#ff4d6d" : "none"}
+            />
+          </div>
+        </button>
+
+        <Link href={`/video/${video?._id}`} className="block h-full">
+          <div className="relative h-full">
+            {/* Video/Image Container */}
+            {hoveredIndex === index ? (
+              <video
+                preload="auto"
+                playsInline
+                autoPlay
+                loop
+                muted
+                poster={video.thumbnail}
+                className="h-full w-full object-cover"
+                controls={false}
+              >
+                <source src={video.preview_video} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <Image
+                className={`h-full w-full object-cover ${videoRatio}`}
+                src={video.thumbnail}
+                alt={video.title}
+                fill
+
               />
-              <div className="font-medium dark:text-white">
-                <div className="lg:text-sm line-clamp-1 text-xs ">
-                  {video?.user?.full_name}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {video.followerCount} followers
-                </div>
+            )}
+
+            {/* Overlay with gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/20"></div>
+
+            {/* Play button overlay that appears on hover */}
+            <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+              <div className="bg-purple-600/80 p-2 rounded-full transform transition-transform duration-300 hover:scale-110">
+                <Play fill="white" size={20} className="text-white" />
               </div>
             </div>
 
-            <div className="text-white capitalize gap-1 lg:gap-2 pt-2 flex flex-wrap text-[10px] lg:text-xs font-bold">
-              <span>{language}</span> <span>|</span>{" "}
-              <span>
-                {convertMinutesToReadableFormat(video?.duration, true)}
-              </span>{" "}
-              <span>|</span>
-              <span className="text-xs font-bold">
-                {timeAgoString(video?.createdAt)}
-              </span>
+            {/* Title at bottom */}
+            <div className="absolute bottom-0 left-0 right-0 p-2 text-white">
+              <h3 className="font-bold text-xs line-clamp-1">{video.title}</h3>
             </div>
-          </div> */}
+          </div>
         </Link>
       </div>
-    </div>
+
+      {/* Desktop view card */}
+      <div
+        className="hidden sm:block card-hover-effect"
+        key={index}
+        onMouseEnter={() => setHoveredIndex(index)}
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
+        <div className="h-auto rounded-3xl overflow-hidden shadow-lg bg-background-medium">
+          {/* Heart button with pulse effect */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handletoWatch(video._id);
+            }}
+            className="absolute top-3 right-3 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          >
+            <div className={`p-2 rounded-full ${isLiked ? 'bg-pink-500 animate-pulse-glow' : 'bg-black/50'} backdrop-blur-sm ${isAnimating ? 'scale-125' : ''} transition-all duration-300`}>
+              <Heart
+                className={`${isLiked ? 'heart-liked' : 'text-white'} ${isAnimating ? 'animate-ping' : ''} transition-colors duration-300`}
+                size={20}
+                fill={isLiked ? "#ff4d6d" : "none"}
+              />
+            </div>
+          </button>
+
+          <Link href={`/video/${video?._id}`} className="block">
+            <div className="relative overflow-hidden rounded-3xl">
+              {/* Video/Image Container */}
+              <div className="relative">
+                {hoveredIndex === index ? (
+                  <video
+                    preload="auto"
+                    playsInline
+                    autoPlay
+                    loop
+                    muted
+                    poster={video.thumbnail}
+                    className={cn("object-cover rounded-3xl shadow-md transform transition-transform duration-500", videoRatio)}
+                    controls={false}
+                  >
+                    <source src={video.preview_video} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <Image
+                    className={cn("rounded-3xl object-cover transform transition-all duration-500", videoRatio)}
+                    src={video.thumbnail}
+                    alt={video.title}
+                    width={320}
+                    height={180}
+                  />
+                )}
+
+                {/* Overlay with gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 opacity-70 rounded-3xl"></div>
+
+                {/* Play button overlay that appears on hover */}
+                <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+                  <div className="bg-purple-600/80 p-3 rounded-full transform transition-transform duration-300 hover:scale-110 animate-pulse-glow">
+                    <Play fill="white" size={24} className="text-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Title and info overlay at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                <h3 className="font-bold text-sm line-clamp-1">{video.title}</h3>
+
+                <div className="flex capitalize items-center space-x-2 text-xs mt-1 text-gray-300">
+                  <span className="bg-purple-600/80 px-2 py-0.5 rounded-full text-white text-[10px] animate-shimmer">
+                    {video.category ? (video.category[0]?.split(",")[0] || "Unknown") : "Unknown"}
+                  </span>
+                  <span>{language}</span>
+                  <span>{video.certification}</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+    </>
   );
 };
 

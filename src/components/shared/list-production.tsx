@@ -75,12 +75,12 @@ const ListProduction = ({ url, title }: any) => {
       <h1 className="lg:text-xl text-base font-semibold mb-6">{title}</h1>
       {url === "production" ? (
         <div className="w-full">
-          <Carousel className="w-full max-w-[91vw]   basis-12 lg:max-w-[94vw]">
-            <CarouselContent className="z-10 gap-3 ml-16">
+          <Carousel className="w-full max-w-[91vw] basis-12 lg:max-w-[94vw]">
+            <CarouselContent className="z-10 gap-3 ml-1">
               {productionCompanies &&
                 productionCompanies?.map((company: any) => (
                   <CarouselItem
-                    className=" bg-[#0f101e] border-[#ffffff1f] px-4 flex items-center justify-center lg:px-4 py-2 lg:py-4 border rounded basis-auto"
+                    className=" bg-[#0f101e] rounded-2xl border-[#ffffff1f] flex items-center justify-center lg:px-4 py-2 lg:py-4 border  basis-auto"
                     key={company._id}
                   >
                     <Link href={"/production/" + company._id} className="">

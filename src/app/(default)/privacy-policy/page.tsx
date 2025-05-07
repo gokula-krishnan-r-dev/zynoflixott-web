@@ -1,60 +1,300 @@
-import { NextPage } from "next";
-import Head from "next/head";
+"use client";
 
-const PrivacyPolicy: NextPage = () => {
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Shield, Lock, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import Link from "next/link";
+
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
+const PolicySection = ({ title, children, icon }: SectionProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-body flex flex-col">
-      <Head>
-        <title>ZynoFlix - Privacy Policy</title>
-        <meta
-          name="description"
-          content="Privacy Policy of ZynoFlix under the law in India"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="mb-6 rounded-xl overflow-hidden bg-[rgba(25,28,51,0.5)] backdrop-blur-sm border border-[#292c41]/50"
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 sm:p-5 flex items-center justify-between text-left bg-[rgba(25,28,51,0.8)] hover:bg-[rgba(25,28,51,1)] transition-colors"
+      >
+        <div className="flex items-center">
+          {icon && <div className="mr-3 text-[#7b61ff]">{icon}</div>}
+          <h2 className="text-base sm:text-lg font-bold text-white">{title}</h2>
+        </div>
+        <div className="text-white">
+          {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </div>
+      </button>
 
-      <main className="flex-grow max-w-4xl mx-auto bg-body p-8 rounded-lg shadow-lg mt-10">
-        <h1 className="text-3xl font-bold mb-6">
-          ZynoFlix Privacy Policy Under the Law in India
-        </h1>
-        <p className="mb-4">
-          Privacy is a fundamental right of every individual, and laws regarding
-          privacy are crucial to protect personal information. In the case of
-          ZynoFlix, an OTT short film application, the privacy policy under the
-          law in India plays a vital role in ensuring the protection of user
-          data.
-        </p>
-        <p className="mb-4">
-          Under the law in India, the privacy policy of ZynoFlix must adhere to
-          certain regulations and guidelines to safeguard the personal
-          information of its users. This includes obtaining consent from users
-          before collecting any data, clearly stating the purpose of data
-          collection, ensuring data security measures are in place, and
-          providing users with the option to opt-out of data sharing.
-        </p>
-        <p className="mb-4">
-          Furthermore, the privacy policy must comply with the Information
-          Technology (Reasonable Security Practices and Procedures and Sensitive
-          Personal Data or Information) Rules, 2011. This regulation governs the
-          collection and use of sensitive personal data or information, such as
-          passwords, financial information, and biometric data. ZynoFlix must
-          ensure that such data is protected and not misused in any way.
-        </p>
-        <p className="mb-4">
-          Additionally, the privacy policy must also follow the provisions of
-          the Indian Contract Act, 1872, regarding the terms and conditions of
-          service. Users must be informed of their rights and responsibilities
-          when using the ZynoFlix application, and any changes to the privacy
-          policy must be communicated to the users in a timely manner.
-        </p>
-        <p className="mb-4">
-          In conclusion, the privacy policy of ZynoFlix under the law in India
-          is crucial in maintaining the trust and confidence of its users. By
-          adhering to the regulations and guidelines set forth by the
-          government, ZynoFlix can ensure that the personal information of its
-          users is protected and that their privacy rights are upheld.
-        </p>
-      </main>
+      <motion.div
+        initial={false}
+        animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+        className="overflow-hidden"
+      >
+        <div className="p-4 sm:p-6 text-gray-200 text-sm sm:text-base">
+          {children}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const PrivacyPolicy = () => {
+  // Automatically open first section on mobile, all sections on desktop
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return (
+    <div className="min-h-screen pt-16 sm:pt-24 bg-gradient-to-br from-[#1a0733] to-[#2c1157]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8 sm:mb-12 text-center"
+        >
+          <div className="inline-flex items-center justify-center p-2 sm:p-3 bg-[#7b61ff]/20 rounded-full mb-3 sm:mb-4">
+            <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-[#7b61ff]" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
+            Privacy Policy for ZynoFlix OTT
+          </h1>
+          <p className="text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+            Effective Date: May 7, 2025
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-[rgba(25,28,51,0.3)] backdrop-blur-sm p-4 sm:p-6 rounded-xl mb-8 border border-[#292c41]/50"
+        >
+          <p className="text-gray-200 text-sm sm:text-base">
+            Infopod Media Entertainment Private Limited ("we", "us", "our") is committed to protecting your privacy and ensuring the security of your personal data. This Privacy Policy explains how we collect, use, store, and safeguard your information when you access or use ZynoFlix OTT ("the Platform").
+          </p>
+          <p className="text-gray-200 text-sm sm:text-base mt-3">
+            Please read this Privacy Policy carefully. By using ZynoFlix OTT, you agree to the practices described herein.
+          </p>
+        </motion.div>
+
+        <PolicySection
+          title="1. Information We Collect"
+          icon={<Lock size={20} />}
+        >
+          <h3 className="font-semibold text-white mb-2">a. Personal Data</h3>
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>Name, email address, phone number, date of birth, gender.</li>
+            <li>Profile picture and social media account details (if linked).</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">b. Account Information</h3>
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>Login credentials (username, password) — Login ID: defg45@gmail.com, Password: abcd@.</li>
+            <li>User preferences, viewing history, watchlists, feedback, and reviews.</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">c. Content Data</h3>
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>Videos uploaded, comments, reviews, and feedback.</li>
+            <li>Content engagement metrics (views, likes, shares).</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">d. Device & Usage Data</h3>
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>Device type, operating system, browser type.</li>
+            <li>IP address, geolocation data, access time, and duration.</li>
+            <li>Cookies and tracking technologies.</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">e. Cookies & Similar Technologies</h3>
+          <p>We utilize cookies, web beacons, and similar technologies to analyze traffic, personalize content, and improve user experience.</p>
+        </PolicySection>
+
+        <PolicySection
+          title="2. Purposes of Data Collection & Use"
+          icon={<Lock size={20} />}
+        >
+          <p className="mb-4">In accordance with the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011, and other applicable laws, we use your data for:</p>
+
+          <ul className="space-y-2 mb-4">
+            <li><span className="font-semibold text-white">Provision of services:</span> Streaming, content management, and user account functionalities.</li>
+            <li><span className="font-semibold text-white">Personalization:</span> Content recommendations based on your preferences and viewing history.</li>
+            <li><span className="font-semibold text-white">Communication:</span> Sending updates, notifications, and customer support responses.</li>
+            <li><span className="font-semibold text-white">Legal & Regulatory Compliance:</span> Ensuring compliance with Indian laws such as the Information Technology Act, 2000, Copyright Act, 1957, and The Cinematograph Act, 1952.</li>
+            <li><span className="font-semibold text-white">Security & Fraud Prevention:</span> Detecting and preventing unauthorized activities.</li>
+            <li><span className="font-semibold text-white">Platform Improvement:</span> Analyzing usage patterns, fixing bugs, and enhancing features.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="3. Sharing Your Information"
+          icon={<Lock size={20} />}
+        >
+          <h3 className="font-semibold text-white mb-2">a. Third Parties & Service Providers</h3>
+          <p className="mb-4">We may share your data with trusted third-party vendors who perform services such as hosting, streaming, analytics, customer support, and platform maintenance, under strict confidentiality obligations.</p>
+
+          <h3 className="font-semibold text-white mb-2">b. Legal Obligations</h3>
+          <p className="mb-4">We may disclose your data if required by law, legal process, or government authority or to protect our rights, safety, and property.</p>
+
+          <h3 className="font-semibold text-white mb-2">c. Business Transfers</h3>
+          <p>In connection with mergers, acquisitions, or sale of assets, your data may be transferred as part of that process.</p>
+        </PolicySection>
+
+        <PolicySection
+          title="4. Data Security & Retention"
+          icon={<Shield size={20} />}
+        >
+          <ul className="list-disc pl-5 space-y-2">
+            <li>We adopt industry-standard security measures, including encryption, firewalls, and secure data storage, to protect your personal data from unauthorized access, alteration, disclosure, or destruction.</li>
+            <li>Your data will be retained only as long as necessary to fulfill the purposes outlined in this policy or as legally mandated.</li>
+            <li>You may request the deletion of your account or personal data by contacting us at <a href="mailto:infozynoflixott@gmail.com" className="text-[#7b61ff] hover:underline">infozynoflixott@gmail.com</a>.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="5. User Rights & Data Control"
+          icon={<Lock size={20} />}
+        >
+          <p className="mb-4">In accordance with Indian laws, including the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011, and the Personal Data Protection Bill, 2019 (pending enactment), you have:</p>
+
+          <ul className="space-y-2 mb-4">
+            <li><span className="font-semibold text-white">Right to access</span> your personal data held by us.</li>
+            <li><span className="font-semibold text-white">Right to correction</span> or update inaccurate or incomplete data.</li>
+            <li><span className="font-semibold text-white">Right to delete</span> or deactivate your data, subject to legal or operational obligations.</li>
+            <li><span className="font-semibold text-white">Right to withdraw consent</span> for processing data for marketing or other purposes.</li>
+            <li><span className="font-semibold text-white">Right to data portability</span> where applicable.</li>
+          </ul>
+
+          <p>To exercise these rights, or for any privacy concerns, please contact us at <a href="mailto:infozynoflixott@gmail.com" className="text-[#7b61ff] hover:underline">infozynoflixott@gmail.com</a>.</p>
+        </PolicySection>
+
+        <PolicySection
+          title="6. Cookies & Tracking Technologies"
+          icon={<Lock size={20} />}
+        >
+          <ul className="list-disc pl-5 space-y-2">
+            <li>We use cookies, web beacons, and similar technologies to enhance user experience, analyze usage patterns, and serve targeted content.</li>
+            <li>You can configure your browser to reject cookies or alert you when cookies are set.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="7. Data Protection & Security Protocols"
+          icon={<Shield size={20} />}
+        >
+          <h3 className="font-semibold text-white mb-2">a. Standards & Frameworks</h3>
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>We adhere to internationally recognized data protection standards, including ISO/IEC 27001 for information security management.</li>
+            <li>Our security measures comply with Indian regulatory requirements, including the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011.</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">b. Technical & Organizational Measures</h3>
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>Encryption of personal data both at rest and in transit.</li>
+            <li>Regular security audits and vulnerability assessments.</li>
+            <li>Role-based access controls to restrict data access.</li>
+            <li>Use of secure servers and firewalls to prevent unauthorized access.</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">c. Cross-border Data Transfers</h3>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Your personal data may be transferred to servers located outside India for hosting and operational purposes.</li>
+            <li>Any such transfer will be carried out in compliance with applicable Indian laws, including the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011.</li>
+            <li>We ensure such transfers are protected by appropriate safeguards, such as standard contractual clauses or adequacy decisions, to maintain the confidentiality and security of your data.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="8. Children's Privacy"
+          icon={<Shield size={20} />}
+        >
+          <ul className="list-disc pl-5 space-y-2">
+            <li>ZynoFlix OTT is not intended for children under 13 years of age. We do not knowingly collect or solicit personal data from children.</li>
+            <li>If we discover that we have inadvertently collected data from a minor, we will delete it immediately.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="9. Data Breach & Incident Response"
+          icon={<Shield size={20} />}
+        >
+          <ul className="list-disc pl-5 space-y-2">
+            <li>In the event of a data breach, we will notify affected users and relevant authorities in accordance with the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011, and applicable Indian laws.</li>
+            <li>We will also undertake necessary remedial actions to mitigate harm and prevent future breaches.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="10. Changes to Privacy Policy"
+          icon={<Lock size={20} />}
+        >
+          <ul className="list-disc pl-5 space-y-2">
+            <li>We reserve the right to update this Privacy Policy periodically to reflect changes in legal, technological, or operational requirements.</li>
+            <li>Users will be notified of material changes via the platform or email.</li>
+            <li>Continued use of ZynoFlix OTT after such updates constitutes acceptance of the revised policy.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="11. Governing Law & Jurisdiction"
+          icon={<Lock size={20} />}
+        >
+          <ul className="list-disc pl-5 space-y-2">
+            <li>This Privacy Policy is governed by Indian law, including the Information Technology Act, 2000, and applicable amendments.</li>
+            <li>Disputes arising under this policy shall be subject to the exclusive jurisdiction of courts in India.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection
+          title="12. Contact Details"
+          icon={<ExternalLink size={20} />}
+        >
+          <p className="mb-4">For questions, concerns, or data access requests, contact us at:</p>
+
+          <ul className="space-y-2">
+            <li><span className="font-semibold text-white">Email:</span> <a href="mailto:infozynoflixott@gmail.com" className="text-[#7b61ff] hover:underline">infozynoflixott@gmail.com</a></li>
+            <li><span className="font-semibold text-white">Phone:</span> 8270895609</li>
+            <li><span className="font-semibold text-white">Registered Office:</span> Bangalore, India</li>
+          </ul>
+        </PolicySection>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-10 text-center text-gray-300 text-sm"
+        >
+          <p>By accessing or using ZynoFlix OTT, you acknowledge that you have read, understood, and agree to this Privacy Policy and consent to our collection, use, and disclosure of your information as described.</p>
+
+          <div className="mt-8 flex items-center justify-center space-x-6">
+            <Link href="/" className="text-[#7b61ff] hover:text-white transition-colors">
+              Return to Home
+            </Link>
+            <Link href="/explore" className="text-[#7b61ff] hover:text-white transition-colors">
+              Explore Content
+            </Link>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };

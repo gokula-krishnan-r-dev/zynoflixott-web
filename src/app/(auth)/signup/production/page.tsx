@@ -1,5 +1,6 @@
 import ProductionForm from "@/components/form/production-form";
 import SignupForm from "@/components/form/signup-form";
+import Link from "next/link";
 import React from "react";
 
 const page = () => {
@@ -24,8 +25,17 @@ const page = () => {
               <h1 className="text-2xl xl:text-3xl font-extrabold text-white">
                 Sign up
               </h1>
+
+
               <div className="w-full mt-8">
                 <div className="mx-auto max-w-xl">
+
+                  <Link
+                    href={"/signup"}
+                    className="w-full mt-4 mb-4 w-full font-bold text-center shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+                  >
+                    <span className="ml-4">User Signup</span>
+                  </Link>
                   <ProductionForm type="production" />
                   <p className="mt-6 text-xs text-gray-600 text-center">
                     I agree to abide by templatana

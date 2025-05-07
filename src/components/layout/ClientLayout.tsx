@@ -1,11 +1,43 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { Home, Search, Play, Heart, User } from "lucide-react";
+
+const MobileNavBar = () => {
+  const pathname = usePathname();
+
+  return (
+    <div className="mobile-nav-bar sm:hidden">
+      <Link href="/" className={`mobile-nav-item ${pathname === '/' ? 'active' : ''}`}>
+        <Home size={20} />
+        <span>Home</span>
+      </Link>
+      <Link href="/search" className={`mobile-nav-item ${pathname === '/search' ? 'active' : ''}`}>
+        <Search size={20} />
+        <span>Search</span>
+      </Link>
+      <Link href="/videos" className={`mobile-nav-item ${pathname.includes('/video') ? 'active' : ''}`}>
+        <Play size={20} />
+        <span>Videos</span>
+      </Link>
+      <Link href="/profile" className={`mobile-nav-item ${pathname === '/profile' ? 'active' : ''}`}>
+        <User size={20} />
+        <span>Profile</span>
+      </Link>
+    </div>
+  );
+};
 
 export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [queryClient] = React.useState(() => new QueryClient());
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
     // Disable text selection
     document.body.style.userSelect = "none";
@@ -33,6 +65,8 @@ export default function ClientLayout({
     document.addEventListener("copy", preventCopy as EventListener);
     document.addEventListener("keydown", preventCopy as EventListener);
 
+    setIsClient(true);
+
     return () => {
       // Clean up event listeners and CSS rule
       document.body.style.userSelect = "";
@@ -42,5 +76,16 @@ export default function ClientLayout({
     };
   }, []);
 
-  return <>{children}</>;
+  if (!isClient) {
+    return null;
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="bg-background-dark min-h-screen">
+        {children}
+        <MobileNavBar />
+      </div>
+    </QueryClientProvider>
+  );
 } 

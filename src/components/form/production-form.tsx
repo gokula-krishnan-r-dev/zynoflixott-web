@@ -1,5 +1,6 @@
 "use client";
 import axios from "@/lib/axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -81,7 +82,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
     const submissionData = new FormData();
 
 
-    submissionData.append("name" , formData.founderName as any)
+    submissionData.append("name", formData.founderName as any)
 
     Object.keys(formData).forEach((key) => {
       if (formData[key as keyof ProductionCompanyFormData]) {
@@ -134,6 +135,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+
       {/* <div className="mb-4">
         <label htmlFor="name" className="block mb-2 font-bold">
           Name of Company:
@@ -151,7 +153,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       </div> */}
       <div className="mb-4">
         <label htmlFor="founderName" className="block mb-2 font-bold">
-        Director name:
+          Director name:
         </label>
         <input
           type="text"
@@ -239,7 +241,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       </div>
       <div className="mb-4">
         <label htmlFor="logo" className="block mb-2 font-bold">
-Profile Pic:
+          Profile Pic:
         </label>
         <input
           type="file"

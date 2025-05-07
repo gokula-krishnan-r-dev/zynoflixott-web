@@ -2,116 +2,151 @@
 import { isLogin } from "@/lib/user";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Menu, X, Home, Compass, Upload, MessageSquare, User, LogIn, Film } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+
 const menuItems = [
-  { label: "Home", href: "#", isActive: true },
-  { label: "Upload a Video", href: "/video-upload" },
-  { label: "Chat", href: "/chat" },
-  { label: "Profile", href: "/profile" },
-  // { label: "Membership", href: "/membership" },
-  { label: "Login", href: "/login" },
-  { label: "Flim Call", href: "/film-call" },
+  { label: "Home", href: "/", icon: <Home className="w-5 h-5" /> },
+  { label: "Explore", href: "/explore", icon: <Compass className="w-5 h-5" /> },
+  { label: "Upload a Video", href: "/video-upload", icon: <Upload className="w-5 h-5" /> },
+  { label: "Chat", href: "/chat", icon: <MessageSquare className="w-5 h-5" /> },
+  { label: "Profile", href: "/profile", icon: <User className="w-5 h-5" /> },
+  { label: "Login", href: "/login", icon: <LogIn className="w-5 h-5" /> },
+  { label: "Film Call", href: "/film-call", icon: <Film className="w-5 h-5" /> },
 ];
 
 export function SheetMobile() {
   const [open, setOpen] = useState<boolean>(false);
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (open && e.target instanceof Element && !e.target.closest('.mobile-menu-container')) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [open]);
+
+  // Prevent scrolling when menu is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
   useEffect(() => {
     setLoggedIn(isLogin);
   }, []);
 
   if (loggedIn === null) {
-    return <div>Loading...</div>; // Placeholder to ensure server and client render the same initially
+    return null; // This will be handled by the parent component
   }
-  return (
-    <div className="">
-      <button onClick={() => setOpen(!open)}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 text-white"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16m-7 6h7"
-          />
-        </svg>
-      </button>
-      {open && (
-        <div className="fixed bg-body w-[60%] top-0 bottom-0 left-0 duration-500">
-          <div className="px-1 relative flex-col w-full flex items-center justify-center py-4">
-            <button
-              className="absolute top-3 right-3"
-              onClick={() => setOpen(false)}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
 
-            <nav className=" px-0 lg:px-1 w-full py-2.5 dark:bg-gray-800">
-              <div className="flex flex-wrap justify-between items-center w-full ">
-                <div
-                  className="justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
-                  id="mobile-menu-2"
-                >
-                  <Navigation items={menuItems} />
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-2 text-white rounded-full hover:bg-[#292c41]/50 transition-colors"
+        aria-label="Menu"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              onClick={() => setOpen(false)}
+            />
+
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed top-0 left-0 h-full w-[80%] max-w-xs bg-gradient-to-b from-[#1a0733] to-[#2c1157] z-50 mobile-menu-container shadow-xl"
+            >
+              <div className="flex flex-col h-full overflow-y-auto">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-[#292c41]/50">
+                  <Link href="/" onClick={() => setOpen(false)}>
+                    <Image
+                      src="/logo/logo.png"
+                      width={100}
+                      height={30}
+                      alt="ZynoFlix Logo"
+                      className="lg:h-12 w-auto"
+                    />
+                  </Link>
+                  <button
+                    className="p-2 text-white rounded-full hover:bg-[#292c41]/50 transition-colors"
+                    onClick={() => setOpen(false)}
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Menu Items */}
+                <div className="py-4 px-2">
+                  <ul className="space-y-1">
+                    {menuItems.map((item, index) => {
+                      // Skip login item if already logged in
+                      if (item.label === "Login" && loggedIn) return null;
+                      // Skip profile item if not logged in
+                      if (item.label === "Profile" && !loggedIn) return null;
+
+                      return (
+                        <motion.li
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                        >
+                          <Link
+                            href={item.href}
+                            className="flex items-center px-4 py-3 text-white rounded-lg hover:bg-[#292c41]/50 transition-colors"
+                            onClick={() => setOpen(false)}
+                          >
+                            <span className="mr-3 text-[#7b61ff]">{item.icon}</span>
+                            <span>{item.label}</span>
+                          </Link>
+                        </motion.li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-auto p-4 border-t border-[#292c41]/50 text-center text-xs text-gray-400">
+                  <p>© {new Date().getFullYear()} ZynoFlix</p>
                 </div>
               </div>
-            </nav>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-import React from "react";
-
-type MenuItem = {
-  label: string;
-  href: string;
-  isActive?: boolean;
-};
-
-type NavProps = {
-  items: MenuItem[];
-};
-
-const Navigation: React.FC<NavProps> = ({ items }) => {
-  return (
-    <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-      {items.map((item, index) => (
-        <li key={index}>
-          <a
-            href={item.href}
-            className={`block py-2 pr-4 pl-3 rounded ${
-              item.isActive
-                ? "text-white bg-primary-700 lg:bg-transparent lg:text-primary-700 dark:text-white"
-                : "text-white lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-            }`}
-            aria-current={item.isActive ? "page" : undefined}
-          >
-            {item.label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
-};
-
-export default Navigation;
