@@ -3,13 +3,8 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import LanguageList from "@/components/shared/list-language";
-import SEO from "@/lib/next-seo.config";
-import Link from "next/link";
-import { ChevronRight, ArrowRight } from "lucide-react";
 import BannerCarousel from "@/components/shared/banner-carousel";
 import DirectorsCarousel from "@/components/shared/directors-carousel";
-import { directors } from "./directors/page";
-import Image from "next/image";
 
 const CategoryList = dynamic(
   () => import("@/components/shared/category-list"),
@@ -246,3 +241,45 @@ export default function Home() {
     </main>
   );
 }
+const directors = [
+  {
+    id: 1,
+    name: "MR. RAM",
+    image: "https://m.media-amazon.com/images/M/MV5BZTcxZmM4NmYtZjZlYy00YTlhLWFiNTYtODUzMmRiNWU2NTUzXkEyXkFqcGdeQXVyNDI3NjU1NzQ@._V1_.jpg",
+    company: "ANIMAL PICTURES",
+    upcomingFilm: "NEW FILM SUPERMINT COMING SOON",
+    path: "/profile/rajamouli"
+  },
+  {
+    id: 2,
+    name: "MR. KASHYAP",
+    image: "https://img.etimg.com/thumb/msid-98546103,width-650,height-488,imgsize-44978,,resizemode-75/anurag-kashyap.jpg",
+    company: "ANIMAL PICTURES",
+    upcomingFilm: "NEW FILM KENNEDY COMING SOON",
+    path: "/profile/kashyap"
+  },
+  {
+    id: 3,
+    name: "MR. NOLAN",
+    image: "https://variety.com/wp-content/uploads/2023/07/Christopher-Nolan.jpg",
+    company: "ANIMAL PICTURES",
+    upcomingFilm: "NEW FILM PROJECT COMING SOON",
+    path: "/profile/nolan"
+  },
+  {
+    id: 4,
+    name: "MR. CHAZELLE",
+    image: "https://variety.com/wp-content/uploads/2022/12/damien-chazelle.jpg",
+    company: "ANIMAL PICTURES",
+    upcomingFilm: "NEW FILM CONCEPT COMING SOON",
+    path: "/profile/chazelle"
+  },
+  {
+    id: 5,
+    name: "MR. RATNAM",
+    image: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Mani_Ratnam_at_IONIC_Rare_Ragas_by_Amaan_Ali_Khan_%26_Ayaan_Ali_Khan.jpg",
+    company: "ANIMAL PICTURES",
+    upcomingFilm: "NEW FILM PONNIYIN SELVAN 3 COMING SOON",
+    path: "/profile/ratnam"
+  },
+];

@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import DirectorsCarousel from "@/components/shared/directors-carousel";
 
 // Static data for directors who started with short films and became big filmmakers
-export const directors = [
+const directors = [
     {
         id: 1,
         name: "MR. RAM",
