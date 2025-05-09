@@ -4,16 +4,15 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import LanguageList from "@/components/shared/list-language";
 import SEO from "@/lib/next-seo.config";
+import Link from "next/link";
+import { ChevronRight, ArrowRight } from "lucide-react";
+import BannerCarousel from "@/components/shared/banner-carousel";
+import DirectorsCarousel from "@/components/shared/directors-carousel";
+import { directors } from "./directors/page";
+import Image from "next/image";
 
 const CategoryList = dynamic(
   () => import("@/components/shared/category-list"),
-  {
-    ssr: false,
-  }
-);
-
-const BannerCarousel = dynamic(
-  () => import("@/components/shared/banner-carousel"),
   {
     ssr: false,
   }
@@ -32,7 +31,7 @@ const AdsCard = dynamic(() => import("@/components/ads/ads-card"), {
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center">
+    <main className="min-h-screen bg-body">
       <Head>
         <title>ZynoflixOTT - Premier Platform for Short Films & Independent Filmmakers</title>
         <meta
@@ -66,7 +65,7 @@ export default function Home() {
         <BannerCarousel />
 
         {/* Main categories for mobile view */}
-        <div className="sm:hidden mt-4 mb-3">
+        <div className="sm:hidden mt-3 mb-3">
           <CategoryList
             title={"TRENDING"}
             desc={"Popular movies right now"}
@@ -98,7 +97,7 @@ export default function Home() {
 
         <section className="lg:px-8 px-0 space-y-6 pt-0 lg:pt-12 py-2">
           {/* Desktop view sections */}
-          <div className="px-4">
+          <div className="px-4 space-y-4">
             <ListProduction url={"director"} title={"DIRECTORS LIVE"} />
             <ListProduction
               url={"production"}
@@ -133,6 +132,8 @@ export default function Home() {
               desc={"BEST MALAYALAM FILMS"}
             />
 
+
+            {/* here */}
             <CategoryList langage={"Kannada"}
               title={"KANNADA SHORT FILMS"}
               desc={"FAMOUS KANNADA FILMS"}
@@ -235,7 +236,11 @@ export default function Home() {
             desc={"EXPLORE ALL SHORT FILMS"}
           />
 
-          {/* <AdsCard /> */}
+          {/* Directors section */}
+          <div className="lg:px-4 px-2">
+            <DirectorsCarousel displayCount={3} showViewAll={true} />
+          </div>
+
         </section>
       </div>
     </main>

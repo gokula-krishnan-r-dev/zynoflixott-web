@@ -80,7 +80,7 @@ const ListProduction = ({ url, title }: any) => {
               {productionCompanies &&
                 productionCompanies?.map((company: any) => (
                   <CarouselItem
-                    className=" bg-[#0f101e] rounded-2xl border-[#ffffff1f] flex items-center justify-center lg:px-4 py-2 lg:py-4 border  basis-auto"
+                    className=" bg-[#0f101e] rounded-2xl border-[#ffffff1f] flex items-center justify-center px-6 lg:px-4 py-4 lg:py-4  border  basis-auto"
                     key={company._id}
                   >
                     <Link href={"/production/" + company._id} className="">
@@ -199,9 +199,9 @@ const ListProduction = ({ url, title }: any) => {
                           <h2 className="lg:text-xl lg:w-max w-full text-lg pl-2 font-bold mb-2">
                             {company.name}
                           </h2>
-                          <p className="text-[#92939e] lg:text-base text-xs  pl-2 mb-2">
+                          {/* <p className="text-[#92939e] lg:text-base text-xs  pl-2 mb-2">
                             Founder & CEO
-                          </p>
+                          </p> */}
                           <button className="bg-red-500  px-3 lg:px-6 py-1 lg:text-sm text-xs lg:py-3 rounded-xl">
                             Watching
                           </button>
@@ -224,7 +224,7 @@ const ListProduction = ({ url, title }: any) => {
       ) : (
         <div className="w-full">
           <Carousel className="w-full max-w-[91vw]  basis-12 lg:max-w-[94vw]">
-            <CarouselContent className="z-10 gap-6 ml-16">
+            <CarouselContent className="z-10 gap-6 ml-1">
               {productionCompanies &&
                 productionCompanies?.map((company: any) => (
                   <CarouselItem

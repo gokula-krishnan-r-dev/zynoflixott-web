@@ -43,47 +43,47 @@ const dynamicFormSchema = z.object(
     if (field.tag === "date") {
       acc[field.name] = field.required
         ? z.date({
-            required_error: "A date of birth is required.",
-          })
+          required_error: "A date of birth is required.",
+        })
         : z.any();
     } else if (field.tag === "tags") {
       acc[field.name] = field.required
         ? z.string().min(2, {
-            message: `${field.title} must be at least 2 characters.`,
-          })
+          message: `${field.title} must be at least 2 characters.`,
+        })
         : z.string();
     } else if (field.tag === "file") {
       acc[field.name] = field.required ? z.any() : z.any();
     } else if (field.tag === "checkbox") {
       acc[field.name] = field.required
         ? z.boolean().refine((val) => val === true, {
-            message: `${field.title} is required.`,
-          })
+          message: `${field.title} is required.`,
+        })
         : z.boolean();
     } else if (field.tag === "select") {
       acc[field.name] = field.required
         ? z.array(z.string()).nonempty({
-            message: `${field.title} is required.`,
-          })
+          message: `${field.title} is required.`,
+        })
         : z.any();
     } else if (field.tag === "select-1") {
       acc[field.name] = field.required
         ? z.array(z.string()).nonempty({
-            message: `${field.title} is required.`,
-          })
+          message: `${field.title} is required.`,
+        })
         : z.any();
     } else if (field.tag === "number") {
       acc[field.name] = field.required
         ? z.number().min(1, {
-            message: `${field.title} must be at least 1.`,
-          })
+          message: `${field.title} must be at least 1.`,
+        })
         : z.number();
     } else {
       // Handle text and other input types as strings
       acc[field.name] = field.required
         ? z.string().min(2, {
-            message: `${field.title} must be at least 2 characters.`,
-          })
+          message: `${field.title} must be at least 2 characters.`,
+        })
         : z.string();
     }
     return acc;
@@ -115,8 +115,8 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
   const isIOS = () => {
     if (typeof window !== 'undefined') {
       const userAgent = window.navigator.userAgent.toLowerCase();
-      return /iphone|ipad|ipod/.test(userAgent) || 
-             (userAgent.includes('mac') && 'ontouchend' in document);
+      return /iphone|ipad|ipod/.test(userAgent) ||
+        (userAgent.includes('mac') && 'ontouchend' in document);
     }
     return false;
   };
@@ -377,9 +377,8 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                                           let minutes = `${Math.floor(
                                             (sec - +hours * 3600) / 60
                                           )}`; // get minutes
-                                          let seconds = `${
-                                            sec - +hours * 3600 - +minutes * 60
-                                          }`; //  get seconds
+                                          let seconds = `${sec - +hours * 3600 - +minutes * 60
+                                            }`; //  get seconds
                                           // add 0 if value < 10; Example: 2 => 02
                                           if (+hours < 10) {
                                             hours = "0" + hours;
@@ -621,7 +620,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 <div className="">
                   {/* price 499 per video upload */}
                   <p className="text-lg font-semibold">
-                  UPLOADING CHARGE : 1499/- 
+                    UPLOADING CHARGE : 1499/-
                   </p>
                 </div>
               )}
@@ -631,7 +630,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                     onClick={openPayModal}
                     className="px-6 py-3 rounded-3xl cursor-pointer border text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700"
                   >
-                    UPLOAD NOW 
+                    UPLOAD NOW
                   </div>
                 ) : (
                   <Button
@@ -643,39 +642,39 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 )}
               </div>
               <div className="mt-6 flex items-center justify-between pt-3 ">
-                  <p className="text-white">IF YOU NEED ANY ASSISTANCE REACH: <a href="tel:+918270895609" className="text-blue-400 hover:underline">+91-8270895609</a></p>
-                </div>
+                <p className="text-white">IF YOU NEED ANY ASSISTANCE REACH: <a href="tel:+918270895609" className="text-blue-400 hover:underline">+91-8270895609</a></p>
+              </div>
               {/* add document */}
               <div className="mt-6 p-5 border border-gray-700 rounded-lg bg-gray-900/50">
                 <h3 className="text-xl font-bold mb-4 text-white">TERMS & CONDITIONS</h3>
-                
+
                 <p className="text-gray-300 mb-4">
                   Whoever successfully uploads their short film to Zynoflix OTT will receive the following exclusive benefits from our company:
                 </p>
-                
+
                 <ol className="list-decimal pl-5 space-y-4 text-gray-300">
                   <li>
                     <span className="font-semibold text-white">Free Promotion:</span>
                     <p>Get your short film promoted across our digital platforms at no cost, boosting your visibility and audience reach.</p>
                   </li>
-                  
+
                   <li>
                     <span className="font-semibold text-white">Monetization Unlocked:</span>
                     <p>We will unlock monetization for your first video, allowing you to start earning revenue immediately.</p>
                   </li>
-                  
+
                   <li>
                     <span className="font-semibold text-white">Exclusive Interview Opportunity:</span>
                     <p>Feature in a free, in-depth interview where you can share the story behind your short film, your creative process, and future projects.</p>
                   </li>
-                  
+
                   <li>
                     <span className="font-semibold text-white">News Publication:</span>
                     <p>Receive free media coverage with an official news article published about your short film, enhancing your public profile and credibility.</p>
                   </li>
                 </ol>
-                
-               
+
+
               </div>
             </form>
           </Form>

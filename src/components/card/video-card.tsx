@@ -84,7 +84,7 @@ const VideoCard = ({ video, index, hiddenNew, isLarge = false }: any) => {
       {/* Mobile view card */}
       <div className={`sm:hidden ${videoRatio} movie-card-mobile ${isLarge ? 'movie-card-large' : ''}`}>
         {/* Heart Button */}
-        <button
+        {/* <button
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -99,7 +99,7 @@ const VideoCard = ({ video, index, hiddenNew, isLarge = false }: any) => {
               fill={isLiked ? "#ff4d6d" : "none"}
             />
           </div>
-        </button>
+        </button> */}
 
         <Link href={`/video/${video?._id}`} className="block h-full">
           <div className="relative h-full">

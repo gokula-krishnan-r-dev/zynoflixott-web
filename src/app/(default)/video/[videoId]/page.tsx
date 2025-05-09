@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "@/lib/axios";
 import Loading from "@/components/ui/loading";
@@ -297,6 +297,13 @@ export default function Page({ params }: { params: { videoId: string } }) {
                 <Star className="h-4 w-4 fill-white" />
               </div>
               <ViewCounter count={video.views} />
+              <button
+                onClick={() => router.push('/monetization')}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1"
+              >
+                <span>Monetize</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+              </button>
             </div>
 
             {/* Profile with follow button - Mobile */}
@@ -343,10 +350,11 @@ export default function Page({ params }: { params: { videoId: string } }) {
 
         {/* Additional sections for mobile */}
         <div className="mt-0">
-          <VotePoll
+          <HeartPoll
             rating={rating}
             handleRatingChange={handleRatingChange}
             numberOfStars={Math.floor(displayRating)}
+            videoTitle={video.title}
           />
 
           <div className="mt-6">
@@ -394,6 +402,13 @@ export default function Page({ params }: { params: { videoId: string } }) {
                       </div>
                     </React.Fragment>
                   ))}
+                  <button
+                    onClick={() => router.push('/monetization')}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1 rounded-md text-sm flex items-center gap-2 transition-transform hover:scale-105"
+                  >
+                    <span>Monetize Content</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+                  </button>
                 </div>
               </div>
               <div className="flex items-center flex-row py-6 justify-between">
@@ -431,10 +446,11 @@ export default function Page({ params }: { params: { videoId: string } }) {
                   </button>
                 </div>
                 <div className="w-[70%] !mt-0">
-                  <VotePoll
+                  <HeartPoll
                     rating={rating}
                     handleRatingChange={handleRatingChange}
                     numberOfStars={Math.floor(displayRating)}
+                    videoTitle={video.title}
                   />
                 </div>
               </div>
@@ -448,12 +464,13 @@ export default function Page({ params }: { params: { videoId: string } }) {
             </div>
           </div>
 
-          <CategoryList langage={video.language || "Tamil"}
-            title={"Suggested for you"}
-            desc={"POPULAR FILMS"}
-          />
+
         </div>
       </div>
+      <CategoryList langage={video.language || "Tamil"}
+        title={"Suggested for you"}
+        desc={"POPULAR FILMS"}
+      />
 
     </main >
   );
@@ -564,6 +581,292 @@ function VotePoll({ numberOfStars, handleRatingChange, rating }: any) {
           <p className="text-center text-gray-300 text-sm">
             Thank you for rating this video! Your feedback helps creators improve their content.
           </p>
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}
+
+const HEART_RATINGS = [1, 2, 3, 4, 5];
+
+type HeartPollProps = {
+  numberOfStars: number;
+  handleRatingChange: (rating: number) => void;
+  rating: number | null;
+  videoTitle?: string;
+};
+
+function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: HeartPollProps) {
+  const [selectedRating, setSelectedRating] = useState<number | null>(rating);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isHovering, setIsHovering] = useState<number | null>(null);
+  const [showThankYou, setShowThankYou] = useState(Boolean(rating));
+  const [activeTab, setActiveTab] = useState<'rate' | 'stats'>(rating ? 'stats' : 'rate');
+
+  // Validation to prevent multiple ratings
+  const [hasRated, setHasRated] = useState(Boolean(rating));
+
+  // Calculate rating stats
+  const formattedVotes = useMemo(() => {
+    return numberOfStars ? numberOfStars.toLocaleString() : '0';
+  }, [numberOfStars]);
+
+  // Calculate percentage of current rating compared to all-time high
+  const percentRating = useMemo(() => {
+    return Math.min(100, Math.max(0, Math.round((selectedRating || 0) / 5 * 100)));
+  }, [selectedRating]);
+
+  useEffect(() => {
+    // If user already has a rating, show stats first
+    if (rating) {
+      setActiveTab('stats');
+      setShowThankYou(true);
+    }
+  }, [rating]);
+
+  const handleRate = (heartRating: number) => {
+    if (hasRated && selectedRating === heartRating) {
+      // Toggle off the same rating
+      setSelectedRating(null);
+      setHasRated(false);
+      handleRatingChange(0);
+      setShowThankYou(false);
+      return;
+    }
+
+    setIsAnimating(true);
+    setSelectedRating(heartRating);
+    setHasRated(true);
+
+    // Convert 1-5 heart scale to 1-10 scale for API compatibility
+    handleRatingChange(heartRating * 2);
+
+    // Show thank you message
+    setShowThankYou(true);
+
+    // Switch to stats view after rating
+    setTimeout(() => {
+      setActiveTab('stats');
+    }, 1500);
+
+    // Reset animation state after animation completes
+    setTimeout(() => setIsAnimating(false), 700);
+  };
+
+  // Heart rating descriptions for better UX
+  const ratingDescriptions = [
+    "Not for me",
+    "It's okay",
+    "Good",
+    "Great!",
+    "Loved it!"
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full max-w-5xl space-y-4 rounded-xl bg-gradient-to-br from-[rgba(25,28,51,0.7)] to-[rgba(41,44,71,0.5)] backdrop-blur-sm border border-[#292c41]/50 p-4 sm:p-6 shadow-lg overflow-hidden"
+    >
+      {/* Header with tabs */}
+      <div className="flex items-center justify-between">
+        <div className="flex bg-[#1E2033]/70 backdrop-blur-sm rounded-lg p-1">
+          <motion.button
+            whileHover={{ backgroundColor: 'rgba(123,97,255,0.2)' }}
+            onClick={() => setActiveTab('rate')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${activeTab === 'rate'
+              ? 'bg-gradient-to-r from-[rgba(123,97,255,0.3)] to-[rgba(123,97,255,0.2)] text-white shadow-inner'
+              : 'text-gray-400 hover:text-white'
+              }`}
+          >
+            Rate
+          </motion.button>
+          <motion.button
+            whileHover={{ backgroundColor: 'rgba(123,97,255,0.2)' }}
+            onClick={() => setActiveTab('stats')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${activeTab === 'stats'
+              ? 'bg-gradient-to-r from-[rgba(123,97,255,0.3)] to-[rgba(123,97,255,0.2)] text-white shadow-inner'
+              : 'text-gray-400 hover:text-white'
+              }`}
+          >
+            Stats
+          </motion.button>
+        </div>
+
+        <div className="flex items-center">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center gap-2 bg-gradient-to-r from-[#1a0733] to-[#2c1157] px-4 py-2 rounded-xl shadow-md border border-purple-900/30"
+          >
+            <span className="text-white font-bold">{formattedVotes}</span>
+            <span className="text-gray-300 text-xs">HEARTS</span>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Rating UI Tab */}
+      {activeTab === 'rate' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col items-center justify-center py-3"
+        >
+          <h3 className="text-white font-medium text-center mb-4">How would you rate this video?</h3>
+
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mb-3">
+            {HEART_RATINGS.map((heartValue) => (
+              <motion.button
+                key={heartValue}
+                onClick={() => handleRate(heartValue)}
+                onMouseEnter={() => setIsHovering(heartValue)}
+                onMouseLeave={() => setIsHovering(null)}
+                whileHover={{ scale: 1.15, y: -5 }}
+                whileTap={{ scale: 0.9 }}
+                animate={selectedRating === heartValue && isAnimating ?
+                  { scale: [1, 1.4, 1], transition: { duration: 0.8 } } :
+                  {}}
+                className="relative flex items-center justify-center group"
+                aria-label={`Rate ${heartValue} hearts`}
+              >
+                <Heart
+                  className={`h-8 w-8 sm:h-11 sm:w-11 transition-all duration-300 
+                    ${(selectedRating !== null && heartValue <= selectedRating)
+                      ? "fill-red-500 text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]"
+                      : (isHovering !== null && heartValue <= isHovering)
+                        ? "fill-red-300 text-red-300"
+                        : "text-gray-400 hover:text-red-300"
+                    }`}
+                />
+                {/* Pulse animation for selected hearts */}
+                {selectedRating !== null && heartValue <= selectedRating && (
+                  <motion.span
+                    initial={{ opacity: 0.7, scale: 1 }}
+                    animate={{
+                      opacity: [0.7, 0, 0],
+                      scale: [1, 1.8, 2],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      repeatDelay: 2
+                    }}
+                    className="absolute inset-0 rounded-full bg-red-500/20"
+                  />
+                )}
+
+                {/* Number below each heart */}
+                <span className="absolute -bottom-6 text-xs font-medium text-gray-400">{heartValue}</span>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Rating description text */}
+          <div className="h-8 mt-6">
+            {isHovering && (
+              <motion.p
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm font-medium text-gray-300"
+              >
+                {ratingDescriptions[isHovering - 1]}
+              </motion.p>
+            )}
+            {!isHovering && selectedRating && (
+              <p className="text-sm font-medium text-gray-300">
+                {ratingDescriptions[selectedRating - 1]}
+              </p>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Stats UI Tab */}
+      {activeTab === 'stats' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col items-center justify-center py-3"
+        >
+          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-6 mb-4">
+            <div className="flex flex-col items-center sm:items-start">
+              <span className="text-sm text-gray-400">Your Rating</span>
+              <div className="flex items-center gap-2 mt-1">
+                {selectedRating ? Array.from({ length: selectedRating }).map((_, i) => (
+                  <Heart key={i} className="h-5 w-5 fill-red-500 text-red-500" />
+                )) : (
+                  <span className="text-gray-500 italic text-sm">Not rated yet</span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {selectedRating && (
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  className="flex flex-col items-center"
+                >
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-[#7b61ff] to-[#5549c2] flex items-center justify-center ring-2 ring-[#7b61ff]/30 shadow-lg">
+                    <span className="text-2xl font-bold text-white">{selectedRating}</span>
+                  </div>
+                  <span className="text-xs text-gray-400 mt-1">Your Score</span>
+                </motion.div>
+              )}
+
+              <div className="flex flex-col items-center">
+                <div className="w-full flex items-center gap-2">
+                  <div className="h-4 w-full max-w-[120px] bg-gray-700 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${percentRating}%` }}
+                      transition={{ duration: 1, delay: 0.2 }}
+                      className="h-full bg-gradient-to-r from-red-500 to-red-400"
+                    />
+                  </div>
+                  <span className="text-xs text-gray-300">{percentRating}%</span>
+                </div>
+                <span className="text-xs text-gray-400 mt-1">Satisfaction</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Button to rate again */}
+          {selectedRating && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveTab('rate')}
+              className="text-sm text-[#7b61ff] hover:text-[#9f8aff] transition-colors duration-200 mt-2"
+            >
+              Change your rating
+            </motion.button>
+          )}
+        </motion.div>
+      )}
+
+      {/* Thank you message with animation */}
+      {showThankYou && hasRated && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="pt-3 border-t border-[#292c41]/50 mt-3"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="bg-gradient-to-r from-purple-900/30 to-purple-800/20 rounded-lg p-3 text-center"
+          >
+            <p className="text-center text-gray-200 text-sm">
+              Thanks for rating {videoTitle && <span className="font-medium">"{videoTitle}"</span>} with {selectedRating} {selectedRating === 1 ? 'heart' : 'hearts'}!
+              <br />
+              <span className="text-xs text-gray-400">Your feedback helps creators improve their content.</span>
+            </p>
+          </motion.div>
         </motion.div>
       )}
     </motion.div>

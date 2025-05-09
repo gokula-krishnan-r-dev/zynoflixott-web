@@ -102,7 +102,7 @@ const Page = () => {
   }, []);
   return (
     <main>
-      <div className="lg:px-24 px-2 py-24">
+      <div className="lg:px-24 px-2 py-5 lg:py-24">
         <CreateFormSubmit
           isSuccessful={isSuccessful}
           openPayModal={openPayModal}

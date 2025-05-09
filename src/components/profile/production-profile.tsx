@@ -31,7 +31,7 @@ export default function ProductionProfile() {
 
   if (isLoading)
     return <Loading className="flex items-center h-screen justify-center" />;
-  
+
   const handletoLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
@@ -64,31 +64,31 @@ export default function ProductionProfile() {
       toast.success("Account deleted successfully");
     }
   };
-console.log(user?.logo , "user?.logo")
+  console.log(user?.logo, "user?.logo")
   return (
     <main>
       <section className="w-full overflow-hidden dark:bg-gray-900">
         <div className="w-full mx-auto">
-        <UpdateImg
-              refetch={refetch}
-              id="backgroundPic"
-              name="backgroundPic"
-              button={
-                <div className="relative w-full group">
-                  <img
-                    src={getBackgroundImage(user?.backgroundPic, user?.name)}
-                    alt="User Cover"
-                    className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
-                  />
-                  <div className=" absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                    <div className="bg-white p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                      <Edit2 className="w-5 h-5 text-gray-800" />
-                    </div>
-                    <span className="absolute bottom-4 text-white font-medium text-sm  group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-3 py-1 rounded-full">Edit Cover</span>
+          <UpdateImg
+            refetch={refetch}
+            id="backgroundPic"
+            name="backgroundPic"
+            button={
+              <div className="relative w-full group">
+                <img
+                  src={getBackgroundImage(user?.backgroundPic, user?.name)}
+                  alt="User Cover"
+                  className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
+                />
+                <div className=" absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                  <div className="bg-white p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                    <Edit2 className="w-5 h-5 text-gray-800" />
                   </div>
+                  <span className="absolute bottom-4 text-white font-medium text-sm  group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-3 py-1 rounded-full">Edit Cover</span>
                 </div>
-              }
-            />
+              </div>
+            }
+          />
 
           {/* User Profile Image */}
           <div className="w-full flex justify-center sm:justify-start sm:pl-6 md:pl-8 lg:pl-12">
@@ -119,7 +119,7 @@ console.log(user?.logo , "user?.logo")
               />
             </div>
           </div>
-          
+
           <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 mx-auto flex flex-col gap-3 md:gap-4 mt-4 sm:mt-6">
             {/* Logout button on top right */}
             <div className="flex justify-end">
@@ -131,23 +131,23 @@ console.log(user?.logo , "user?.logo")
                 <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
-            
+
             {/* FullName */}
             <h1 className="text-center sm:text-left text-white font-bold text-2xl sm:text-3xl md:text-4xl">
               {user?.name || "No name provided"}
             </h1>
-            
+
             <div className="flex flex-col sm:flex-row items-center pt-2 gap-4 sm:gap-8">
               {/* Founder Name */}
               <div className="text-center sm:text-left">
                 <h2 className="text-white font-bold text-lg sm:text-xl">
                   {user?.founderName || "No founder name provided"}
                 </h2>
-                <p className="text-gray-400 text-sm sm:text-md">
+                {/* <p className="text-gray-400 text-sm sm:text-md">
                   Founder & CEO
-                </p>
+                </p> */}
               </div>
-              
+
               <div className="mt-2 sm:mt-0">
                 <SocialButtons
                   facebook={user?.socialMedia?.facebook}
@@ -173,7 +173,7 @@ console.log(user?.logo , "user?.logo")
                   <MessageCircle className="w-5 h-5" />
                   <span>Chat</span>
                 </button>
-                
+
                 <DialogSocial
                   button={
                     <button className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-colors">

@@ -189,7 +189,7 @@ const Footer: React.FC = () => {
         <div className="flex justify-end  md:ml-auto gap-y-3 lg:gap-y-0 lg:flex-row flex-col md:mr-0 mx-auto items-center flex-shrink-0 space-x-0 lg:space-x-4">
           <a
             className="bg-background_body inline-flex py-3 px-5 rounded-xl items-center  hover:border-blue-500 duration-300 border-gray-400 border  focus:outline-none"
-            href="https://play.google.com/store/apps/details?id=com.fueronetwork.zynoflix"
+            href="https://play.google.com/store/apps/details?id=com.zynoflixott.app"
             target="_black"
           >
             <svg

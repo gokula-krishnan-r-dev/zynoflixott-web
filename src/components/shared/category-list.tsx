@@ -19,7 +19,7 @@ const CategoryList = ({ title, desc, langage, sectionType }: any) => {
   const { data, isLoading, error } = useQuery(["video", langage], () => fetchCategories(langage));
   if (isLoading) return <p>Loading...</p>;
 
-  if (data.length === 0) return null;
+  if (data?.length === 0) return null;
 
   // Determine if this is a trending or featured section
   const isFeatured = sectionType === 'trending' || sectionType === 'featured';
@@ -32,7 +32,7 @@ const CategoryList = ({ title, desc, langage, sectionType }: any) => {
         <div className="lg:pb-6 pb-0">
           <div className="flex items-center">
             <div className="h-6 w-1 bg-gradient-to-b from-purple-500 to-indigo-500 rounded-full mr-3"></div>
-            <h2 className="text-xl md:text-2xl font-bold text-white">
+            <h2 className="text-xs md:text-2xl font-bold text-white">
               {title}
             </h2>
           </div>

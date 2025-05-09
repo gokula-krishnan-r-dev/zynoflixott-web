@@ -96,9 +96,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                 <h2 className="text-center text-white font-bold text-xl">
                   {user?.founderName || "Founder"}
                 </h2>
-                <p className="text-center text-gray-400 text-md">
-                  Founder & CEO
-                </p>
+
               </div>
               <div className="">
                 <SocialButtons
