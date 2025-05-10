@@ -268,7 +268,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
   return (
     <main className="lg:pt-1 pt-20 pb-10">
       {/* Mobile design - Movie Card UI */}
-      <div className="lg:hidden mx-auto px-0 max-w-md">
+      <div className="lg:hidden mx-auto px-0 max-w-2xl">
         <div className="">
           <VideoPlayer isMembership={isMembership} video={video} />
 
@@ -667,7 +667,7 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-5xl space-y-4 rounded-xl bg-gradient-to-br from-[rgba(25,28,51,0.7)] to-[rgba(41,44,71,0.5)] backdrop-blur-sm border border-[#292c41]/50 p-4 sm:p-6 shadow-lg overflow-hidden"
+      className="w-full max-w-5xl space-y-4 rounded-xl bg-gradient-to-br from-[rgba(25,28,51,0.7)] to-[rgba(41,44,71,0.5)] backdrop-blur-sm border border-[#292c41]/50 p-0 sm:p-6 shadow-lg overflow-hidden"
     >
       {/* Header with tabs */}
       <div className="flex items-center justify-between">
@@ -711,7 +711,7 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex flex-col items-center justify-center py-3"
+          className="flex flex-col items-center justify-center py-1"
         >
           <h3 className="text-white font-medium text-center mb-4">How would you rate this video?</h3>
 

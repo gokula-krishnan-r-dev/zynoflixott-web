@@ -11,7 +11,7 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 
 interface DirectorsCarouselProps {
     className?: string;
@@ -60,56 +60,37 @@ const DirectorsCarousel = ({
                             key={director.id}
                             className="pl-2 md:pl-4 basis-[80%] xs:basis-[48%] sm:basis-1/3 md:basis-1/3 lg:basis-1/3 xl:basis-1/5"
                         >
-                            <Link
-                                href={director.path}
-                                className="group block"
-                            >
-                                <div className="relative bg-[#302269] rounded-lg aspect-[3/4] overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-[1.02]">
-                                    {/* ZYNOFLIXOTT at top */}
-                                    <div className="absolute top-0 left-0 w-full text-center py-2 z-10">
-                                        <p className="text-white text-xs font-medium uppercase tracking-wide">ZYNOFLIXOTT</p>
-                                    </div>
+                            <div className="group relative">
+                                <Link
+                                    href={director.path}
+                                    className="block"
+                                >
+                                    <div className="relative  rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-[1.02]">
+                                        {/* Image with overlay gradient */}
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70 z-10"></div>
 
-                                    {/* Profile image with circular frame */}
-                                    <div className="absolute top-[22%] sm:top-[25%] left-1/2 transform -translate-x-1/2 z-10">
-                                        <div className="w-20 h-20 xs:w-24 xs:h-24 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-[3px] border-white flex items-center justify-center shadow-md">
-                                            <Image
-                                                src={director.image}
-                                                alt={director.name}
-                                                width={112}
-                                                height={112}
-                                                className="w-full h-full object-cover"
-                                                onError={(e) => {
-                                                    const target = e.target as HTMLImageElement;
-                                                    target.onerror = null;
-                                                    target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234b0082'/%3E%3C/svg%3E";
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
+                                        <img
+                                            src={director.image}
+                                            alt={director.name}
+                                            className="w-full object-cover"
+                                        />
 
-                                    {/* Director name */}
-                                    <div className="absolute top-[50%] xs:top-[52%] left-0 w-full text-center z-10">
-                                        <h3 className="text-white text-base xs:text-lg sm:text-lg md:text-xl font-bold px-1">{director.name}</h3>
                                     </div>
+                                </Link>
 
-                                    {/* NEW FILM info */}
-                                    <div className="absolute top-[60%] xs:top-[62%] left-0 w-full text-center px-2 xs:px-3 z-10">
-                                        <p className="text-white text-xs font-medium">
-                                            <span className="block">NEW FILM</span>
-                                            <span className="block mt-1 text-xs xs:text-sm">
-                                                {director.upcomingFilm.replace('NEW FILM ', '').replace(' COMING SOON', '')}
-                                            </span>
-                                            <span className="block mt-1">COMING SOON</span>
-                                        </p>
-                                    </div>
-
-                                    {/* ANIMAL PICTURES at bottom */}
-                                    <div className="absolute bottom-4 left-0 w-full text-center z-10">
-                                        <p className="text-white text-xs font-bold">{director.company}</p>
-                                    </div>
+                                {/* Read Article button */}
+                                <div className="absolute bottom-3 left-0 w-full text-center z-30">
+                                    <Link
+                                        href="https://zynoflixcineworld.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
+                                    >
+                                        Read Article
+                                        <ExternalLink className="h-3 w-3" />
+                                    </Link>
                                 </div>
-                            </Link>
+                            </div>
                         </CarouselItem>
                     ))}
                 </CarouselContent>
@@ -136,7 +117,7 @@ const directors = [
     {
         id: 1,
         name: "MR. RAM",
-        image: "https://m.media-amazon.com/images/M/MV5BZTcxZmM4NmYtZjZlYy00YTlhLWFiNTYtODUzMmRiNWU2NTUzXkEyXkFqcGdeQXVyNDI3NjU1NzQ@._V1_.jpg",
+        image: "/images/photo.jpeg",
         company: "ANIMAL PICTURES",
         upcomingFilm: "NEW FILM SUPERMINT COMING SOON",
         path: "/profile/rajamouli"
@@ -144,7 +125,7 @@ const directors = [
     {
         id: 2,
         name: "MR. KASHYAP",
-        image: "https://img.etimg.com/thumb/msid-98546103,width-650,height-488,imgsize-44978,,resizemode-75/anurag-kashyap.jpg",
+        image: "/images/photo5.jpeg",
         company: "ANIMAL PICTURES",
         upcomingFilm: "NEW FILM KENNEDY COMING SOON",
         path: "/profile/kashyap"
@@ -152,7 +133,7 @@ const directors = [
     {
         id: 3,
         name: "MR. NOLAN",
-        image: "https://variety.com/wp-content/uploads/2023/07/Christopher-Nolan.jpg",
+        image: "/images/photo2.jpeg",
         company: "ANIMAL PICTURES",
         upcomingFilm: "NEW FILM PROJECT COMING SOON",
         path: "/profile/nolan"
@@ -160,7 +141,7 @@ const directors = [
     {
         id: 4,
         name: "MR. CHAZELLE",
-        image: "https://variety.com/wp-content/uploads/2022/12/damien-chazelle.jpg",
+        image: "/images/photo3.jpeg",
         company: "ANIMAL PICTURES",
         upcomingFilm: "NEW FILM CONCEPT COMING SOON",
         path: "/profile/chazelle"
@@ -168,9 +149,17 @@ const directors = [
     {
         id: 5,
         name: "MR. RATNAM",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Mani_Ratnam_at_IONIC_Rare_Ragas_by_Amaan_Ali_Khan_%26_Ayaan_Ali_Khan.jpg",
+        image: "/images/photo4.jpeg",
         company: "ANIMAL PICTURES",
         upcomingFilm: "NEW FILM PONNIYIN SELVAN 3 COMING SOON",
         path: "/profile/ratnam"
     },
+    {
+        id: 6,
+        name: "MR. RATNAM",
+        image: "/images/photo6.jpeg",
+        company: "ANIMAL PICTURES",
+        upcomingFilm: "NEW FILM PONNIYIN SELVAN 3 COMING SOON",
+        path: "/profile/ratnam"
+    }
 ];

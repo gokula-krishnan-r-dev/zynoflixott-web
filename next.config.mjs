@@ -15,7 +15,8 @@ const nextConfig = {
       'upload.wikimedia.org',
       "www.koimoi.com",
       'pbs.twimg.com',
-      "static.toiimg.com"
+      "static.toiimg.com",
+      "placehold.co"
     ],
   },
   experimental: {

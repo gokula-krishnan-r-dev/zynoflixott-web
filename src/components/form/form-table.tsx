@@ -462,7 +462,9 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                                   or drag and drop
                                 </p>
                                 <p className="text-xs leading-5 text-gray-600">
-                                  PNG, JPG up to 10GB
+                                  {item.name === "thumbnail"
+                                    ? "PNG, JPG up to 10MB"
+                                    : "MP4, WebM video up to 10GB"}
                                 </p>
                                 {item.name === "thumbnail" && thumbnail && (
                                   <div className="">
