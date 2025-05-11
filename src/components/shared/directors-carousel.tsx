@@ -61,8 +61,7 @@ const DirectorsCarousel = ({
                             className="pl-2 md:pl-4 basis-[80%] xs:basis-[48%] sm:basis-1/3 md:basis-1/3 lg:basis-1/3 xl:basis-1/5"
                         >
                             <div className="group relative">
-                                <Link
-                                    href={director.path}
+                                <div
                                     className="block"
                                 >
                                     <div className="relative  rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-[1.02]">
@@ -76,7 +75,7 @@ const DirectorsCarousel = ({
                                         />
 
                                     </div>
-                                </Link>
+                                </div>
 
                                 {/* Read Article button */}
                                 <div className="absolute bottom-3 left-0 w-full text-center z-30">

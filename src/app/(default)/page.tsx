@@ -2,9 +2,15 @@
 
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import LanguageList from "@/components/shared/list-language";
-import BannerCarousel from "@/components/shared/banner-carousel";
-import DirectorsCarousel from "@/components/shared/directors-carousel";
+const LanguageList = dynamic(() => import("@/components/shared/list-language"), {
+  ssr: false,
+});
+const BannerCarousel = dynamic(() => import("@/components/shared/banner-carousel"), {
+  ssr: false,
+});
+const DirectorsCarousel = dynamic(() => import("@/components/shared/directors-carousel"), {
+  ssr: false,
+});
 
 const CategoryList = dynamic(
   () => import("@/components/shared/category-list"),
