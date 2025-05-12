@@ -148,7 +148,7 @@ const directors = [
     {
         id: 5,
         name: "MR. RATNAM",
-        image: "/images/photo4.jpeg",
+        image: "/images/photo5.jpeg",
         company: "ANIMAL PICTURES",
         upcomingFilm: "NEW FILM PONNIYIN SELVAN 3 COMING SOON",
         path: "/profile/ratnam"

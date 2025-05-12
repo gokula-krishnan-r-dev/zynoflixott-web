@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import OtpModal from "@/components/otp/OtpModal";
 
 interface ProductionCompanyFormData {
   name: string;
@@ -23,7 +24,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
     founderName: "",
     about: "",
     email: "",
-    contactNumber: "",
+    contactNumber: "8783478347",
     profile_type: type,
     password: "",
     logo: undefined,
@@ -32,6 +33,13 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // OTP verification states
+  const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
+  const [otpError, setOtpError] = useState<string>("");
+  const [sentOtp, setSentOtp] = useState<string>("");
+
   console.log(errors, "errors");
 
   const handleChange = (
@@ -59,8 +67,6 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.logo) newErrors.logo = "Logo is required";
     if (!formData.password) newErrors.password = "Password is required";
-    if (!formData.contactNumber)
-      newErrors.contactNumber = "Contact Number is required";
     if (!formData.about) newErrors.about = "About is required";
     if (!formData.founderName)
       newErrors.founderName = "Founder Name is required";
@@ -70,6 +76,88 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
     return newErrors;
   };
 
+  const sendOtpToEmail = async () => {
+    try {
+      setIsSubmitting(true);
+      const response = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          fullName: formData.founderName
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send verification code');
+      }
+
+      // Store the OTP for verification
+      setSentOtp(data.otp);
+      setShowOtpModal(true);
+      toast.success('Verification code sent to your email!');
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      toast.error('Failed to send verification code. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const verifyOtp = async (enteredOtp: string) => {
+    try {
+      setIsVerifyingOtp(true);
+      setOtpError("");
+
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: enteredOtp,
+          expectedOtp: sentOtp
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setOtpError(data.error || 'Invalid verification code');
+        return false;
+      }
+
+      toast.success('Email verified successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setOtpError('Failed to verify code. Please try again.');
+      return false;
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleOtpSubmit = async (enteredOtp: string) => {
+    const isVerified = await verifyOtp(enteredOtp);
+    if (isVerified) {
+      // Close the modal and proceed with form submission
+      setShowOtpModal(false);
+      await submitProductionForm();
+    }
+  };
+
+  const handleCloseOtpModal = () => {
+    if (!isVerifyingOtp) {
+      setShowOtpModal(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validateForm();
@@ -77,11 +165,15 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       setErrors(validationErrors);
       return;
     }
+
+    // Send OTP before proceeding with form submission
+    await sendOtpToEmail();
+  };
+
+  const submitProductionForm = async () => {
     setIsSubmitting(true);
 
     const submissionData = new FormData();
-
-
     submissionData.append("name", formData.founderName as any)
 
     Object.keys(formData).forEach((key) => {
@@ -109,10 +201,10 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       if (response.status === 201) {
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("userId", response.data.userId);
-        toast.success("Company created successfully");
+        toast.success("Director profile created successfully");
         router.push("/");
       } else {
-        toast.error("Error creating company");
+        toast.error("Error creating profile");
       }
 
       // Reset form data and errors
@@ -128,149 +220,164 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       });
       setErrors({});
     } catch (error) {
-      console.error("Error creating company:", error);
-      // toast.error("Error creating company");
+      console.error("Error creating profile:", error);
+      toast.error("Error creating profile. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+    <>
+      <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+        <div className="mb-4">
+          <label htmlFor="founderName" className="block mb-2 font-bold">
+            Director name:
+          </label>
+          <input
+            type="text"
+            id="founderName"
+            placeholder="Enter Founder Name"
+            name="founderName"
+            value={formData.founderName}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
+          />
+          {errors.founderName && <p className="text-red-500">{errors.founderName}</p>}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="about" className="block mb-2 font-bold">
+            Few Words About You:
+          </label>
+          <textarea
+            placeholder="Enter a few words About you"
+            rows={6}
+            id="about"
+            name="about"
+            value={formData.about}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
+          />
+          {errors.about && <p className="text-red-500">{errors.about}</p>}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="email" className="block mb-2 font-bold">
+            Email ID:
+          </label>
+          <input
+            type="email"
+            placeholder="Enter Email ID"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
+          />
+          {errors.email && <p className="text-red-500">{errors.email}</p>}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="password" className="block mb-2 font-bold">
+            Password:
+          </label>
+          <input
+            placeholder="Enter Password"
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
+          />
+          {errors.password && <p className="text-red-500">{errors.password}</p>}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="profile_type" className="block mb-2 font-bold">
+            Profile Type:
+          </label>
+          <select
+            id="profile_type"
+            name="profile_type"
+            defaultValue={formData.profile_type}
+            value={formData.profile_type}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
+          >
+            <option value="production">Production</option>
+            <option value="directors">Directors</option>
+          </select>
+          {errors.profile_type && <p className="text-red-500">{errors.profile_type}</p>}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="logo" className="block mb-2 font-bold">
+            Profile Pic:
+          </label>
+          <input
+            type="file"
+            placeholder="Upload Logo"
+            id="logo"
+            name="logo"
+            onChange={handleFileChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl   bg-transparent  focus:outline-none focus:border-blue-500"
+          />
+          {formData.logo && (
+            <div className="flex items-center justify-center">
+              <img
+                src={formData.logo ? URL.createObjectURL(formData.logo) : ""}
+                className="w-44 h-44 object-cover border rounded-2xl mt-2"
+                alt="Profile preview"
+              />
+            </div>
+          )}
 
-      {/* <div className="mb-4">
-        <label htmlFor="name" className="block mb-2 font-bold">
-          Name of Company:
-        </label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          placeholder="Enter Company Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300  bg-transparent rounded-xl focus:outline-none focus:border-blue-500"
-        />
-        {errors.name && <p className="text-red-500">{errors.name}</p>}
-      </div> */}
-      <div className="mb-4">
-        <label htmlFor="founderName" className="block mb-2 font-bold">
-          Director name:
-        </label>
-        <input
-          type="text"
-          id="founderName"
-          placeholder="Enter Founder Name"
-          name="founderName"
-          value={formData.founderName}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="about" className="block mb-2 font-bold">
-          Few Words About You:
-        </label>
-        <textarea
-          placeholder="Enter a few words About you"
-          rows={6}
-          id="about"
-          name="about"
-          value={formData.about}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="email" className="block mb-2 font-bold">
-          Email ID:
-        </label>
-        <input
-          type="email"
-          placeholder="Enter Email ID"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
-        />
-        {errors.email && <p className="text-red-500">{errors.email}</p>}
-      </div>
-      <div className="mb-4">
-        <label htmlFor="contactNumber" className="block mb-2 font-bold">
-          Contact Number:
-        </label>
-        <input
-          type="tel"
-          id="contactNumber"
-          name="contactNumber"
-          value={formData.contactNumber}
-          placeholder="Enter Contact Number"
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="password" className="block mb-2 font-bold">
-          Password:
-        </label>
-        <input
-          placeholder="Enter Password"
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
-        />
-      </div>
-      <div className="mb-4">
-        {/* //select optin for profile_type enum like production and directors  */}
-        <label htmlFor="profile_type" className="block mb-2 font-bold">
-          Profile Type:
-        </label>
-        <select
-          id="profile_type"
-          name="profile_type"
-          defaultValue={formData.profile_type}
-          value={formData.profile_type}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
+          {errors.logo && <p className="text-red-500">{errors.logo}</p>}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full py-2 px-4 bg-main text-black font-bold rounded-xl transition-all duration-300 ease-in-out"
         >
-          <option value="production">Production</option>
-          <option value="directors">Directors</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label htmlFor="logo" className="block mb-2 font-bold">
-          Profile Pic:
-        </label>
-        <input
-          type="file"
-          placeholder="Upload Logo"
-          id="logo"
-          name="logo"
-          onChange={handleFileChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-xl   bg-transparent  focus:outline-none focus:border-blue-500"
-        />
-        {formData.logo && (
-          <div className="flex items-center justify-center">
-            <img
-              src={formData.logo ? URL.createObjectURL(formData.logo) : ""}
-              className="w-44 h-44 object-cover border rounded-2xl mt-2"
-            />
-          </div>
-        )}
+          {isSubmitting ? (
+            <div className="flex items-center justify-center">
+              <svg
+                className="w-5 h-5 mr-3 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0l4 4-4 4V5a7 7 0 100 14v-3l4 4-4 4v-2a8 8 0 01-8-8z"
+                ></path>
+              </svg>
+              Processing...
+            </div>
+          ) : (
+            "Submit"
+          )}
+        </button>
+      </form>
 
-        {errors.logo && <p className="text-red-500">{errors.logo}</p>}
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full py-2 px-4 bg-main text-black font-bold rounded-xl transition-all duration-300 ease-in-out"
-      >
-        {isSubmitting ? "Submitting..." : "Submit"}
-      </button>
-    </form>
+      {/* OTP Modal */}
+      <OtpModal
+        isOpen={showOtpModal}
+        onClose={handleCloseOtpModal}
+        onOtpSubmit={handleOtpSubmit}
+        isVerifying={isVerifyingOtp}
+        error={otpError}
+        onResendOtp={sendOtpToEmail}
+        email={formData.email}
+      />
+    </>
   );
 };
 

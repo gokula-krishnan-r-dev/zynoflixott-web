@@ -3,6 +3,7 @@ import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
+import OtpModal from "@/components/otp/OtpModal";
 
 interface FormData {
   full_name?: string;
@@ -32,9 +33,15 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
     email: "",
     password: "",
     confirmPassword: "",
-    contact: "",
+    contact: "8783478347",
   });
   const [loading, setLoading] = useState<boolean>(false);
+
+  // OTP verification states
+  const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
+  const [otpError, setOtpError] = useState<string>("");
+  const [sentOtp, setSentOtp] = useState<string>("");
 
   useEffect(() => {
     setFormData(initialFormData);
@@ -59,11 +66,6 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
     return password === confirmPassword ? "" : "Passwords do not match";
   };
 
-  const validatePhone = (phone?: string): string => {
-    if (mode === "signup" && !phone?.trim()) return "Phone number is required";
-    const phoneRegex = /^\d{10}$/;
-    return phone && phoneRegex.test(phone) ? "" : "Invalid phone number";
-  };
 
   const validateFullName = (fullName?: string): string => {
     if (mode === "signup" && !fullName?.trim()) return "Full name is required";
@@ -90,48 +92,92 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
         ...prev,
         confirmPassword: validateConfirmPassword(formData.password, value)
       }));
-    } else if (name === "contact") {
-      setErrors(prev => ({ ...prev, contact: validatePhone(value) }));
+
     } else if (name === "full_name") {
       setErrors(prev => ({ ...prev, full_name: validateFullName(value) }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const fullNameError = validateFullName(formData.full_name);
-    const emailError = validateEmail(formData.email);
-    const passwordError = validatePassword(formData.password);
-    const confirmPasswordError =
-      mode === "signup"
-        ? validateConfirmPassword(formData.password, formData.confirmPassword)
-        : "";
-    const phoneError = mode === "signup" ? validatePhone(formData.contact) : "";
-
-    if (fullNameError || emailError || passwordError || confirmPasswordError || phoneError) {
-      setErrors({
-        full_name: fullNameError,
-        email: emailError,
-        password: passwordError,
-        confirmPassword: confirmPasswordError,
-        contact: phoneError,
-      });
-      return;
-    }
-
-    setErrors({
-      email: "",
-      password: "",
-      confirmPassword: "",
-      contact: "",
-      full_name: "",
-    });
-    setLoading(true);
-
+  const sendOtpToEmail = async () => {
     try {
+      setLoading(true);
+      const response = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          fullName: formData.full_name
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send verification code');
+      }
+
+      // Store the OTP for verification (in production you would not send back the OTP)
+      setSentOtp(data.otp);
+      setShowOtpModal(true);
+      toast.success('Verification code sent to your email!');
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      toast.error('Failed to send verification code. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyOtp = async (enteredOtp: string) => {
+    try {
+      setIsVerifyingOtp(true);
+      setOtpError("");
+
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: enteredOtp,
+          expectedOtp: sentOtp
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setOtpError(data.error || 'Invalid verification code');
+        return false;
+      }
+
+      toast.success('Email verified successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setOtpError('Failed to verify code. Please try again.');
+      return false;
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleOtpSubmit = async (enteredOtp: string) => {
+    const isVerified = await verifyOtp(enteredOtp);
+    if (isVerified) {
+      // Close the modal and proceed with form submission
+      setShowOtpModal(false);
+      await submitForm();
+    }
+  };
+
+  const submitForm = async () => {
+    try {
+      setLoading(true);
       const response = await axios.post(`/auth/${mode}`, formData);
-      console.log(response.data);
 
       if (response.data.code === 401) {
         toast.error("Invalid password provided for login");
@@ -140,13 +186,10 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
 
       if (response.data.error === "User already exists") {
         toast.error(
-          "User already exists with the provided email so please login instead"
+          "User already exists with the provided email. Please login instead."
         );
-
         return;
       }
-
-      console.log(response.data.errro);
 
       if (response.data.error === "User not found") {
         toast.error("User not found or invalid password provided for login");
@@ -165,13 +208,61 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
         toast.error("Failed to save access token to local storage");
       }
 
-      toast.success(`${mode === "login" ? "Login" : "Signup"} form submitted`);
+      toast.success(`${mode === "login" ? "Login" : "Signup"} successful!`);
       window.location.href = "/";
     } catch (error) {
       console.error("Submission error", error);
-      toast.error("Failed to submit form please try again");
+      toast.error("Failed to submit form, please try again");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const fullNameError = validateFullName(formData.full_name);
+    const emailError = validateEmail(formData.email);
+    const passwordError = validatePassword(formData.password);
+    const confirmPasswordError =
+      mode === "signup"
+        ? validateConfirmPassword(formData.password, formData.confirmPassword)
+        : "";
+
+    if (fullNameError || emailError || passwordError || confirmPasswordError) {
+      setErrors({
+        full_name: fullNameError,
+        email: emailError,
+        password: passwordError,
+        confirmPassword: confirmPasswordError,
+      });
+      return;
+    }
+
+    setErrors({
+      email: "",
+      password: "",
+      confirmPassword: "",
+      contact: "",
+      full_name: "",
+    });
+
+    if (mode === "signup") {
+      // For signup, send OTP first
+      await sendOtpToEmail();
+    } else {
+      // For login, directly submit the form
+      await submitForm();
+    }
+  };
+
+  const handleResendOtp = async () => {
+    await sendOtpToEmail();
+  };
+
+  const handleCloseOtpModal = () => {
+    if (!isVerifyingOtp) {
+      setShowOtpModal(false);
     }
   };
 
@@ -184,8 +275,8 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
               Full Name <span className="text-red-500">*</span>
             </label>
             <input
-              className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${errors.full_name ? "border-red-500" : "border-gray-200"
-                } placeholder-gray-500 text-sm focus:outline-none  `}
+              className={`w-full px-8 py-4 rounded-lg font-medium border-2 bg-transparent ${errors.full_name ? "border-red-500" : "border-gray-200"
+                } placeholder-gray-500 text-sm focus:outline-none`}
               type="text"
               name="full_name"
               value={formData.full_name}
@@ -203,8 +294,8 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
             Email <span className="text-red-500">*</span>
           </label>
           <input
-            className={`w-full px-8 py-4 rounded-lg font-medium  bg-transparent  border-2 ${errors.email ? "border-red-500" : "border-gray-200"
-              } text-sm focus:outline-none `}
+            className={`w-full px-8 py-4 rounded-lg font-medium bg-transparent border-2 ${errors.email ? "border-red-500" : "border-gray-200"
+              } text-sm focus:outline-none`}
             type="email"
             name="email"
             value={formData.email}
@@ -221,8 +312,8 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
             Password <span className="text-red-500">*</span>
           </label>
           <input
-            className={`w-full px-8 py-4 rounded-lg font-medium bg-transparent  border-2 ${errors.password ? "border-red-500" : "border-gray-200"
-              }  text-sm focus:outline-none  mt-1`}
+            className={`w-full px-8 py-4 rounded-lg font-medium bg-transparent border-2 ${errors.password ? "border-red-500" : "border-gray-200"
+              } text-sm focus:outline-none mt-1`}
             type="password"
             name="password"
             value={formData.password}
@@ -241,8 +332,8 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
                 Confirm Password <span className="text-red-500">*</span>
               </label>
               <input
-                className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${errors.confirmPassword ? "border-red-500" : "border-gray-200"
-                  }  text-sm focus:outline-none  mt-1`}
+                className={`w-full px-8 py-4 rounded-lg font-medium border-2 bg-transparent ${errors.confirmPassword ? "border-red-500" : "border-gray-200"
+                  } text-sm focus:outline-none mt-1`}
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
@@ -256,13 +347,13 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
                 </p>
               )}
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm mb-1">
                 Phone Number <span className="text-red-500">*</span>
               </label>
               <input
-                className={`w-full px-8 py-4 rounded-lg font-medium  border-2 bg-transparent ${errors.contact ? "border-red-500" : "border-gray-200"
-                  }  text-sm focus:outline-none  mt-1`}
+                className={`w-full px-8 py-4 rounded-lg font-medium border-2 bg-transparent ${errors.contact ? "border-red-500" : "border-gray-200"
+                  } text-sm focus:outline-none mt-1`}
                 type="tel"
                 name="contact"
                 value={formData.contact}
@@ -273,7 +364,7 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
               {errors.contact && (
                 <p className="text-red-500 text-xs mt-2">{errors.contact}</p>
               )}
-            </div>
+            </div> */}
           </>
         )}
         <button
@@ -323,6 +414,17 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
           )}
         </button>
       </form>
+
+      {/* OTP Modal */}
+      <OtpModal
+        isOpen={showOtpModal}
+        onClose={handleCloseOtpModal}
+        onOtpSubmit={handleOtpSubmit}
+        isVerifying={isVerifyingOtp}
+        error={otpError}
+        onResendOtp={handleResendOtp}
+        email={formData.email}
+      />
     </div>
   );
 };

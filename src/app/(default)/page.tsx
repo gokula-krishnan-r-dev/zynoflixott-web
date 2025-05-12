@@ -1,21 +1,38 @@
 "use client";
 
+import { Suspense, lazy } from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+
+// Skeleton loaders
+import BannerSkeleton from "@/components/skeletons/BannerSkeleton";
+import CategorySkeleton from "@/components/skeletons/CategorySkeleton";
+import LanguageSkeleton from "@/components/skeletons/LanguageSkeleton";
+import DirectorsSkeleton from "@/components/skeletons/DirectorsSkeleton";
+import ProductionSkeleton from "@/components/skeletons/ProductionSkeleton";
+
+
+// Dynamic imports with lazy loading
 const LanguageList = dynamic(() => import("@/components/shared/list-language"), {
   ssr: false,
+  loading: () => <LanguageSkeleton />
 });
+
 const BannerCarousel = dynamic(() => import("@/components/shared/banner-carousel"), {
   ssr: false,
+  loading: () => <BannerSkeleton />
 });
+
 const DirectorsCarousel = dynamic(() => import("@/components/shared/directors-carousel"), {
   ssr: false,
+  loading: () => <DirectorsSkeleton />
 });
 
 const CategoryList = dynamic(
   () => import("@/components/shared/category-list"),
   {
     ssr: false,
+    loading: () => <CategorySkeleton />
   }
 );
 
@@ -23,12 +40,11 @@ const ListProduction = dynamic(
   () => import("@/components/shared/list-production"),
   {
     ssr: false,
+    loading: () => <ProductionSkeleton />
   }
 );
 
-const AdsCard = dynamic(() => import("@/components/ads/ads-card"), {
-  ssr: false,
-});
+
 
 export default function Home() {
   return (
@@ -63,183 +79,248 @@ export default function Home() {
       </Head>
 
       <div className="w-full">
-        <BannerCarousel />
+        <Suspense fallback={<BannerSkeleton />}>
+          <BannerCarousel />
+        </Suspense>
 
         {/* Main categories for mobile view */}
         <div className="sm:hidden mt-3 mb-3">
-          <CategoryList
-            title={"TRENDING"}
-            desc={"Popular movies right now"}
-            langage={"All"}
-            sectionType="trending"
-          />
+          <Suspense fallback={<CategorySkeleton />}>
+            <CategoryList
+              title={"TRENDING"}
+              desc={"Popular movies right now"}
+              langage={"All"}
+              sectionType="trending"
+            />
+          </Suspense>
 
-          <CategoryList
-            title={"COMING SOON"}
-            desc={"New releases"}
-            langage={"All"}
-            sectionType="coming-soon"
-          />
+          <Suspense fallback={<CategorySkeleton />}>
+            <CategoryList
+              title={"COMING SOON"}
+              desc={"New releases"}
+              langage={"All"}
+              sectionType="coming-soon"
+            />
+          </Suspense>
 
-          <CategoryList
-            title={"MY LIST"}
-            desc={"Your saved films"}
-            langage={"All"}
-            sectionType="my-list"
-          />
+          <Suspense fallback={<CategorySkeleton />}>
+            <CategoryList
+              title={"MY LIST"}
+              desc={"Your saved films"}
+              langage={"All"}
+              sectionType="my-list"
+            />
+          </Suspense>
 
-          <CategoryList
-            title={"TV SHOWS"}
-            desc={"Series & Shows"}
-            langage={"All"}
-            sectionType="tv-shows"
-          />
+          <Suspense fallback={<CategorySkeleton />}>
+            <CategoryList
+              title={"TV SHOWS"}
+              desc={"Series & Shows"}
+              langage={"All"}
+              sectionType="tv-shows"
+            />
+          </Suspense>
         </div>
 
         <section className="lg:px-8 px-0 space-y-6 pt-0 lg:pt-12 py-2">
           {/* Desktop view sections */}
           <div className="px-4 space-y-4">
-            <ListProduction url={"director"} title={"DIRECTORS LIVE"} />
-            <ListProduction
-              url={"production"}
-              title={"PRODUCTION COMPANIES LIVE"}
-            />
+            <Suspense fallback={<ProductionSkeleton />}>
+              <ListProduction url={"director"} title={"DIRECTORS LIVE"} />
+            </Suspense>
+            <Suspense fallback={<ProductionSkeleton />}>
+              <ListProduction
+                url={"production"}
+                title={"PRODUCTION COMPANIES LIVE"}
+              />
+            </Suspense>
           </div>
 
-          <CategoryList title={"SHORT FILMS"} desc={"TOP-RATED SHORT FILMS"} langage={"Tamil"} />
-          <LanguageList />
+          <Suspense fallback={<CategorySkeleton />}>
+            <CategoryList title={"SHORT FILMS"} desc={"TOP-RATED SHORT FILMS"} langage={"Tamil"} />
+          </Suspense>
+
+          <Suspense fallback={<LanguageSkeleton />}>
+            <LanguageList />
+          </Suspense>
 
           {/* Indian Languages */}
           <div className="">
             {/* <h2 className="text-2xl font-bold mb-8">INDIAN LANGUAGE SHORT FILMS</h2> */}
 
-            <CategoryList langage={"Hindi"}
-              title={"HINDI SHORT FILMS"}
-              desc={"BEST HINDI FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Hindi"}
+                title={"HINDI SHORT FILMS"}
+                desc={"BEST HINDI FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Tamil"}
-              title={"TAMIL SHORT FILMS"}
-              desc={"POPULAR TAMIL FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Tamil"}
+                title={"TAMIL SHORT FILMS"}
+                desc={"POPULAR TAMIL FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Telugu"}
-              title={"TELUGU SHORT FILMS"}
-              desc={"BEST TELUGU FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Telugu"}
+                title={"TELUGU SHORT FILMS"}
+                desc={"BEST TELUGU FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Malayalam"}
-              title={"MALAYALAM SHORT FILMS"}
-              desc={"BEST MALAYALAM FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Malayalam"}
+                title={"MALAYALAM SHORT FILMS"}
+                desc={"BEST MALAYALAM FILMS"}
+              />
+            </Suspense>
 
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Kannada"}
+                title={"KANNADA SHORT FILMS"}
+                desc={"FAMOUS KANNADA FILMS"}
+              />
+            </Suspense>
 
-            {/* here */}
-            <CategoryList langage={"Kannada"}
-              title={"KANNADA SHORT FILMS"}
-              desc={"FAMOUS KANNADA FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Bengali"}
+                title={"BENGALI SHORT FILMS"}
+                desc={"BEST BENGALI FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Bengali"}
-              title={"BENGALI SHORT FILMS"}
-              desc={"BEST BENGALI FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Marathi"}
+                title={"MARATHI SHORT FILMS"}
+                desc={"BEST MARATHI FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Marathi"}
-              title={"MARATHI SHORT FILMS"}
-              desc={"BEST MARATHI FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Punjabi"}
+                title={"PUNJABI SHORT FILMS"}
+                desc={"TRENDING PUNJABI FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Punjabi"}
-              title={"PUNJABI SHORT FILMS"}
-              desc={"TRENDING PUNJABI FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Gujarati"}
+                title={"GUJARATI SHORT FILMS"}
+                desc={"POPULAR GUJARATI FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Gujarati"}
-              title={"GUJARATI SHORT FILMS"}
-              desc={"POPULAR GUJARATI FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Odia"}
+                title={"ODIA SHORT FILMS"}
+                desc={"FEATURED ODIA FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Odia"}
-              title={"ODIA SHORT FILMS"}
-              desc={"FEATURED ODIA FILMS"}
-            />
-
-            <CategoryList langage={"Urdu"}
-              title={"URDU SHORT FILMS"}
-              desc={"ACCLAIMED URDU FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Urdu"}
+                title={"URDU SHORT FILMS"}
+                desc={"ACCLAIMED URDU FILMS"}
+              />
+            </Suspense>
           </div>
 
           {/* Global Languages */}
           <div className="">
             {/* <h2 className="text-2xl font-bold mb-8">GLOBAL LANGUAGE SHORT FILMS</h2> */}
 
-            <CategoryList langage={"English"}
-              title={"ENGLISH SHORT FILMS"}
-              desc={"BEST ENGLISH FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"English"}
+                title={"ENGLISH SHORT FILMS"}
+                desc={"BEST ENGLISH FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Spanish"}
-              title={"SPANISH SHORT FILMS"}
-              desc={"TRENDING SPANISH FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Spanish"}
+                title={"SPANISH SHORT FILMS"}
+                desc={"TRENDING SPANISH FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"French"}
-              title={"FRENCH SHORT FILMS"}
-              desc={"ARTISTIC FRENCH FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"French"}
+                title={"FRENCH SHORT FILMS"}
+                desc={"ARTISTIC FRENCH FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"German"}
-              title={"GERMAN SHORT FILMS"}
-              desc={"ACCLAIMED GERMAN FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"German"}
+                title={"GERMAN SHORT FILMS"}
+                desc={"ACCLAIMED GERMAN FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Italian"}
-              title={"ITALIAN SHORT FILMS"}
-              desc={"FEATURED ITALIAN FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Italian"}
+                title={"ITALIAN SHORT FILMS"}
+                desc={"FEATURED ITALIAN FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Portuguese"}
-              title={"PORTUGUESE SHORT FILMS"}
-              desc={"POPULAR PORTUGUESE FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Portuguese"}
+                title={"PORTUGUESE SHORT FILMS"}
+                desc={"POPULAR PORTUGUESE FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Russian"}
-              title={"RUSSIAN SHORT FILMS"}
-              desc={"OUTSTANDING RUSSIAN FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Russian"}
+                title={"RUSSIAN SHORT FILMS"}
+                desc={"OUTSTANDING RUSSIAN FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Japanese"}
-              title={"JAPANESE SHORT FILMS"}
-              desc={"EXCEPTIONAL JAPANESE FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Japanese"}
+                title={"JAPANESE SHORT FILMS"}
+                desc={"EXCEPTIONAL JAPANESE FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Chinese"}
-              title={"CHINESE SHORT FILMS"}
-              desc={"CAPTIVATING CHINESE FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Chinese"}
+                title={"CHINESE SHORT FILMS"}
+                desc={"CAPTIVATING CHINESE FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Arabic"}
-              title={"ARABIC SHORT FILMS"}
-              desc={"REMARKABLE ARABIC FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Arabic"}
+                title={"ARABIC SHORT FILMS"}
+                desc={"REMARKABLE ARABIC FILMS"}
+              />
+            </Suspense>
 
-            <CategoryList langage={"Korean"}
-              title={"KOREAN SHORT FILMS"}
-              desc={"TRENDING KOREAN FILMS"}
-            />
+            <Suspense fallback={<CategorySkeleton />}>
+              <CategoryList langage={"Korean"}
+                title={"KOREAN SHORT FILMS"}
+                desc={"TRENDING KOREAN FILMS"}
+              />
+            </Suspense>
           </div>
 
           {/* All languages */}
-          <CategoryList langage={"All"}
-            title={"ALL SHORT FILMS"}
-            desc={"EXPLORE ALL SHORT FILMS"}
-          />
+          <Suspense fallback={<CategorySkeleton />}>
+            <CategoryList langage={"All"}
+              title={"ALL SHORT FILMS"}
+              desc={"EXPLORE ALL SHORT FILMS"}
+            />
+          </Suspense>
 
           {/* Directors section */}
           <div className="lg:px-4 px-2">
-            <DirectorsCarousel displayCount={3} showViewAll={true} />
+            <Suspense fallback={<DirectorsSkeleton />}>
+              <DirectorsCarousel displayCount={3} showViewAll={true} />
+            </Suspense>
           </div>
 
         </section>
@@ -247,45 +328,4 @@ export default function Home() {
     </main>
   );
 }
-const directors = [
-  {
-    id: 1,
-    name: "MR. RAM",
-    image: "https://m.media-amazon.com/images/M/MV5BZTcxZmM4NmYtZjZlYy00YTlhLWFiNTYtODUzMmRiNWU2NTUzXkEyXkFqcGdeQXVyNDI3NjU1NzQ@._V1_.jpg",
-    company: "ANIMAL PICTURES",
-    upcomingFilm: "NEW FILM SUPERMINT COMING SOON",
-    path: "/profile/rajamouli"
-  },
-  {
-    id: 2,
-    name: "MR. KASHYAP",
-    image: "https://img.etimg.com/thumb/msid-98546103,width-650,height-488,imgsize-44978,,resizemode-75/anurag-kashyap.jpg",
-    company: "ANIMAL PICTURES",
-    upcomingFilm: "NEW FILM KENNEDY COMING SOON",
-    path: "/profile/kashyap"
-  },
-  {
-    id: 3,
-    name: "MR. NOLAN",
-    image: "https://variety.com/wp-content/uploads/2023/07/Christopher-Nolan.jpg",
-    company: "ANIMAL PICTURES",
-    upcomingFilm: "NEW FILM PROJECT COMING SOON",
-    path: "/profile/nolan"
-  },
-  {
-    id: 4,
-    name: "MR. CHAZELLE",
-    image: "https://variety.com/wp-content/uploads/2022/12/damien-chazelle.jpg",
-    company: "ANIMAL PICTURES",
-    upcomingFilm: "NEW FILM CONCEPT COMING SOON",
-    path: "/profile/chazelle"
-  },
-  {
-    id: 5,
-    name: "MR. RATNAM",
-    image: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Mani_Ratnam_at_IONIC_Rare_Ragas_by_Amaan_Ali_Khan_%26_Ayaan_Ali_Khan.jpg",
-    company: "ANIMAL PICTURES",
-    upcomingFilm: "NEW FILM PONNIYIN SELVAN 3 COMING SOON",
-    path: "/profile/ratnam"
-  },
-];
+

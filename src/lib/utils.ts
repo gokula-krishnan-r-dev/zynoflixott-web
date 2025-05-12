@@ -19,19 +19,19 @@ export const fetchUser = async () => {
  */
 export const cleanImageUrl = (url?: string): string => {
   if (!url) return '';
-  
+
   try {
     // Handle Azure Blob Storage URLs (remove SAS tokens and query params)
     if (url.includes('blob.core.windows.net')) {
       // Extract just the base URL without query parameters
       return url.split('?')[0];
     }
-    
+
     // Handle general URLs with query parameters
     if (url.includes('?')) {
       return url.split('?')[0];
     }
-    
+
     return url;
   } catch (error) {
     console.error('Error cleaning image URL:', error);
@@ -49,7 +49,7 @@ export const getProfileImage = (imageUrl?: string, name?: string): string => {
   if (imageUrl) {
     return cleanImageUrl(imageUrl);
   }
-  
+
   // Create a placeholder with the name
   const displayName = name || 'Profile';
   return `https://placehold.co/400x400/1f2937/f59e0b?text=${encodeURIComponent(displayName)}&font=montserrat`;
@@ -65,8 +65,8 @@ export const getBackgroundImage = (imageUrl?: string, name?: string): string => 
   if (imageUrl) {
     return cleanImageUrl(imageUrl);
   }
-  
+
   // Create a placeholder with the name
-  const displayName = name ? `${name} PRODUCTION` : 'PRODUCTION COMPANY';
+  const displayName = name ? `${name}` : 'PRODUCTION COMPANY';
   return `https://placehold.co/1200x400/0f172a/f59e0b?text=${encodeURIComponent(displayName)}&font=montserrat`;
 };

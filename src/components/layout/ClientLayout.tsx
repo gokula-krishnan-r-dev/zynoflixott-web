@@ -14,13 +14,13 @@ const MobileNavBar = () => {
         <Home size={20} />
         <span>Home</span>
       </Link>
-      <Link href="/chat" className={`mobile-nav-item ${pathname === '/explore' ? 'active' : ''}`}>
+      <Link href="/film-call" className={`mobile-nav-item ${pathname === '/film-call' ? 'active' : ''}`}>
         <Search size={20} />
-        <span>Chat</span>
+        <span>Film Call</span>
       </Link>
-      <Link href="/explore" className={`mobile-nav-item ${pathname.includes('/video') ? 'active' : ''}`}>
+      <Link href="/monetization" className={`mobile-nav-item ${pathname.includes('/monetization') ? 'active' : ''}`}>
         <Play size={20} />
-        <span>Videos</span>
+        <span>Monetization</span>
       </Link>
       <Link href="/profile" className={`mobile-nav-item ${pathname === '/profile' ? 'active' : ''}`}>
         <User size={20} />
