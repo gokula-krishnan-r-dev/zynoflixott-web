@@ -25,13 +25,13 @@ export const formdata: any = [
     required: true,
     name: "thumbnail",
   },
-  {
-    title: "Preview Video",
-    description: "Upload your preview video",
-    tag: "file",
-    required: true,
-    name: "preview_video",
-  },
+  // {
+  //   title: "Preview Video",
+  //   description: "Upload your preview video",
+  //   tag: "file",
+  //   required: true,
+  //   name: "preview_video",
+  // },
   {
     title: "Original Video",
     description: "Upload your original video",

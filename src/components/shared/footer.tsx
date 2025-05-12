@@ -126,14 +126,7 @@ const Footer: React.FC = () => {
                     Copy Rights
                   </a>
                 </li>
-                <li>
-                  <a
-                    className="hover:underline"
-                    href="https://zynoflix.com/founder"
-                  >
-                    Team
-                  </a>
-                </li>
+
 
                 <li>
                   <a

@@ -137,8 +137,8 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
 
       if (thumbnail && checkFileSize(thumbnail))
         formData.append("thumbnail", thumbnail as File);
-      if (previewVideo && checkFileSize(previewVideo))
-        formData.append("preview_video", previewVideo as File);
+      if (originalVideo && checkFileSize(originalVideo))
+        formData.append("preview_video", originalVideo as File);
       if (originalVideo && checkFileSize(originalVideo))
         formData.append("orginal_video", originalVideo as File);
 
