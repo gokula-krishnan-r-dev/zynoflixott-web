@@ -12,26 +12,54 @@ export default function Layout({
 
   // Prevent zoom with keyboard shortcuts and mouse wheel
   useEffect(() => {
+    // Add or update viewport meta tag
+    const updateViewportMeta = () => {
+      let viewportMeta = document.querySelector('meta[name="viewport"]') as HTMLMetaElement | null;
+      if (!viewportMeta) {
+        viewportMeta = document.createElement('meta') as HTMLMetaElement;
+        viewportMeta.name = 'viewport';
+        document.head.appendChild(viewportMeta);
+      }
+      viewportMeta.setAttribute(
+        'content',
+        'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+      );
+    };
+
+    // Handle key zoom
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent Ctrl/Cmd + '+'/'-' shortcuts
       if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=')) {
         e.preventDefault();
       }
     };
 
+    // Handle wheel zoom
     const handleWheel = (e: WheelEvent) => {
-      // Prevent zooming with Ctrl/Cmd + mouse wheel
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
       }
     };
 
+    // Handle pinch zoom
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    };
+
+    // Run once after mount
+    updateViewportMeta();
+
+    // Add listeners
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('wheel', handleWheel, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
 
+    // Clean up
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('wheel', handleWheel);
+      document.removeEventListener('touchmove', handleTouchMove);
     };
   }, []);
 
