@@ -7,7 +7,7 @@
 .bg-body {
   --tw-bg-opacity: 1;
   /* background-color: rgb(4 1 28 / var(--tw-bg-opacity)); */
-  background: linear-gradient(135deg, #291155 30%, #472a8a 60%, #6526ab 100%);
+  background: #0e0d2d;
 }
 
 :root {
