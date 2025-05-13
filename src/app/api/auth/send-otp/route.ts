@@ -32,10 +32,7 @@ export async function POST(request: NextRequest) {
         // In production, use a proper database or Redis to store OTPs
         const message: MailDataRequired = {
             to: email,
-            from: {
-                email: process.env.SENDGRID_FROM_EMAIL as string,
-                name: 'ZynoflixOTT Support'
-            },
+            from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: '[ZynoflixOTT] Your Verification Code',
             text: `Your ZynoflixOTT verification code is: ${otp}. This code will expire in 10 minutes.`,
             html: `
