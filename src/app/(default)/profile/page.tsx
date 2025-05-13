@@ -100,39 +100,28 @@ const Page = () => {
       <section className="w-full overflow-hidden dark:bg-gray-900">
         <div className="w-full mx-auto">
 
-          {!isIOS ? (
 
-            <UpdateImg
-              refetch={refetch}
-              id="backgroundPic"
-              name="backgroundPic"
-              button={
-                <div className="relative w-full group">
-                  <img
-                    src={user?.backgroundPic || "https://placehold.co/1200x400/1f2937/374151?text=Add+Background+Image"}
-                    alt="User Cover hhjhj"
-                    className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
-                  />
-                  <div className=" inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                    <div className="bg-main p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                      <Edit2 className="w-5 h-5 text-gray-800" />
-                    </div>
-                    {/* <span className="absolute bottom-4 text-white font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-3 py-1 rounded-full">Edit Cover</span> */}
-                  </div>
-                </div>
-              }
-            />
-          ) : (
-            <div className="w-full flex justify-center sm:justify-start sm:pl-6 md:pl-8 lg:pl-12">
-              <div className="relative">
+          <UpdateImg
+            refetch={refetch}
+            id="backgroundPic"
+            name="backgroundPic"
+            button={
+              <div className="relative w-full group">
                 <img
                   src={user?.backgroundPic || "https://placehold.co/1200x400/1f2937/374151?text=Add+Background+Image"}
-                  alt="User Cover"
+                  alt="User Cover hhjhj"
                   className="w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] xl:h-[350px] object-cover rounded-lg"
                 />
+                <div className=" inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                  <div className="bg-main p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                    <Edit2 className="w-5 h-5 text-gray-800" />
+                  </div>
+                  {/* <span className="absolute bottom-4 text-white font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-3 py-1 rounded-full">Edit Cover</span> */}
+                </div>
               </div>
-            </div>
-          )}
+            }
+          />
+
 
 
           {/* User Profile Image */}
@@ -151,18 +140,17 @@ const Page = () => {
                     relative -mt-12 sm:-mt-14 md:-mt-16 lg:-mt-20 xl:-mt-24"
               />
 
-              {isIOS() && (
-                <UpdateImg
-                  refetch={refetch}
-                  id="profilePic"
-                  name="profilePic"
-                  button={
-                    <button className="absolute bottom-0 right-0 bg-gray-800 rounded-full p-1 cursor-pointer">
-                      <Edit className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
-                    </button>
-                  }
-                />
-              )}
+
+              <UpdateImg
+                refetch={refetch}
+                id="profilePic"
+                name="profilePic"
+                button={
+                  <button className="absolute bottom-0 right-0 bg-gray-800 rounded-full p-1 cursor-pointer">
+                    <Edit className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
+                  </button>
+                }
+              />
             </div>
           </div>
 
