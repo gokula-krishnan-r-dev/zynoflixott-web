@@ -64,7 +64,7 @@ const page = () => {
                 </div>
                 <div className="my-12 text-gray-100 text-center">
                   <div className="leading-none px-2 inline-block text-sm text-gray-100 tracking-wide font-medium  transform translate-y-1/2">
-                    Or User sign up
+                    Or
                   </div>
                 </div>
 
