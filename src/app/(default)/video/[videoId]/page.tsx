@@ -333,8 +333,26 @@ export default function Page({ params }: { params: { videoId: string } }) {
     <main className="lg:pt-1 pt-20 pb-10">
       {/* Mobile design - Movie Card UI */}
       <div className="lg:hidden mx-auto px-0 max-w-2xl">
-        <div className="">
+        <div className="relative">
           <VideoPlayer isMembership={isMembership} video={video} />
+
+          {/* Fullscreen rotate button */}
+          <Button
+            onClick={() => {
+              if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+              }
+            }}
+            size="icon"
+            variant="outline"
+            className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm z-10 rounded-full p-2 h-auto w-auto"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 3 6 6m0-6h-6m6 0v6"></path>
+              <path d="M9 21 3 15m0 6h6m-6 0v-6"></path>
+              <rect width="12" height="7" x="6" y="8.5" rx="1"></rect>
+            </svg>
+          </Button>
 
           {/* Title and heart icon */}
           <div className="p-5 space-y-4">

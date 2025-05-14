@@ -2,18 +2,19 @@
 import { isLogin } from "@/lib/user";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, Home, Compass, Upload, MessageSquare, User, LogIn, Film } from "lucide-react";
+import { Menu, X, Home, Compass, Upload, MessageSquare, User, LogIn, Film, DollarSign } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 const menuItems = [
   { label: "Home", href: "/", icon: <Home className="w-5 h-5" /> },
+  { label: "Profile", href: "/profile", icon: <User className="w-5 h-5" /> },
   { label: "Explore", href: "/explore", icon: <Compass className="w-5 h-5" /> },
   { label: "Upload a Video", href: "/video-upload", icon: <Upload className="w-5 h-5" /> },
-  { label: "Chat", href: "/chat", icon: <MessageSquare className="w-5 h-5" /> },
-  { label: "Profile", href: "/profile", icon: <User className="w-5 h-5" /> },
-  { label: "Login", href: "/login", icon: <LogIn className="w-5 h-5" /> },
+  // { label: "Chat", href: "/chat", icon: <MessageSquare className="w-5 h-5" /> },
   { label: "Film Call", href: "/film-call", icon: <Film className="w-5 h-5" /> },
+  //Monetization
+  { label: "Monetization", href: "/monetization", icon: <DollarSign className="w-5 h-5" /> },
 ];
 
 export function SheetMobile() {

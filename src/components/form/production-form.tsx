@@ -232,12 +232,12 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
         <div className="mb-4">
           <label htmlFor="founderName" className="block mb-2 font-bold">
-            Director name:
+            {type === "production" ? "Director Name" : "Producer Name"}
           </label>
           <input
             type="text"
             id="founderName"
-            placeholder="Enter Founder Name"
+            placeholder={type === "production" ? "Enter Director Name" : "Enter Producer Name"}
             name="founderName"
             value={formData.founderName}
             onChange={handleChange}

@@ -8,11 +8,14 @@ import SearchComponnets from "../shared/search-components";
 import { SheetMobile } from "./mobile-drawer";
 import { Bell, Menu, Search, Upload, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     setLoggedIn(isLogin);
@@ -24,6 +27,15 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Handle search submission
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileSearchOpen(false);
+    }
+  };
 
   if (loggedIn === null) {
     return (
@@ -60,14 +72,22 @@ const Header = () => {
 
           {/* Search - Desktop */}
           <div className="hidden md:block flex-1 max-w-xl mx-8">
-            <div className="relative">
+            <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
-                placeholder="Search a video"
+                placeholder="Search for videos, titles, directors..."
                 className="w-full bg-[rgba(25,28,51,0.5)] backdrop-blur-sm text-white rounded-full px-4 py-2 pl-10 text-sm border border-[#292c41]/50 focus:border-[#7b61ff] outline-none transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            </div>
+              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                <span className="sr-only">Search</span>
+                <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
+                  <path d="M15 15l-5-5m0 0a6 6 0 10-8.5-8.5 6 6 0 008.5 8.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </form>
           </div>
 
           {/* Mobile: Search Toggle and Menu */}
@@ -88,46 +108,60 @@ const Header = () => {
               animate={{ opacity: 1, y: 0 }}
               className="absolute top-16 left-3 right-3 bg-[#1a0733] border border-[#292c41]/50 rounded-lg p-3 shadow-xl z-50"
             >
-              <div className="relative">
+              <form onSubmit={handleSearchSubmit} className="relative">
                 <input
                   type="text"
-                  placeholder="Search a video"
+                  placeholder="Search videos, titles, directors..."
                   className="w-full bg-[rgba(25,28,51,0.5)] backdrop-blur-sm text-white rounded-full px-4 py-2 pl-10 text-sm"
                   autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              </div>
+                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                  <span className="sr-only">Search</span>
+                  <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
+                    <path d="M15 15l-5-5m0 0a6 6 0 10-8.5-8.5 6 6 0 008.5 8.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </form>
             </motion.div>
           )}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-2">
-            <Link href="/profile" className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${loggedIn ? 'bg-[#7b61ff] hover:bg-[#6c52ee] text-white' : 'text-gray-200 hover:text-white'}`}>
-              Profile
-            </Link>
+            {!loggedIn && (
+              <Link href="/login" className="px-4 py-2 text-sm font-medium text-white bg-[#ff4d6d] hover:bg-[#ff3a5f] rounded-full transition-all duration-300">
+                Log in
+              </Link>
+            )}
+
+            {loggedIn && (
+              <Link href="/profile" className="px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 bg-[#7b61ff] hover:bg-[#6c52ee] text-white">
+                Profile
+              </Link>
+            )}
 
             <Link href="/explore" className="px-4 py-2 text-sm font-medium text-white bg-[#7b61ff] hover:bg-[#6c52ee] rounded-full transition-all duration-300">
               Explore
             </Link>
 
-            <Link href="/video-upload" className="px-4 py-2 text-sm font-medium text-white bg-[#292c41]/70 hover:bg-[#292c41] rounded-full transition-all duration-300 flex items-center">
-              <Upload className="w-4 h-4 mr-1" /> Upload a Video
-            </Link>
+            {loggedIn && (
+              <Link href="/video-upload" className="px-4 py-2 text-sm font-medium text-white bg-[#292c41]/70 hover:bg-[#292c41] rounded-full transition-all duration-300 flex items-center">
+                <Upload className="w-4 h-4 mr-1" /> Upload a Video
+              </Link>
+            )}
 
-            <Link href="/chat" className="p-2 text-white bg-[#292c41]/70 hover:bg-[#292c41] rounded-full transition-all duration-300">
-              <MessageSquare className="w-5 h-5" />
-            </Link>
+            {loggedIn && (
+              <Link href="/chat" className="p-2 text-white bg-[#292c41]/70 hover:bg-[#292c41] rounded-full transition-all duration-300">
+                <MessageSquare className="w-5 h-5" />
+              </Link>
+            )}
 
             {loggedIn && (
               <div className="p-2 text-white bg-[#292c41]/70 hover:bg-[#292c41] rounded-full transition-all duration-300">
                 <Bell className="w-5 h-5" />
               </div>
-            )}
-
-            {!loggedIn && (
-              <Link href="/login" className="px-4 py-2 text-sm font-medium text-white bg-[#ff4d6d] hover:bg-[#ff3a5f] rounded-full transition-all duration-300">
-                Log in
-              </Link>
             )}
           </div>
         </div>
