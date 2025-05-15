@@ -9,6 +9,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { languageD } from "@/constants/language";
+import Link from "next/link";
 
 const LanguageList = () => {
   return (
@@ -24,7 +25,7 @@ const LanguageList = () => {
                 className="z-10 basis-auto transition-transform relative transform"
                 key={lang.code}
               >
-                <div
+                <Link href="/explore"
                   className="p-3 cursor-pointer min-w-0 shrink-0 grow-0 px-4 flex items-center justify-center lg:px-4 py-4 lg:py-2 rounded-xl basis-auto hover:border-gray-400"
                   style={{
                     backgroundColor: lang.bgColor, // Dynamic background color
@@ -32,7 +33,7 @@ const LanguageList = () => {
                   }}
                 >
                   <h3 className="uppercase text-xs lg:text-sm font-bold">{lang.name}</h3>
-                </div>
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

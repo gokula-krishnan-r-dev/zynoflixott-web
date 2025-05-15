@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import OtpModal from "@/components/otp/OtpModal";
+import ProfileImageUpload from "@/components/ui/profile-image-upload";
 
 interface ProductionCompanyFormData {
   name: string;
@@ -311,26 +312,16 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
         </div>
         <div className="mb-4">
           <label htmlFor="logo" className="block mb-2 font-bold">
-            Profile Pic:
+            Profile Picture:
           </label>
-          <input
-            type="file"
-            placeholder="Upload Logo"
+          <ProfileImageUpload
             id="logo"
             name="logo"
-            onChange={handleFileChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-xl   bg-transparent  focus:outline-none focus:border-blue-500"
+            value={formData.logo}
+            onChange={(file) => setFormData({ ...formData, logo: file })}
+            maxSizeInMB={2}
+            className="mt-2"
           />
-          {formData.logo && (
-            <div className="flex items-center justify-center">
-              <img
-                src={formData.logo ? URL.createObjectURL(formData.logo) : ""}
-                className="w-44 h-44 object-cover border rounded-2xl mt-2"
-                alt="Profile preview"
-              />
-            </div>
-          )}
-
           {errors.logo && <p className="text-red-500">{errors.logo}</p>}
         </div>
 

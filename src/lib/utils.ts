@@ -70,3 +70,51 @@ export const getBackgroundImage = (imageUrl?: string, name?: string): string => 
   const displayName = name ? `${name}` : 'PRODUCTION COMPANY';
   return `https://placehold.co/1200x400/0f172a/f59e0b?text=${encodeURIComponent(displayName)}&font=montserrat`;
 };
+
+/**
+ * Format a number to a compact representation (e.g., 5K, 5L, 1M)
+ * Supports both Western (K, M, B) and Indian (L, Cr) number systems
+ * 
+ * @param number The number to format
+ * @param useIndianFormat Whether to use Indian number formatting (lakhs, crores)
+ * @returns Formatted string
+ */
+export function formatNumber(number: number, useIndianFormat: boolean = false): string {
+  if (number === null || number === undefined || isNaN(number)) {
+    return '0';
+  }
+
+  // For very small numbers, just return the number
+  if (Math.abs(number) < 1000) {
+    return number.toString();
+  }
+
+  // For Indian number format (lakhs and crores)
+  if (useIndianFormat) {
+    if (number >= 10000000) { // 1 crore (10^7)
+      return (number / 10000000).toFixed(1).replace(/\.0$/, '') + 'Cr';
+    }
+    if (number >= 100000) { // 1 lakh (10^5)
+      return (number / 100000).toFixed(1).replace(/\.0$/, '') + 'L';
+    }
+    if (number >= 1000) { // 1 thousand
+      return (number / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+  }
+  // For Western number format (thousands, millions, billions)
+  else {
+    const units = ['', 'K', 'M', 'B', 'T'];
+    const unitIndex = Math.floor(Math.log10(Math.abs(number)) / 3);
+
+    if (unitIndex >= units.length) {
+      return number.toString(); // If number is too large, return as is
+    }
+
+    const divisor = Math.pow(10, unitIndex * 3);
+    const formattedValue = (number / divisor).toFixed(1).replace(/\.0$/, '');
+
+    return formattedValue + units[unitIndex];
+  }
+
+  return number.toString();
+}

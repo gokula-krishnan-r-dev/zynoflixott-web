@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import OtpModal from "@/components/otp/OtpModal";
+import ProfileImageUpload from "@/components/ui/profile-image-upload";
 
 interface FormData {
   full_name?: string;
@@ -11,6 +12,7 @@ interface FormData {
   password: string;
   confirmPassword?: string;
   contact?: string;
+  logo?: File | string;
 }
 
 interface Props {
@@ -25,6 +27,7 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
     password: "",
     confirmPassword: mode === "signup" ? "" : undefined,
     contact: mode === "signup" ? "" : undefined,
+    logo: "",
   };
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -34,6 +37,7 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
     password: "",
     confirmPassword: "",
     contact: "8783478347",
+    logo: undefined,
   });
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -46,7 +50,14 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
   useEffect(() => {
     setFormData(initialFormData);
   }, [mode]);
-
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFormData({
+        ...formData,
+        logo: e.target.files[0],
+      });
+    }
+  };
   const validateEmail = (email: string): string => {
     if (!email.trim()) return "Email is required";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -177,8 +188,48 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
   const submitForm = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(`/auth/${mode}`, formData);
 
+      // Create form data for submission
+      const formDataValues = new FormData();
+
+      // Conditionally add fields only if they exist
+      if (formData.full_name) {
+        formDataValues.append("full_name", formData.full_name);
+      }
+
+      formDataValues.append("email", formData.email);
+      formDataValues.append("password", formData.password);
+
+      // Handle the logo file properly
+      if (formData.logo) {
+        // If it's already a File object
+        if (formData.logo instanceof File) {
+          formDataValues.append("logo", formData.logo);
+        }
+        // If it's a string URL from previous upload
+        else if (typeof formData.logo === 'string' && formData.logo.trim() !== '') {
+          // The server would need to handle this case
+          formDataValues.append("logoUrl", formData.logo);
+        }
+      }
+
+      // Log request if in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Submitting form with data:', Object.fromEntries(formDataValues.entries()));
+      }
+
+      // Set request timeout
+      const requestConfig = {
+        timeout: 30000, // 30 second timeout
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      };
+
+      // Make the API request
+      const response = await axios.post(`/auth/${mode}`, formDataValues, requestConfig);
+
+      // Handle server validation errors
       if (response.data.code === 401) {
         toast.error("Invalid password provided for login");
         return;
@@ -196,23 +247,38 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
         return;
       }
 
+      // Store auth data securely
       try {
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("userId", response.data.user._id);
+        // Store auth tokens and user info
+        const { accessToken, user } = response.data;
+
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("userId", user._id);
         localStorage.setItem(
           "userRole",
           response.data.isProduction ? "production" : "user"
         );
         localStorage.setItem("isLogin", "true");
-      } catch (e) {
-        toast.error("Failed to save access token to local storage");
-      }
 
-      toast.success(`${mode === "login" ? "Login" : "Signup"} successful!`);
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Submission error", error);
-      toast.error("Email already exists");
+        // Success notification
+        toast.success(`${mode === "login" ? "Login" : "Signup"} successful!`);
+
+        // Redirect to home page
+        window.location.href = "/";
+      } catch (storageError) {
+        console.error("Failed to save auth data to local storage:", storageError);
+        toast.error("Failed to save login information. Please try again.");
+      }
+    } catch (error: any) {
+      // Handle request errors
+      console.error("Form submission error:", error);
+
+      // Extract error message from response if available
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        "An unexpected error occurred";
+
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -346,6 +412,19 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
                   {errors.confirmPassword}
                 </p>
               )}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="logo" className="block text-sm mb-1">
+                Profile Picture
+              </label>
+              <ProfileImageUpload
+                id="logo"
+                name="logo"
+                value={formData.logo}
+                onChange={(file) => setFormData({ ...formData, logo: file })}
+                maxSizeInMB={2}
+                className="mt-2"
+              />
             </div>
             {/* <div className="mb-4">
               <label className="block text-sm mb-1">
