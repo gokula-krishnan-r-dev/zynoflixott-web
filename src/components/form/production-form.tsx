@@ -201,6 +201,8 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       if (response.status === 201) {
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("userId", response.data.userId);
+        localStorage.setItem("isLogin", "true");
+        localStorage.setItem("userRole", "production");
         toast.success("Director profile created successfully");
         router.push("/");
       } else {

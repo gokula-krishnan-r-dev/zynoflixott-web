@@ -11,6 +11,7 @@ export const isProduction =
   typeof window !== "undefined" ? localStorage.getItem("userRole") : null;
 
 export const isLogin =
-  typeof window !== "undefined" ? !localStorage.getItem("isLogin") : false;
+  typeof window !== "undefined" ? localStorage.getItem('userId') !== null : false;
+
 export const authId =
   typeof window !== "undefined" ? localStorage.getItem("userId") : null;

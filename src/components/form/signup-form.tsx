@@ -212,7 +212,7 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
       window.location.href = "/";
     } catch (error) {
       console.error("Submission error", error);
-      toast.error("Failed to submit form, please try again");
+      toast.error("Email already exists");
     } finally {
       setLoading(false);
     }

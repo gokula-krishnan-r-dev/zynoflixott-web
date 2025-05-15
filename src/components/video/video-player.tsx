@@ -4,11 +4,11 @@ import { Ivideo } from "../types/video";
 import "./video-player.css";
 
 // Icons for player controls
-import { 
-  FaPlay, FaPause, FaVolumeUp, FaVolumeMute, 
-  FaExpand, FaCompress, FaForward, FaBackward, 
+import {
+  FaPlay, FaPause, FaVolumeUp, FaVolumeMute,
+  FaExpand, FaCompress, FaForward, FaBackward,
   FaCog,
-  FaClosedCaptioning, 
+  FaClosedCaptioning,
 } from "react-icons/fa";
 
 interface VideoPlayerProps {
@@ -17,8 +17,8 @@ interface VideoPlayerProps {
   mode?: "orignal" | "preview";
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ 
-  video, 
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  video,
   isMembership,
   mode = "preview"
 }) => {
@@ -26,7 +26,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
-  
+
   // State
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -48,14 +48,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Video source based on membership
   const videoLink = video ? (isMembership ? video?.original_video : video?.preview_video) : '';
-  
+
   // Handle video source issues
   const retryVideoLoad = () => {
     if (retryCount < maxRetries) {
       setRetryCount(prevCount => prevCount + 1);
       setVideoError(null);
       setIsVideoUrlIssue(false);
-      
+
       // Force video element to reload
       if (videoRef.current) {
         const video = videoRef.current;
@@ -72,14 +72,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       setIsVideoUrlIssue(true);
       return '';
     }
-    
+
     try {
       // Check if the URL is external
       if (url.startsWith('http')) {
         // Add retry parameter to bust cache if retrying
         return `/api/video-proxy?url=${encodeURIComponent(url)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`;
       }
-      
+
       // If it's a local URL, return it as is
       return url;
     } catch (error) {
@@ -88,7 +88,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       return '';
     }
   };
-  
+
   const proxiedVideoUrl = videoLink ? getProxiedVideoUrl(videoLink) : '';
 
   // Format time (convert seconds to MM:SS format)
@@ -132,6 +132,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         } else if ((playerRef.current as any).msRequestFullscreen) {
           (playerRef.current as any).msRequestFullscreen();
         }
+
+        // Try to switch to landscape orientation on mobile devices
+        if (window.screen && 'orientation' in window.screen) {
+          try {
+            // Cast to any to handle browser differences in the Screen Orientation API
+            (window.screen.orientation as any).lock('landscape').catch((err: Error) => {
+              // It's ok if this fails, as not all devices/browsers support it
+              console.log("Could not lock screen orientation: ", err);
+            });
+          } catch (error) {
+            console.log("Screen orientation API not supported");
+          }
+        }
       } else {
         if (document.exitFullscreen) {
           document.exitFullscreen();
@@ -139,6 +152,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           (document as any).webkitExitFullscreen();
         } else if ((document as any).msExitFullscreen) {
           (document as any).msExitFullscreen();
+        }
+
+        // Release the orientation lock when exiting fullscreen
+        if (window.screen && 'orientation' in window.screen && (window.screen.orientation as any).unlock) {
+          try {
+            (window.screen.orientation as any).unlock();
+          } catch (error) {
+            console.log("Could not unlock screen orientation");
+          }
         }
       }
     }
@@ -182,7 +204,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const skipForward = () => {
     if (videoRef.current) {
       const video = videoRef.current;
-      
+
       try {
         // Get current time and calculate new time
         const newTime = Math.min(video.currentTime + 10, video.duration || 0);
@@ -191,13 +213,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           to: newTime,
           duration: video.duration
         });
-        
+
         // Try direct property setting
         try {
           video.currentTime = newTime;
         } catch (err) {
           console.warn("Primary seek method failed", err);
-          
+
           // Since we can't reliably type fastSeek, we'll try a more vanilla approach
           try {
             // @ts-ignore - Some browsers implement fastSeek
@@ -209,23 +231,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             console.warn("Alternative seek method failed too", err2);
           }
         }
-        
+
         // Force the React state to update
         setCurrentTime(newTime);
-        
+
         // Add a notification to show the user something happened
         const forwardNotification = document.createElement('div');
         forwardNotification.className = 'seek-notification forward';
         forwardNotification.textContent = '+10s';
         playerRef.current?.appendChild(forwardNotification);
-        
+
         // Remove notification after animation
         setTimeout(() => {
           if (forwardNotification.parentNode) {
             forwardNotification.parentNode.removeChild(forwardNotification);
           }
         }, 1000);
-        
+
       } catch (error) {
         console.error('Error skipping forward:', error);
       }
@@ -235,7 +257,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const skipBackward = () => {
     if (videoRef.current) {
       const video = videoRef.current;
-      
+
       try {
         // Get current time and calculate new time
         const newTime = Math.max(video.currentTime - 10, 0);
@@ -243,13 +265,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           from: video.currentTime,
           to: newTime
         });
-        
+
         // Try direct property setting
         try {
           video.currentTime = newTime;
         } catch (err) {
           console.warn("Primary seek method failed", err);
-          
+
           // Since we can't reliably type fastSeek, we'll try a more vanilla approach
           try {
             // @ts-ignore - Some browsers implement fastSeek
@@ -261,23 +283,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             console.warn("Alternative seek method failed too", err2);
           }
         }
-        
+
         // Force the React state to update
         setCurrentTime(newTime);
-        
+
         // Add a notification to show the user something happened
         const backwardNotification = document.createElement('div');
         backwardNotification.className = 'seek-notification backward';
         backwardNotification.textContent = '-10s';
         playerRef.current?.appendChild(backwardNotification);
-        
+
         // Remove notification after animation
         setTimeout(() => {
           if (backwardNotification.parentNode) {
             backwardNotification.parentNode.removeChild(backwardNotification);
           }
         }, 1000);
-        
+
       } catch (error) {
         console.error('Error skipping backward:', error);
       }
@@ -287,17 +309,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Initialize video
   useEffect(() => {
     if (!video) return;
-    
+
     const initializeVideo = async () => {
       try {
         if (videoRef.current) {
           const video = videoRef.current;
-          
+
           // Manually load metadata if needed
           if (video.readyState === 0) {
             console.log("Manually loading video metadata...");
             video.load();
-            
+
             // Wait for metadata to load
             if (!video.duration) {
               await new Promise<void>((resolve) => {
@@ -313,7 +335,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               });
             }
           }
-          
+
           // Set duration once available
           if (video.duration) {
             setDuration(video.duration);
@@ -326,14 +348,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         setVideoError("Failed to initialize video player");
       }
     };
-    
+
     initializeVideo();
   }, [videoLink, video]);
-  
+
   // Handle video events
   useEffect(() => {
     if (!video) return;
-    
+
     const videoElement = videoRef.current;
     if (!videoElement) return;
 
@@ -345,7 +367,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         readyState: videoElement.readyState,
         paused: videoElement.paused
       });
-      
+
       setDuration(videoElement.duration);
       setLoadedData(true);
       setVideoReady(true);
@@ -377,7 +399,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         duration: videoElement.duration,
         readyState: videoElement.readyState
       });
-      
+
       setIsBuffering(false);
       setVideoReady(true);
     };
@@ -417,7 +439,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     // Controls visibility timer
     let controlsTimer: NodeJS.Timeout;
-    
+
     const hideControls = () => {
       if (isPlaying) {
         setShowControls(false);
@@ -452,13 +474,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       videoElement.removeEventListener('canplay', handleCanPlay);
       videoElement.removeEventListener('error', handleError);
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      
+
       if (currentPlayerRef) {
         currentPlayerRef.removeEventListener('mousemove', handleMouseMove);
         currentPlayerRef.removeEventListener('mouseleave', hideControls);
         currentPlayerRef.removeEventListener('mouseenter', handleMouseMove);
       }
-      
+
       clearTimeout(controlsTimer);
     };
   }, [isPlaying, video]);
@@ -467,8 +489,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   if (!video) return null;
 
   return (
-    <div 
-      className="video-player-container" 
+    <div
+      className="video-player-container"
       ref={playerRef}
       onClick={togglePlay}
     >
@@ -488,7 +510,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onError={(e) => {
           console.error("Video error event:", e);
           const videoElement = e.target as HTMLVideoElement;
-          
+
           let errorMessage = "Error loading video";
           if (videoElement.error) {
             // Log detailed error info
@@ -496,7 +518,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               code: videoElement.error.code,
               message: videoElement.error.message
             });
-            
+
             // Create more specific error message based on error code
             switch (videoElement.error.code) {
               case 1: // MEDIA_ERR_ABORTED
@@ -515,21 +537,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               default:
                 errorMessage = `Video playback error (${videoElement.error.code})`;
             }
-            
+
             if (videoElement.error.message) {
               errorMessage += `: ${videoElement.error.message}`;
             }
           }
-          
+
           setVideoError(errorMessage);
         }}
       >
         {/* Add text tracks for subtitles if available */}
-        <track 
-          kind="subtitles" 
-          src="path-to-subtitles.vtt" 
-          srcLang="en" 
-          label="English" 
+        <track
+          kind="subtitles"
+          src="path-to-subtitles.vtt"
+          srcLang="en"
+          label="English"
         />
       </video>
 
@@ -619,8 +641,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               onChange={handleTimelineChange}
               step="0.01"
             />
-            <div 
-              className="timeline-progress" 
+            <div
+              className="timeline-progress"
               style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
             ></div>
           </div>
@@ -631,23 +653,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               <button className="control-button" onClick={togglePlay}>
                 {isPlaying ? <FaPause /> : <FaPlay />}
               </button>
-              
-              <button 
-                className="control-button" 
+
+              <button
+                className="control-button"
                 onClick={skipBackward}
                 style={{ transform: 'scale(1.1)' }}
               >
                 <FaBackward />
               </button>
-              
-              <button 
-                className="control-button" 
+
+              <button
+                className="control-button"
                 onClick={skipForward}
                 style={{ transform: 'scale(1.1)' }}
               >
                 <FaForward />
               </button>
-              
+
               <div className="volume-container">
                 <button className="control-button" onClick={toggleMute}>
                   {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
@@ -662,7 +684,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   onChange={handleVolumeChange}
                 />
               </div>
-              
+
               <div className="time-display">
                 <span>{formatTime(currentTime)}</span>
                 <span> / </span>
@@ -672,21 +694,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
             <div className="right-controls">
               <div className="settings-container">
-                <button 
-                  className="control-button" 
+                <button
+                  className="control-button"
                   onClick={() => setShowSettings(!showSettings)}
                 >
                   <FaCog />
                 </button>
-                
+
                 {showSettings && (
                   <div className="settings-menu">
                     <div className="settings-section">
                       <h4>Playback Speed</h4>
                       <div className="speed-options">
                         {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
-                          <button 
-                            key={rate} 
+                          <button
+                            key={rate}
                             className={`speed-option ${playbackRate === rate ? 'active' : ''}`}
                             onClick={() => changePlaybackRate(rate)}
                           >
@@ -698,14 +720,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   </div>
                 )}
               </div>
-              
-              <button 
-                className="control-button" 
+
+              <button
+                className="control-button"
                 onClick={() => setShowSubtitles(!showSubtitles)}
               >
                 <FaClosedCaptioning />
               </button>
-              
+
               <button className="control-button" onClick={toggleFullscreen}>
                 {isFullscreen ? <FaCompress /> : <FaExpand />}
               </button>

@@ -39,7 +39,7 @@ export default function ProductionProfile() {
     localStorage.removeItem("isLogin");
     localStorage.removeItem("transactionId");
 
-    router.push("/login");
+    window.location.href = "/login";
   };
   const handletoCreateRoom = async () => {
     const response = await axios.post("/room", {

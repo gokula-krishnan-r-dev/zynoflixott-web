@@ -46,7 +46,7 @@ const CategoryList = ({ title, desc, langage, sectionType }: any) => {
           <div className="px-4">
             <h3 className="text-base text-gray-200 mb-1">Lets Explore</h3>
             <div className="flex items-center justify-between">
-              <h2 className="lg:text-xl text-lg font-bold text-white uppercase">{title} {title === 'TRENDING' && <span className="inline-block ml-1">↗</span>}</h2>
+              <h2 className="lg:text-xl text-xs font-bold text-white uppercase">{title} {title === 'TRENDING' && <span className="inline-block ml-1">↗</span>}</h2>
               <Link href="/explore" className="text-sm text-purple-400">Let's Explore</Link>
             </div>
           </div>

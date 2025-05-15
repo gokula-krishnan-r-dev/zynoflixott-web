@@ -62,7 +62,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     localStorage.removeItem("isLogin");
     localStorage.removeItem("transactionId");
 
-    router.push("/login");
+    window.location.href = "/login";
   };
   return (
     <main>

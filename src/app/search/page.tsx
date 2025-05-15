@@ -60,7 +60,7 @@ const SearchPage = () => {
             if (category !== "All") params.append("category", category);
             params.append("page", page.toString());
 
-            const response = await fetch(`http://localhost:3000/api/search?${params.toString()}`);
+            const response = await fetch(`https://zynoflixott.com/api/search?${params.toString()}`);
             return response.json();
         },
         {
@@ -119,16 +119,6 @@ const SearchPage = () => {
                                     className="bg-[#7b61ff] hover:bg-[#6c52ee] px-6 py-2 text-white rounded-lg"
                                 >
                                     Search
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="border-[#292c41] text-white"
-                                    onClick={() => setShowFilters(!showFilters)}
-                                >
-                                    <Filter className="h-5 w-5 mr-2" />
-                                    <span className="hidden md:inline">Filters</span>
                                 </Button>
                             </div>
                         </div>
