@@ -52,7 +52,7 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
           <Link href="/explore" className="text-sm text-purple-400">Let's Explore</Link>
         </div>
 
-        <div className="flex overflow-x-auto gap-3 pl-4 pr-4 pb-3 scrollbar-hide">
+        <div className="flex overflow-x-auto  gap-3 pl-4 pr-4 pb-3 scrollbar-hide">
           {Array.isArray(shuffledVideos) &&
             shuffledVideos.map((video: Ivideo, index: number) => (
               <div key={index} className="flex-none">
@@ -63,7 +63,7 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
       </div>
 
       {/* Desktop view with Carousel */}
-      <div className="hidden sm:block">
+      <div className="hidden sm:block ">
         <Carousel
           opts={{
             align: "start",

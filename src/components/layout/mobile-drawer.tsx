@@ -2,7 +2,7 @@
 import { isLogin } from "@/lib/user";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, Home, Compass, Upload, MessageSquare, User, LogIn, Film, DollarSign } from "lucide-react";
+import { Menu, X, Home, Compass, Upload, MessageSquare, User, LogIn, Film, DollarSign, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -136,6 +136,44 @@ export function SheetMobile() {
                         </motion.li>
                       );
                     })}
+                    {!loggedIn && (
+                      <motion.li
+                        key="login"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: menuItems.length * 0.05 }}
+                      >
+                        <Link href="/login" className="flex items-center px-4 py-3 text-white rounded-lg hover:bg-[#292c41]/50 transition-colors">
+                          <span className="mr-3 text-[#7b61ff]"><LogIn className="w-5 h-5" /></span>
+                          <span>Login</span>
+                        </Link>
+                      </motion.li>
+                    )}
+
+
+                    {loggedIn && (
+                      <motion.li
+                        key="logout"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: menuItems.length * 0.05 }}
+                      >
+                        <button
+                          onClick={() => {
+                            localStorage.removeItem("isLogin");
+                            localStorage.removeItem("userRole");
+                            window.location.href = "/login";
+                          }}
+                          className="flex items-center px-4 py-3 text-white rounded-lg hover:bg-[#292c41]/50 transition-colors"
+                        >
+                          <span className="mr-3 text-[#7b61ff]"><LogOut className="w-5 h-5" /></span>
+                          <span>Logout</span>
+                        </button>
+                      </motion.li>
+                    )}
+
+
+
                   </ul>
                 </div>
 

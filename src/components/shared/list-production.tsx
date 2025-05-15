@@ -367,7 +367,7 @@ export const SocialButtons = ({
   console.log(facebook, "facebook");
 
   return (
-    <div className="social-btn flex z-50 relative items-center gap-4">
+    <div className="social-btn flex z-20 relative items-center gap-4">
       {socialLinks.map((link) => (
         <a
           key={link.name}

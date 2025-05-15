@@ -44,8 +44,6 @@ const ListProduction = dynamic(
   }
 );
 
-
-
 export default function Home() {
   return (
     <main className="min-h-screen bg-body">
