@@ -87,14 +87,6 @@ const Page = () => {
       toast.error("User not found");
     }
   };
-  const isIOS = () => {
-    if (typeof window !== 'undefined') {
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      return /iphone|ipad|ipod/.test(userAgent) ||
-        (userAgent.includes('mac') && 'ontouchend' in document);
-    }
-    return false;
-  };
 
 
   return (

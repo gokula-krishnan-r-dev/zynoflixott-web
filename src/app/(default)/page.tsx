@@ -174,12 +174,12 @@ export default function Home() {
               />
             </Suspense>
 
-            <Suspense fallback={<CategorySkeleton />}>
+            {/* <Suspense fallback={<CategorySkeleton />}>
               <CategoryList langage={"Kannada"}
                 title={"KANNADA SHORT FILMS"}
                 desc={"FAMOUS KANNADA FILMS"}
               />
-            </Suspense>
+            </Suspense> */}
 
             <Suspense fallback={<CategorySkeleton />}>
               <CategoryList langage={"Bengali"}

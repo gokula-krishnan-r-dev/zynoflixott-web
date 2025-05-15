@@ -277,6 +277,92 @@ const PrivacyPolicy = () => {
           </ul>
         </PolicySection>
 
+        <PolicySection
+          title="13. DMCA Policy"
+          icon={<Shield size={20} />}
+        >
+          <p className="mb-4">Effective Date: 15 May 2025</p>
+
+          <p className="mb-4">ZynoFlix OTT ("ZynoFlix") respects the intellectual property rights of others and expects users of the platform to do the same. It is our policy to respond to notices of alleged copyright infringement that comply with the Digital Millennium Copyright Act (DMCA).</p>
+
+          <h3 className="font-semibold text-white mb-2">How to Submit a DMCA Takedown Notice</h3>
+          <p className="mb-4">If you believe that your copyrighted work has been uploaded to ZynoFlix OTT without permission, you may submit a written notice to our designated copyright agent containing the following information:</p>
+
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>A physical or electronic signature of the copyright owner or authorized agent.</li>
+            <li>A description of the copyrighted work that you claim has been infringed.</li>
+            <li>A description of the infringing material and its location on the platform (e.g., URL).</li>
+            <li>Your contact information: name, address, phone number, and email address.</li>
+            <li>A statement that you have a good-faith belief that the use of the material is not authorized by the copyright owner, its agent, or the law.</li>
+            <li>A statement that the information in the notice is accurate, and under penalty of perjury, that you are authorized to act on behalf of the owner of the copyrighted work.</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">DMCA Contact Information</h3>
+          <p className="mb-4">Copyright Agent for ZynoFlix OTT:</p>
+          <p className="mb-4">Email: <a href="mailto:infozynoflixott@gmail.com" className="text-[#7b61ff] hover:underline">infozynoflixott@gmail.com</a></p>
+
+          <p className="mb-4">Please send your DMCA takedown notices to the above email address.</p>
+
+          <h3 className="font-semibold text-white mb-2">Response to DMCA Notices</h3>
+          <p className="mb-4">Upon receipt of a valid DMCA notice, ZynoFlix OTT will promptly remove or disable access to the infringing material and notify the user responsible for the content. If the user believes the content was removed or disabled erroneously, they may file a counter-notification, which will be reviewed in accordance with the DMCA procedures.</p>
+
+          <h3 className="font-semibold text-white mb-2">Counter-Notification Procedure</h3>
+          <p className="mb-4">If you believe your content was removed mistakenly and wish to restore it, you may submit a written counter-notification to our designated copyright agent, including:</p>
+
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>Your contact information.</li>
+            <li>Identification of the material removed or disabled.</li>
+            <li>A statement under penalty of perjury that you have a good-faith belief that the material was removed or disabled as a result of mistake or misidentification.</li>
+            <li>A consent to jurisdiction and a statement that you will accept service of process.</li>
+          </ul>
+
+          <p>Note: This policy is for informational purposes and should be reviewed by legal counsel to ensure compliance with applicable laws and regulations.</p>
+        </PolicySection>
+
+        <PolicySection
+          title="14. Legal Copyright Notice & Non-Disclosure Agreement"
+          icon={<Lock size={20} />}
+        >
+          <h3 className="font-semibold text-white mb-2">1. Copyright & Intellectual Property Rights</h3>
+          <p className="mb-4">ZynoFlix OTT ("the Platform") is a proprietary platform that facilitates short film uploaders ("Content Creators") to upload and stream short films ("Content") to viewers ("Users").</p>
+
+          <p className="mb-4">All Content uploaded to the Platform remains the intellectual property of the respective Content Creators. ZynoFlix OTT does not claim ownership of any short films or Content uploaded by users.</p>
+
+          <p className="mb-4">Unauthorized copying, reproduction, distribution, or use of any Content or the Platform's proprietary materials without explicit written permission is strictly prohibited. Any such infringement will be met with immediate legal action, including but not limited to, claims for damages, injunctive relief, and other remedies available under applicable law.</p>
+
+          <h3 className="font-semibold text-white mb-2">2. No Ownership of Content</h3>
+          <p className="mb-4">ZynoFlix OTT explicitly states that it does not own, control, or claim any rights over the uploaded short films or Content. The platform merely provides the infrastructure for uploaders to share their Content and for viewers to stream it.</p>
+
+          <h3 className="font-semibold text-white mb-2">3. Prohibition of Copying and Unauthorized Use</h3>
+          <p className="mb-4">Any attempt to copy, reproduce, distribute, or exploit Content from ZynoFlix OTT without prior written authorization from the Content Creator will be considered a violation of intellectual property rights and will be subject to legal action under applicable copyright laws, including the Copyright Act, 1976 (India), Digital Millennium Copyright Act (DMCA) (United States), or relevant local laws.</p>
+
+          <h3 className="font-semibold text-white mb-2">4. Non-Disclosure Agreement (NDA)</h3>
+          <p className="mb-4">To protect confidential information, all users, Content Creators, and partners agree to the following NDA terms:</p>
+
+          <ul className="space-y-2 mb-4">
+            <li><span className="font-semibold text-white">Definition of Confidential Information:</span> Any non-public, proprietary, or sensitive information exchanged during use of the Platform, including but not limited to Content details, user data, platform algorithms, business strategies, and other trade secrets.</li>
+            <li><span className="font-semibold text-white">Obligation of Confidentiality:</span> Users agree not to disclose, share, or distribute any Confidential Information to third parties without prior written consent from ZynoFlix OTT or the Content Creator involved.</li>
+            <li><span className="font-semibold text-white">Use of Confidential Information:</span> Confidential Information shall only be used for the purpose of using or engaging with the Platform and Content as intended.</li>
+            <li><span className="font-semibold text-white">Duration:</span> The confidentiality obligations shall survive the termination of any agreement or use of the Platform for a period mandated by applicable laws.</li>
+            <li><span className="font-semibold text-white">Legal Consequences:</span> Breach of this NDA may result in legal action, damages, and termination of access to the Platform.</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">5. Legal Compliance & Enforcement</h3>
+          <p className="mb-4">ZynoFlix OTT reserves the right to:</p>
+
+          <ul className="list-disc pl-5 mb-4 space-y-1">
+            <li>Remove or disable access to any Content that infringes upon intellectual property rights or violates applicable laws.</li>
+            <li>Take strict legal action against any individual or entity found copying, distributing, or using Content without authorization.</li>
+            <li>Cooperate with legal authorities and rights holders in enforcement actions.</li>
+          </ul>
+
+          <h3 className="font-semibold text-white mb-2">6. Governing Law & Jurisdiction</h3>
+          <p className="mb-4">This agreement shall be governed by and construed in accordance with the laws. Any disputes arising hereunder shall be subject to the exclusive jurisdiction of courts.</p>
+
+          <h3 className="font-semibold text-white mb-2">7. Acceptance</h3>
+          <p>By using ZynoFlix OTT, you agree to comply with these terms. If you do not agree, please refrain from using the platform.</p>
+        </PolicySection>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

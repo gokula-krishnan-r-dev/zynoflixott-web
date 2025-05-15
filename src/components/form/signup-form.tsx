@@ -189,85 +189,73 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
     try {
       setLoading(true);
 
-      // Create form data for submission
-      const formDataValues = new FormData();
+      // Handle different submission formats based on mode
+      if (mode === "login") {
+        // For login, send as JSON
+        const loginData = {
+          email: formData.email,
+          password: formData.password
+        };
 
-      // Conditionally add fields only if they exist
-      if (formData.full_name) {
-        formDataValues.append("full_name", formData.full_name);
-      }
-
-      formDataValues.append("email", formData.email);
-      formDataValues.append("password", formData.password);
-
-      // Handle the logo file properly
-      if (formData.logo) {
-        // If it's already a File object
-        if (formData.logo instanceof File) {
-          formDataValues.append("logo", formData.logo);
+        // Log request if in development
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Submitting login with data:', loginData);
         }
-        // If it's a string URL from previous upload
-        else if (typeof formData.logo === 'string' && formData.logo.trim() !== '') {
-          // The server would need to handle this case
-          formDataValues.append("logoUrl", formData.logo);
+
+        // Set request config for JSON
+        const requestConfig = {
+          timeout: 30000, // 30 second timeout
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        };
+
+        // Make the API request with JSON data
+        const response = await axios.post(`/auth/${mode}`, loginData, requestConfig);
+
+        handleAuthResponse(response);
+      } else {
+        // For signup, use FormData (for file uploads)
+        const formDataValues = new FormData();
+
+        // Conditionally add fields only if they exist
+        if (formData.full_name) {
+          formDataValues.append("full_name", formData.full_name);
         }
-      }
 
-      // Log request if in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Submitting form with data:', Object.fromEntries(formDataValues.entries()));
-      }
+        formDataValues.append("email", formData.email);
+        formDataValues.append("password", formData.password);
 
-      // Set request timeout
-      const requestConfig = {
-        timeout: 30000, // 30 second timeout
-        headers: {
-          'Content-Type': 'multipart/form-data',
+        // Handle the logo file properly
+        if (formData.logo) {
+          // If it's already a File object
+          if (formData.logo instanceof File) {
+            formDataValues.append("logo", formData.logo);
+          }
+          // If it's a string URL from previous upload
+          else if (typeof formData.logo === 'string' && formData.logo.trim() !== '') {
+            // The server would need to handle this case
+            formDataValues.append("logoUrl", formData.logo);
+          }
         }
-      };
 
-      // Make the API request
-      const response = await axios.post(`/auth/${mode}`, formDataValues, requestConfig);
+        // Log request if in development
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Submitting signup with data:', Object.fromEntries(formDataValues.entries()));
+        }
 
-      // Handle server validation errors
-      if (response.data.code === 401) {
-        toast.error("Invalid password provided for login");
-        return;
-      }
+        // Set request config for FormData
+        const requestConfig = {
+          timeout: 30000, // 30 second timeout
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        };
 
-      if (response.data.error === "User already exists") {
-        toast.error(
-          "User already exists with the provided email. Please login instead."
-        );
-        return;
-      }
+        // Make the API request with FormData
+        const response = await axios.post(`/auth/${mode}`, formDataValues, requestConfig);
 
-      if (response.data.error === "User not found") {
-        toast.error("User not found or invalid password provided for login");
-        return;
-      }
-
-      // Store auth data securely
-      try {
-        // Store auth tokens and user info
-        const { accessToken, user } = response.data;
-
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("userId", user._id);
-        localStorage.setItem(
-          "userRole",
-          response.data.isProduction ? "production" : "user"
-        );
-        localStorage.setItem("isLogin", "true");
-
-        // Success notification
-        toast.success(`${mode === "login" ? "Login" : "Signup"} successful!`);
-
-        // Redirect to home page
-        window.location.href = "/";
-      } catch (storageError) {
-        console.error("Failed to save auth data to local storage:", storageError);
-        toast.error("Failed to save login information. Please try again.");
+        handleAuthResponse(response);
       }
     } catch (error: any) {
       // Handle request errors
@@ -281,6 +269,50 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper function to handle the authentication response
+  const handleAuthResponse = (response: any) => {
+    // Handle server validation errors
+    if (response.data.code === 401) {
+      toast.error("Invalid password provided for login");
+      return;
+    }
+
+    if (response.data.error === "User already exists") {
+      toast.error(
+        "User already exists with the provided email. Please login instead."
+      );
+      return;
+    }
+
+    if (response.data.error === "User not found") {
+      toast.error("User not found or invalid password provided for login");
+      return;
+    }
+
+    // Store auth data securely
+    try {
+      // Store auth tokens and user info
+      const { accessToken, user } = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("userId", user._id);
+      localStorage.setItem(
+        "userRole",
+        response.data.isProduction ? "production" : "user"
+      );
+      localStorage.setItem("isLogin", "true");
+
+      // Success notification
+      toast.success(`${mode === "login" ? "Login" : "Signup"} successful!`);
+
+      // Redirect to home page
+      window.location.href = "/";
+    } catch (storageError) {
+      console.error("Failed to save auth data to local storage:", storageError);
+      toast.error("Failed to save login information. Please try again.");
     }
   };
 

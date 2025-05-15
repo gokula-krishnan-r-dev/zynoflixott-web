@@ -574,7 +574,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
           </div>
 
           {/* Video Stats - Desktop Professional UI */}
-          <div className="flex flex-wrap gap-3 mt-3">
+          <div className="flex-wrap lg:hidden flex gap-3 mt-3">
             <div className="stats-badge bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-700 px-4 py-2 rounded-full shadow-md flex items-center gap-2 hover:shadow-lg transition-all">
               <div className="bg-blue-500/20 p-1.5 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-blue-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
