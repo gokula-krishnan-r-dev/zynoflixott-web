@@ -145,12 +145,12 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
   };
 
   const handleOtpSubmit = async (enteredOtp: string) => {
-    // const isVerified = await verifyOtp(enteredOtp);
-    // if (isVerified) {
-    //   // Close the modal and proceed with form submission
-    //   setShowOtpModal(false);
-    // }
-    await submitProductionForm();
+    const isVerified = await verifyOtp(enteredOtp);
+    if (isVerified) {
+      // Close the modal and proceed with form submission
+      setShowOtpModal(false);
+      await submitProductionForm();
+    }
   };
 
   const handleCloseOtpModal = () => {
@@ -168,8 +168,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
     }
 
     // Send OTP before proceeding with form submission
-    // await sendOtpToEmail();
-    await submitProductionForm();
+    await sendOtpToEmail();
   };
 
   const submitProductionForm = async () => {
