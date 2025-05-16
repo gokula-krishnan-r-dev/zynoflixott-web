@@ -3,13 +3,14 @@ import { UpdateImg } from "@/components/profile/update-img";
 import { SocialButtons } from "@/components/shared/list-production";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
-import { Edit, Edit2, LogOut, MessageCircle, Plus, Trash2 } from "lucide-react";
+import { Edit, Edit2, LogOut, MessageCircle, Plus, Trash2, Save } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { userId } from "@/lib/user";
 import { useRouter } from "next/navigation";
 import { getBackgroundImage, getProfileImage } from "@/lib/utils";
+import { toast } from "sonner";
 
 const fetchCategories = async (id: string) => {
   const response = await axios.get("/auth/production/user/" + id);
@@ -28,6 +29,38 @@ export default function ProductionProfile() {
     error,
     refetch,
   } = useQuery(["user", userId], () => fetchCategories(userId || ""));
+
+  const [isEditingAbout, setIsEditingAbout] = useState(false);
+  const [aboutText, setAboutText] = useState("");
+  const [isUpdatingAbout, setIsUpdatingAbout] = useState(false);
+
+  useEffect(() => {
+    if (user?.about) {
+      setAboutText(user.about);
+    }
+  }, [user?.about]);
+
+  const handleUpdateAbout = async () => {
+    if (!aboutText.trim()) return;
+
+    setIsUpdatingAbout(true);
+    try {
+      const response = await axios.put("/auth/production/user/", {
+        about: aboutText.trim()
+      });
+
+      if (response.status === 200) {
+        toast.success("About section updated successfully");
+        setIsEditingAbout(false);
+        refetch();
+      }
+    } catch (error) {
+      toast.error("Failed to update about section");
+      console.error("Error updating about:", error);
+    } finally {
+      setIsUpdatingAbout(false);
+    }
+  };
 
   if (isLoading)
     return <Loading className="flex items-center h-screen justify-center" />;
@@ -159,9 +192,59 @@ export default function ProductionProfile() {
             </div>
 
             {/* About */}
-            <p className="w-full text-gray-400 text-sm sm:text-md text-pretty text-center sm:text-left mt-2">
-              {user?.about || "No description provided"}
-            </p>
+            <div className="relative w-full">
+              {isEditingAbout ? (
+                <div className="w-full flex flex-col gap-2">
+                  <textarea
+                    value={aboutText}
+                    onChange={(e) => setAboutText(e.target.value)}
+                    className="w-full min-h-[100px] p-3 text-sm sm:text-md bg-[rgba(25,28,51,0.5)] text-gray-200 rounded-lg border border-[#292c41]/50 focus:outline-none focus:border-[#7b61ff]"
+                    placeholder="Write something about yourself or your production company..."
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => {
+                        setIsEditingAbout(false);
+                        setAboutText(user?.about || "");
+                      }}
+                      className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                      disabled={isUpdatingAbout}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleUpdateAbout}
+                      disabled={isUpdatingAbout}
+                      className="flex items-center gap-2 px-4 py-2 bg-[#7b61ff] text-white rounded-lg hover:bg-[#6f55e6] transition-colors disabled:opacity-50"
+                    >
+                      {isUpdatingAbout ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span>Saving...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          <span>Save</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div onClick={() => setIsEditingAbout(true)} className="group cursor-pointer">
+                  <p className="w-full text-gray-400 text-sm sm:text-md text-pretty text-center sm:text-left mt-2">
+                    {user?.about || "No description provided"}
+                  </p>
+                  <button
+                    onClick={() => setIsEditingAbout(true)}
+                    className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Edit className="w-4 h-4 text-gray-400 hover:text-white transition-colors" />
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Action Buttons */}
             <div className="mt-4 sm:mt-6">
@@ -231,9 +314,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-import { useState } from "react";
-import { toast } from "sonner";
 
 export function DialogSocial({ button }: { button: React.ReactNode }) {
   const [instagram, setInstagram] = useState("");

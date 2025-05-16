@@ -205,7 +205,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
         localStorage.setItem("isLogin", "true");
         localStorage.setItem("userRole", "production");
         toast.success("Director profile created successfully");
-        router.push("/");
+        window.location.href = "/";
       } else {
         toast.error("Error creating profile");
       }
@@ -235,12 +235,12 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
         <div className="mb-4">
           <label htmlFor="founderName" className="block mb-2 font-bold">
-            {type === "production" ? "Producer Name" : "Director Name"}
+            {type === "production" ? "Production Company Name" : "Director Name"}
           </label>
           <input
             type="text"
             id="founderName"
-            placeholder={type === "production" ? "Enter Producer Name" : "Enter Director Name"}
+            placeholder={type === "production" ? "Enter Production Company Name" : "Enter Director Name"}
             name="founderName"
             value={formData.founderName}
             onChange={handleChange}

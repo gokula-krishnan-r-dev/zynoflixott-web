@@ -175,11 +175,6 @@ const Page = () => {
                 {user.full_name}
               </h1>
 
-              {/* About */}
-              <p className="w-full text-gray-400 text-sm sm:text-md text-pretty text-center sm:text-left">
-                {user.description || "No description provided"}
-              </p>
-
               {/* Email */}
               <div className="flex flex-col items-center sm:items-start mt-2">
                 <h3 className="text-lg sm:text-xl font-bold text-white">Email</h3>
