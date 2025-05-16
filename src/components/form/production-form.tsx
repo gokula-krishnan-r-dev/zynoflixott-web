@@ -361,7 +361,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       </form>
 
       {/* OTP Modal */}
-      {/* <OtpModal
+      <OtpModal
         isOpen={showOtpModal}
         onClose={handleCloseOtpModal}
         onOtpSubmit={handleOtpSubmit}
@@ -369,7 +369,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
         error={otpError}
         onResendOtp={sendOtpToEmail}
         email={formData.email}
-      /> */}
+      />
     </>
   );
 };
