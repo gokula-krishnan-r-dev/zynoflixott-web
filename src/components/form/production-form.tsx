@@ -223,9 +223,9 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
         logo: undefined,
       });
       setErrors({});
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating profile:", error);
-      toast.error("Error creating profile. Please try again.");
+      toast.error(`Error creating profile. Please try again. ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
