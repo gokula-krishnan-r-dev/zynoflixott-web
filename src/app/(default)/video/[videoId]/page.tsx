@@ -325,11 +325,6 @@ export default function Page({ params }: { params: { videoId: string } }) {
   const avgRating = ratings?.rating || 0;
   const displayRating = Number(avgRating.toFixed(1));
 
-  const truncateDescription = (text: string, maxLength = 150) => {
-    if (!text) return "";
-    if (text.length <= maxLength) return text;
-    return text.substr(0, maxLength) + "...";
-  };
 
   const displayDuration = secondsToMinutes(video.duration);
 

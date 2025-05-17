@@ -28,6 +28,10 @@ export const footerData: FooterSection[] = [
       { label: "Terms & Conditions", href: "/legal-policy" },
       { label: "refund policy", href: "/refund-policy" },
       { label: "copy right", href: "/copyrights" },
+      //event
+      { label: "Event", href: "/event" },
+      //advertisement
+      { label: "Advertisement", href: "/advertisement" },
       {
         label: "Legal Policy",
         href: "/legal-policy",
@@ -127,7 +131,17 @@ const Footer: React.FC = () => {
                   </a>
                 </li>
 
+                <li>
+                  <a className="hover:underline " href="/event">
+                    Event
+                  </a>
+                </li>
 
+                <li>
+                  <a className="hover:underline " href="/advertisement">
+                    Advertisement
+                  </a>
+                </li>
                 <li>
                   <a
                     className="hover:underline"

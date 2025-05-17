@@ -43,13 +43,6 @@ export default function RootLayout({
           src="//code.tidio.co/10qdqbeh4bzacrayxyrxave4vbbqqj6y.js"
           async
         ></script>
-        <script>
-          var ahrefs_analytics_script = document.createElement('script');
-          ahrefs_analytics_script.async = true;
-          ahrefs_analytics_script.src = 'https://analytics.ahrefs.com/analytics.js';
-          ahrefs_analytics_script.setAttribute('data-key', 'y/Hp6qltaCCSITbY89/pqg');
-          document.getElementsByTagName('head')[0].appendChild(ahrefs_analytics_script);
-        </script>
 
 
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="y/Hp6qltaCCSITbY89/pqg" async></script>
