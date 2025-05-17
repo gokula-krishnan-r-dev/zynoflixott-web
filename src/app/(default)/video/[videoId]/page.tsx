@@ -450,6 +450,10 @@ export default function Page({ params }: { params: { videoId: string } }) {
             />
           </div>
         </div>
+        <CategoryList langage={video.language || "Tamil"}
+          title={"Suggested for you"}
+          desc={"POPULAR FILMS"}
+        />
 
         {/* Additional sections for mobile */}
         <div className="mt-0">
@@ -610,10 +614,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
           </div>
         </div>
       </div>
-      <CategoryList langage={video.language || "Tamil"}
-        title={"Suggested for you"}
-        desc={"POPULAR FILMS"}
-      />
+
 
     </main >
   );
