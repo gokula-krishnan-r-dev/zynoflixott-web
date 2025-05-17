@@ -257,7 +257,7 @@ const EventPage = () => {
                             <div className="flex flex-col md:flex-row items-center">
                                 <div className="md:w-1/2 md:pr-12 md:text-right mb-4 md:mb-0">
                                     <h3 className="text-xl font-bold text-indigo-300">Submissions Open</h3>
-                                    <p className="text-gray-300">January 15, 2025</p>
+                                    <p className="text-gray-300">23/05/2025</p>
                                 </div>
                                 <div className="bg-indigo-600 rounded-full h-8 w-8 flex items-center justify-center z-10 mb-4 md:mb-0">
                                     <div className="bg-white h-3 w-3 rounded-full"></div>
@@ -273,7 +273,7 @@ const EventPage = () => {
                                 </div>
                                 <div className="md:w-1/2 md:pl-12 md:text-left">
                                     <h3 className="text-xl font-bold text-indigo-300">Submission Deadline</h3>
-                                    <p className="text-gray-300">June 30, 2025</p>
+                                    <p className="text-gray-300">07/07/2025</p>
                                 </div>
                             </div>
 
@@ -281,7 +281,7 @@ const EventPage = () => {
                             <div className="flex flex-col md:flex-row items-center">
                                 <div className="md:w-1/2 md:pr-12 md:text-right mb-4 md:mb-0">
                                     <h3 className="text-xl font-bold text-indigo-300">Finalists Announcement</h3>
-                                    <p className="text-gray-300">July 10, 2025</p>
+                                    <p className="text-gray-300">15/07/2025</p>
                                 </div>
                                 <div className="bg-indigo-600 rounded-full h-8 w-8 flex items-center justify-center z-10 mb-4 md:mb-0">
                                     <div className="bg-white h-3 w-3 rounded-full"></div>
@@ -297,7 +297,7 @@ const EventPage = () => {
                                 </div>
                                 <div className="md:w-1/2 md:pl-12 md:text-left">
                                     <h3 className="text-xl font-bold text-indigo-300">Festival & Awards</h3>
-                                    <p className="text-gray-300">July 20, 2025</p>
+                                    <p className="text-gray-300">20/07/2025</p>
                                 </div>
                             </div>
                         </div>
@@ -401,7 +401,7 @@ const EventPage = () => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="filmGenre" className="block text-sm font-medium text-gray-300 mb-1">Genre</label>
+                                    <label htmlFor="filmGenre" className="block text-sm font-medium text-gray-300 mb-1">Category</label>
                                     <select
                                         id="filmGenre"
                                         name="filmGenre"

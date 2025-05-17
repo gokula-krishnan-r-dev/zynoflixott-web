@@ -132,17 +132,6 @@ const Footer: React.FC = () => {
                 </li>
 
                 <li>
-                  <a className="hover:underline " href="/event">
-                    Event
-                  </a>
-                </li>
-
-                <li>
-                  <a className="hover:underline " href="/advertisement">
-                    Advertisement
-                  </a>
-                </li>
-                <li>
                   <a
                     className="hover:underline"
                     href="/legal-policy"
@@ -185,6 +174,18 @@ const Footer: React.FC = () => {
                     href="/film-call"
                   >
                     Film Call
+                  </a>
+                </li>
+
+                <li>
+                  <a className="hover:underline " href="/event">
+                    Event
+                  </a>
+                </li>
+
+                <li>
+                  <a className="hover:underline " href="/advertisement">
+                    Advertisement
                   </a>
                 </li>
               </ul>
