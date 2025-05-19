@@ -314,13 +314,13 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
           <label htmlFor="logo" className="block mb-2 font-bold">
             Profile Picture:
           </label>
-          <ProfileImageUpload
+
+          <input
+            type="file"
             id="logo"
             name="logo"
-            value={formData.logo}
-            onChange={(file) => setFormData({ ...formData, logo: file })}
-            maxSizeInMB={2}
-            className="mt-2"
+            onChange={handleFileChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl  bg-transparent  focus:outline-none focus:border-blue-500"
           />
           {errors.logo && <p className="text-red-500">{errors.logo}</p>}
         </div>
