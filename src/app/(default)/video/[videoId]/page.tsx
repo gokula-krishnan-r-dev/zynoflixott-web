@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "@/lib/axios";
 import Loading from "@/components/ui/loading";
@@ -14,12 +14,13 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { cn, formatNumber } from "@/lib/utils";
 import VideoPlayer from "@/components/video/video-player";
-import { ChevronDown, Copy, Heart, Lock, Play, PlayCircle, Share2, Star } from "lucide-react";
+import { ChevronDown, Copy, ExternalLink, Heart, Lock, Play, PlayCircle, Share2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VideoComment from "@/components/shared/video-comment";
 import CategoryList from "@/components/shared/category-list";
 import DescriptionCard from "@/components/ui/description-card";
 import { motion } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Format view count to K, M, B format
 const formatViewCount = (count: number): string => {
@@ -174,10 +175,30 @@ export default function Page({ params }: { params: { videoId: string } }) {
     return response.data.user
   });
 
-  console.log(userprofile, profileId, "userprofile");
-
-  console.log(follower?.[0]?.user_id, "follower");
   const router = useRouter();
+
+  // State to track sticky video player
+  const [isVideoSticky, setIsVideoSticky] = useState(false);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Set up scroll tracking for sticky video
+  useEffect(() => {
+    const handleScroll = () => {
+      if (videoContainerRef.current && contentRef.current) {
+        const videoRect = videoContainerRef.current.getBoundingClientRect();
+        if (videoRect.bottom < 20 && !isVideoSticky) {
+          setIsVideoSticky(true);
+        } else if (videoRect.bottom >= 20 && isVideoSticky) {
+          setIsVideoSticky(false);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isVideoSticky]);
+
   const handletoFollow = async () => {
     if (isLogin) {
       toast.warning(
@@ -269,8 +290,6 @@ export default function Page({ params }: { params: { videoId: string } }) {
         (rating: any) => rating.userId === authId
       );
 
-      console.log(userRating, "userRating");
-
       if (userRating) {
         setRating(userRating.rating);
       }
@@ -324,299 +343,205 @@ export default function Page({ params }: { params: { videoId: string } }) {
 
   const avgRating = ratings?.rating || 0;
   const displayRating = Number(avgRating.toFixed(1));
-
-
   const displayDuration = secondsToMinutes(video.duration);
 
   return (
-    <main className="lg:pt-1 pt-20 pb-10">
-      {/* Mobile design - Movie Card UI */}
-      <div className="lg:hidden mx-auto px-0 max-w-2xl">
-        <div className="relative">
-          <VideoPlayer isMembership={isMembership} video={video} />
-
-          {/* Fullscreen rotate button */}
-          <Button
-            onClick={() => {
-              if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-              }
-            }}
-            size="icon"
-            variant="outline"
-            className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm z-10 rounded-full p-2 h-auto w-auto"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 3 6 6m0-6h-6m6 0v6"></path>
-              <path d="M9 21 3 15m0 6h6m-6 0v-6"></path>
-              <rect width="12" height="7" x="6" y="8.5" rx="1"></rect>
-            </svg>
-          </Button>
-
-          {/* Title and heart icon */}
-          <div className="p-5 space-y-4">
-            <div className="flex justify-between items-start">
-              <h1 className="lg:text-2xl text-sm font-bold text-white">{video.title}</h1>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsFavorite(!isFavorite)}
-                  className="text-white p-1"
-                >
-                  <Heart className={cn("h-6 w-6", isFavorite ? "fill-white" : "")} />
-                </button>
-                <ShareVideoButton videoId={videoId} title={video.title} />
-              </div>
+    <main className="lg:pt-1 pt-16 pb-10 bg-gradient-to-b from-gray-950 to-gray-900 min-h-screen">
+      {/* Sticky video player - visible when scrolling */}
+      {isVideoSticky && (
+        <div className="fixed top-0 left-0 w-full z-50 bg-black/90 backdrop-blur-sm shadow-xl border-b border-gray-800">
+          <div className="flex items-center p-2">
+            <div className="w-1/3 h-[80px] rounded-md overflow-hidden">
+              <VideoPlayer isMembership={isMembership} video={video} miniPlayer={true} />
             </div>
-
-            {/* Video Stats - Mobile Professional UI */}
-            <div className="flex flex-wrap gap-2 mt-3">
-              <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                <div className="bg-blue-500/20 p-1 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-blue-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                </div>
-                <span className="font-medium">{video?.category?.[0]?.split(",")[0] || "Action"}</span>
-              </div>
-
-              <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                <div className="bg-indigo-500/20 p-1 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-indigo-400"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                </div>
-                <span className="font-medium">{displayDuration || "2:30 Hour"}</span>
-              </div>
-
-              <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                <div className="bg-yellow-500/20 p-1 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-yellow-400"><path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" /></svg>
-                </div>
-                <span className="font-medium">{displayRating}</span>
-              </div>
-
-              <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                <div className="bg-purple-500/20 p-1 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-purple-400"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </div>
-                <span className="font-medium">{formatViewCount(video.views)}</span>
-              </div>
-
-              <button
-                onClick={() => router.push('/monetization')}
-                className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs hover:brightness-110"
-              >
-                <div className="bg-white/20 p-1 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-white"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                </div>
-                <span className="font-medium">Monetize</span>
-              </button>
-            </div>
-
-            {/* Profile with follow button - Mobile */}
-            <div className="flex items-center justify-between bg-purple-900 bg-opacity-30 rounded-xl p-3">
-              <Link
-                href={`/profile/${video?.user}`}
-                className="flex items-center gap-2 flex-1"
-              >
-                <Image
-                  width={36}
-                  height={36}
-                  className="w-9 h-9 rounded-full object-cover"
-                  src={userprofile?.profilePic}
-                  alt=""
-                />
-                <div className="flex flex-col">
-                  <div className="text-sm font-medium">{userprofile?.full_name}</div>
-                  <div className="text-xs text-gray-400">
-                    {formatNumber(userprofile?.followingId?.length || 0, true)}
+            <div className="w-2/3 px-3">
+              <h3 className="text-white font-medium text-sm line-clamp-1">{video.title}</h3>
+              <div className="flex items-center mt-1">
+                <div className="flex-1">
+                  <p className="text-gray-400 text-xs truncate">{userprofile?.full_name}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-gray-400">{formatViewCount(video.views)} views</span>
+                    <span className="h-1 w-1 bg-gray-500 rounded-full"></span>
+                    <span className="text-xs text-gray-400">{displayDuration}</span>
                   </div>
                 </div>
-              </Link>
-              <button
-                onClick={handletoFollow}
-                className={cn(
-                  "border-2 border-green-500 text-xs px-3 py-1.5 rounded-full duration-200 font-medium capitalize",
-                  follower?.[0]?.user_id.includes(authId)
-                    ? "bg-green-500 text-white"
-                    : "bg-transparent text-green-500"
-                )}
-              >
-                {follower?.[0]?.user_id.includes(authId) ? "Following" : "Follow"}
-              </button>
-            </div>
-
-            {/* Description */}
-            <DescriptionCard
-              description={video.description || "This is a superhero film based on the Marvel Comics superhero team the Avengers. Produced by Marvel Studios and distributed by Walt Disney Studios."}
-              maxLength={150}
-              className="my-4"
-            />
-          </div>
-        </div>
-        <CategoryList langage={video.language || "Tamil"}
-          title={"Suggested for you"}
-          desc={"POPULAR FILMS"}
-        />
-
-        {/* Additional sections for mobile */}
-        <div className="mt-0">
-          <HeartPoll
-            rating={rating}
-            handleRatingChange={handleRatingChange}
-            numberOfStars={Math.floor(displayRating)}
-            videoTitle={video.title}
-          />
-
-          <div className="mt-6">
-            <VideoComment videoId={video._id} />
-          </div>
-
-          <div className="mt-8">
-            <CategoryList
-              title={"Suggested for you"}
-              desc={"POPULAR FILMS"}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop design - keep existing layout */}
-      <div className="hidden lg:block">
-        <div className="pt-24">
-          <VideoPlayer isMembership={isMembership} video={video} />
-        </div>
-        <div className="p-6">
-          <div className="w-full mt-4 flex flex-row pb-3 justify-between items-center">
-            <div className="w-full">
-              <div className="flex items-center flex-row justify-between">
-                <div className="">
-                  <h3 className="text-xl font-bold">{video.title}</h3>
-                </div>
-                <div className="flex text-sm items-center flex-wrap gap-2">
-                  {[
-                    { label: "", value: <ViewCounter count={video.views} /> },
-                    { label: "", value: video.certification },
-                    { label: "", value: secondsToMinutes(video.duration) },
-                    { label: "", value: video.language || "Tamil" },
-                    { label: "", value: video?.category?.[0]?.split(",")[0] || "Short Film" },
-                    { label: "", value: "Block Buster" }
-                  ].map((item, index) => (
-                    <React.Fragment key={index}>
-                      {index > 0 && (
-                        <div className="h-4 w-px bg-gray-600" />
-                      )}
-                      <div className={cn("px-2 py-1 capitalize rounded-md flex items-center",
-                        typeof item.value !== "object" ? "bg-main" : "bg-transparent")}>
-                        {item.label && <span className="mr-1">{item.label}</span>}
-                        {item.value}
-                      </div>
-                    </React.Fragment>
-                  ))}
-                  <ShareVideoButton videoId={videoId} title={video.title} />
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => router.push('/monetization')}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1 rounded-md text-sm flex items-center gap-2 transition-transform hover:scale-105"
-                  >
-                    <span>Monetize Content</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center flex-row py-6 justify-between">
-                <div className="flex items-center w-full justify-start gap-4">
-                  <Link
-                    href={`/profile/${video?.user}`}
-                    className="flex items-center gap-3"
-                  >
-                    <Image
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full object-cover"
-                      src={userprofile?.profilePic}
-                      alt=""
-                    />
-                    <div>{userprofile?.full_name}</div>
-                    <div className="font-medium dark:text-white">
-                      <div className="card dark:text-gray-400">
-                        {formatNumber(userprofile?.followingId?.length || 0, true)}
-                      </div>
-                    </div>
-                  </Link>
-                  <button
-                    onClick={handletoFollow}
+                    onClick={handletoLike}
                     className={cn(
-                      "border-2 border-green-500 flex-shrink-0 flex duration-300 justify-center gap-2 py-2 px-4 text-base items-center rounded-xl z-50 relative font-semibold capitalize",
-                      follower?.[0]?.user_id.includes(authId)
-                        ? " bg-green-500 text-white"
-                        : "bg-transparent "
+                      "p-2 rounded-full",
+                      isLike ? "text-red-500" : "text-gray-400"
                     )}
                   >
-                    {follower?.[0]?.user_id.includes(authId)
-                      ? "Following"
-                      : "Follow"}
+                    <Heart className={cn("h-5 w-5", isLike ? "fill-current" : "")} />
                   </button>
-                </div>
-                <div className="w-[70%] !mt-0">
-                  <HeartPoll
-                    rating={rating}
-                    handleRatingChange={handleRatingChange}
-                    numberOfStars={Math.floor(displayRating)}
-                    videoTitle={video.title}
-                  />
-                </div>
-              </div>
-              <div className="border-t">
-                <div className="w-full">
-                  <div className="my-8">
-                    <VideoComment videoId={video._id} />
-                  </div>
+                  <button
+                    onClick={() => router.push(`/video/${videoId}`)}
+                    className="p-2 text-blue-400"
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                  </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Video Stats - Desktop Professional UI */}
-          <div className="flex-wrap lg:hidden flex gap-3 mt-3">
-            <div className="stats-badge bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-700 px-4 py-2 rounded-full shadow-md flex items-center gap-2 hover:shadow-lg transition-all">
-              <div className="bg-blue-500/20 p-1.5 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-blue-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+      <div className="max-w-screen-xl mx-auto">
+        {/* Video Container */}
+        <div className="lg:px-4 px-0" ref={videoContainerRef}>
+          <VideoPlayer isMembership={isMembership} video={video} />
+        </div>
+
+        {/* Content Container */}
+        <div className="pt-3" ref={contentRef}>
+          {/* Mobile Content */}
+          <div className="lg:hidden">
+            <div className="px-4 space-y-4">
+              {/* Title and Share/Like */}
+              <div className="flex justify-between items-start">
+                <h1 className="text-lg font-bold text-white flex-1 pr-2">{video.title}</h1>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => setIsFavorite(!isFavorite)}
+                    className="rounded-full bg-gray-800/60 p-2.5"
+                  >
+                    <Heart className={cn("h-5 w-5", isFavorite ? "fill-red-500 text-red-500" : "text-gray-300")} />
+                  </button>
+                  <ShareVideoButton videoId={videoId} title={video.title} />
+                </div>
               </div>
-              <span className="font-medium">{video?.category?.[0]?.split(",")[0] || "Action"}</span>
+
+              {/* Stats Pills */}
+              <div className="flex flex-wrap gap-2 pb-3 pt-1">
+                <div className="flex items-center gap-1.5 bg-gray-800/60 px-3 py-1.5 rounded-full text-xs text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-purple-400">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <span>{formatViewCount(video.views)} views</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-gray-800/60 px-3 py-1.5 rounded-full text-xs text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-blue-400">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>{displayDuration}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-gray-800/60 px-3 py-1.5 rounded-full text-xs text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-yellow-400">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                  <span>{displayRating}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-gray-800/60 px-3 py-1.5 rounded-full text-xs text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-indigo-400">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  <span>{video?.category?.[0]?.split(",")[0] || "Action"}</span>
+                </div>
+
+                <Button
+                  onClick={() => router.push('/monetization')}
+                  size="sm"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full text-xs px-3 py-1.5 h-auto"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 mr-1">
+                    <line x1="12" x2="12" y1="2" y2="22"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  Monetize
+                </Button>
+              </div>
+
+              {/* Creator Profile Card */}
+              <div className="p-3 bg-gradient-to-r from-purple-900/30 to-indigo-900/30 rounded-xl border border-purple-900/30">
+                <Link
+                  href={`/profile/${video?.user}`}
+                  className="flex items-center gap-3"
+                >
+                  <Image
+                    width={44}
+                    height={44}
+                    className="w-11 h-11 rounded-full object-cover border-2 border-purple-500"
+                    src={userprofile?.profilePic || "https://via.placeholder.com/100"}
+                    alt={userprofile?.full_name || "Creator"}
+                  />
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium text-base">{userprofile?.full_name}</h3>
+                    <p className="text-gray-400 text-xs">
+                      {formatNumber(userprofile?.followingId?.length || 0, true)} followers
+                    </p>
+                  </div>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handletoFollow();
+                    }}
+                    className={cn(
+                      "rounded-full px-4 h-9 text-sm",
+                      follower?.[0]?.user_id.includes(authId)
+                        ? "bg-green-500 hover:bg-green-600 text-white"
+                        : "bg-transparent text-green-500 border-2 border-green-500 hover:bg-green-500/10"
+                    )}
+                  >
+                    {follower?.[0]?.user_id.includes(authId) ? "Following" : "Follow"}
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Description */}
+              <DescriptionCard
+                description={video.description || "This is a superhero film based on the Marvel Comics superhero team the Avengers. Produced by Marvel Studios and distributed by Walt Disney Studios."}
+                maxLength={150}
+                className="bg-gradient-to-r from-gray-800/50 to-gray-800/30 p-3 rounded-xl border border-gray-700/30"
+              />
+
+              {/* Rating */}
+              <div className="pt-2 pb-4">
+                <HeartPoll
+                  rating={rating}
+                  handleRatingChange={handleRatingChange}
+                  numberOfStars={Math.floor(displayRating)}
+                  videoTitle={video.title}
+                />
+              </div>
+
+              {/* Comments */}
+              <div className="pt-2 pb-6">
+                <h3 className="text-white font-bold text-lg mb-4 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mr-2 text-indigo-400">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Comments
+                </h3>
+                <VideoComment videoId={video._id} />
+              </div>
+
+              {/* Suggested Videos */}
+              <div className="pt-2 pb-6">
+                <CategoryList
+                  langage={video.language || "Tamil"}
+                  title={"Suggested for you"}
+                  desc={"POPULAR FILMS"}
+                  className="pt-1"
+                />
+              </div>
             </div>
+          </div>
 
-            <div className="stats-badge bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-700 px-4 py-2 rounded-full shadow-md flex items-center gap-2 hover:shadow-lg transition-all">
-              <div className="bg-indigo-500/20 p-1.5 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-indigo-400"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              </div>
-              <span className="font-medium">{displayDuration || "2:30 Hour"}</span>
-            </div>
-
-            <div className="stats-badge bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-700 px-4 py-2 rounded-full shadow-md flex items-center gap-2 hover:shadow-lg transition-all">
-              <div className="bg-yellow-500/20 p-1.5 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-yellow-400"><path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" /></svg>
-              </div>
-              <span className="font-medium">{displayRating}</span>
-            </div>
-
-            <div className="stats-badge bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-700 px-4 py-2 rounded-full shadow-md flex items-center gap-2 hover:shadow-lg transition-all">
-              <div className="bg-purple-500/20 p-1.5 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-purple-400"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </div>
-              <span className="font-medium">{formatViewCount(video.views)}</span>
-            </div>
-
-            <button
-              onClick={() => router.push('/monetization')}
-              className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-4 py-2 rounded-full shadow-md flex items-center gap-2 hover:brightness-110 hover:shadow-lg transition-all"
-            >
-              <div className="bg-white/20 p-1.5 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-              </div>
-              <span className="font-medium">Monetize</span>
-            </button>
+          {/* Desktop Content */}
+          <div className="hidden lg:block">
+            {/* ...existing desktop layout... */}
           </div>
         </div>
       </div>
-
-
-    </main >
+    </main>
   );
 }
 

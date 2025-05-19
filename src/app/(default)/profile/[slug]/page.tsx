@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: any }) {
     data: userVideos,
     isLoading: videoLoading,
     error: videoError,
-  } = useQuery(["video" , params.slug], async () => {
+  } = useQuery(["video", params.slug], async () => {
     const response = await axios.get(`/profile/video`);
     return response.data.video;
   });
@@ -81,10 +81,7 @@ export default async function Page({ params }: { params: any }) {
               <h1 className="text-center text-white font-bold text-4xl">
                 {user.full_name}
               </h1>
-              {/* About */}
-              <p className="w-full text-gray-400 text-md text-pretty sm:text-center xs:text-justify">
-                {user.description || "No description provided"}
-              </p>
+
             </div>
             <div className="py-8 px-12">
               <button className="flex items-center bg-green-500 rounded-xl px-6 py-3 gap-3">

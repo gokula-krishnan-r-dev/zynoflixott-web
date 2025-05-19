@@ -161,7 +161,6 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
             (progressEvent.loaded * 100) / progressEvent.total
           );
           setProgressEvent(percentCompleted);
-          // setIsLoading(percentCompleted < 100);
         },
       });
 
@@ -169,12 +168,6 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
         toast.success("Banner video added successfully");
         setIsLoading(false);
         router.push("/");
-        // const transaction = localStorage.getItem("transactionId");
-        // const response1 = await axios.put(`/payment/video/${transaction}`, {
-        //   status: "success",
-        //   isVideo_uploaded: true,
-        // });
-
         console.log(response1);
       } else {
         toast.error("Banner video added failed please try again");
@@ -183,33 +176,52 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
       setIsLoading(false);
     } catch (error) {
       console.error("Error submitting form:", error);
+      setIsLoading(false);
+      toast.error("Upload failed. Please try again.");
     }
   }
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <div className="flex flex-col items-center justify-center">
-  //         <p className="text-3xl font-semibold">Uploading...</p>
-  //         <div className="relative pt-1 w-80">
-  //           <div className="flex mb-2 items-center justify-between">
-  //             <div>
-  //               <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
-  //                 {progressEvent}%
-  //               </span>
-  //             </div>
-  //           </div>
-  //           <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
-  //             <div
-  //               style={{ width: `${progressEvent}%` }}
-  //               className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500"
-  //             ></div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="bg-gray-900 p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="mb-6">
+              {progressEvent < 100 ? (
+                <svg className="animate-spin h-16 w-16 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">
+              {progressEvent < 100 ? "Uploading..." : "Processing..."}
+            </h3>
+            <p className="text-gray-300 mb-6">
+              {progressEvent < 100
+                ? "Please keep this window open while we upload your video."
+                : "Almost done! We're processing your upload."}
+            </p>
+
+            <div className="w-full bg-gray-700 rounded-full h-4 mb-2 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300 ease-out rounded-full"
+                style={{ width: `${progressEvent}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between w-full text-sm text-gray-400">
+              <span>{Math.min(progressEvent, 100)}% complete</span>
+              <span>{originalVideo ? `${(originalVideo.size / (1024 * 1024)).toFixed(2)} MB` : ""}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

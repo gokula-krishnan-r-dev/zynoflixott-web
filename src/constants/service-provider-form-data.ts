@@ -59,7 +59,7 @@ export const formdata: any = [
       { label: "U - Unrestricted", value: "U" },
       {
         label:
-          "UA - Unrestricted but with parental discretion advisory for children under 12 years",
+          "UA - Parental guidance advised for children under 12",
         value: "UA",
       },
       { label: "A - Adult", value: "A" },

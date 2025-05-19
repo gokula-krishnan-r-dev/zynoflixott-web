@@ -15,12 +15,14 @@ interface VideoPlayerProps {
   video: Ivideo;
   isMembership: boolean;
   mode?: "orignal" | "preview";
+  miniPlayer?: boolean;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   video,
   isMembership,
-  mode = "preview"
+  mode = "preview",
+  miniPlayer = false
 }) => {
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -488,6 +490,36 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Handle if video is null
   if (!video) return null;
 
+  // For mini player mode, return simplified player
+  if (miniPlayer) {
+    return (
+      <div
+        className="relative w-full h-full overflow-hidden"
+        onClick={togglePlay}
+      >
+        <video
+          ref={videoRef}
+          src={proxiedVideoUrl || videoLink}
+          poster={video?.thumbnail}
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover"
+          autoPlay={false}
+          muted={true}
+          controls={false}
+        />
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+          {isPlaying ? (
+            <FaPause className="text-white text-xl" />
+          ) : (
+            <FaPlay className="text-white text-xl" />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Return normal player for regular mode
   return (
     <div
       className="video-player-container"
