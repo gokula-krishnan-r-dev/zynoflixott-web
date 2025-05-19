@@ -1,6 +1,6 @@
 "use client";
 import axios from "@/lib/axios";
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -17,13 +17,37 @@ const fetchCategories = async (langage: string) => {
 
 const CategoryList = ({ title, desc, langage, sectionType }: any) => {
   const { data, isLoading, error } = useQuery(["video", langage], () => fetchCategories(langage));
-  if (isLoading) return <p>Loading...</p>;
+  const [activeTab, setActiveTab] = useState('Popular');
+
+  if (isLoading) return (
+    <div className="w-full flex justify-center items-center py-10">
+      <div className="animate-pulse flex flex-col items-center">
+        <div className="h-6 w-40 bg-gray-700 rounded-md mb-4"></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="flex flex-col space-y-2">
+              <div className="h-40 bg-gray-700 rounded-md"></div>
+              <div className="h-4 bg-gray-700 rounded-md w-3/4"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (error) return <p className="text-red-500 text-center py-4">Failed to load videos</p>;
 
   if (data?.length === 0) return null;
 
   // Determine if this is a trending or featured section
   const isFeatured = sectionType === 'trending' || sectionType === 'featured';
   const isMainCategory = title === 'TRENDING' || title === 'COMING SOON' || title === 'BEST FOR KIDS';
+
+  // Handle tab change
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    // Here you could filter videos based on tab if needed
+  };
 
   return (
     <div className="pt-0 md:pt-4">
@@ -52,11 +76,19 @@ const CategoryList = ({ title, desc, langage, sectionType }: any) => {
           </div>
 
           {title === 'TRENDING' && (
-            <div className="mobile-tabs px-4 mt-2">
-              <button className="mobile-tab active">Popular</button>
-              <button className="mobile-tab">Action</button>
-              <button className="mobile-tab">Love</button>
-              <button className="mobile-tab">Drama</button>
+            <div className="mobile-tabs px-4 mt-2 flex overflow-x-auto space-x-2 pb-2 scrollbar-hide">
+              {['Popular', 'Action', 'Love', 'Drama'].map(tab => (
+                <button
+                  key={tab}
+                  className={`mobile-tab px-3 py-1 rounded-full text-sm whitespace-nowrap ${activeTab === tab
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-800 text-gray-300'
+                    } transition-colors`}
+                  onClick={() => handleTabChange(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
           )}
         </div>

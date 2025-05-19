@@ -5,13 +5,14 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi
 } from "@/components/ui/carousel";
 import { Ivideo } from "../types/video";
 
 import { cn } from "@/lib/utils";
 const VideoCard = dynamic(() => import("@/components/card/video-card"));
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 
 // Helper function to shuffle array
@@ -24,8 +25,52 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return shuffled;
 };
 
+// Helper function to get random interval between min and max
+const getRandomInterval = (min: number, max: number): number => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
 export default function VideoScroll({ data, title = '', sectionType = '' }: { data: Ivideo[], title?: string, sectionType?: string }) {
   const [shuffledVideos, setShuffledVideos] = useState<Ivideo[]>([]);
+  const [api, setApi] = useState<CarouselApi>();
+  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Handle carousel API initialization
+  useEffect(() => {
+    if (!api) return;
+
+    // Setup auto-scrolling function
+    const startAutoScroll = () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
+
+      // Set a random interval between 4-8 seconds for next scroll
+      const randomInterval = getRandomInterval(4000, 8000);
+
+      autoScrollIntervalRef.current = setInterval(() => {
+        if (!isPaused) {
+          api.scrollNext();
+        }
+        // Set a new random interval after each scroll
+        if (autoScrollIntervalRef.current) {
+          clearInterval(autoScrollIntervalRef.current);
+          startAutoScroll();
+        }
+      }, randomInterval);
+    };
+
+    // Start the auto-scrolling
+    startAutoScroll();
+
+    // Cleanup on unmount
+    return () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
+    };
+  }, [api, isPaused]);
 
   useEffect(() => {
     if (Array.isArray(data)) {
@@ -43,6 +88,14 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
   // Check if we should use large cards (for featured content like "TRENDING")
   const isLargeSection = sectionType === 'trending' || sectionType === 'featured';
 
+  const handleMouseEnter = () => {
+    setIsPaused(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPaused(false);
+  };
+
   return (
     <div className="w-full mobile-section-spacing">
       {/* Mobile view */}
@@ -52,7 +105,7 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
           <Link href="/explore" className="text-sm text-purple-400">Let's Explore</Link>
         </div>
 
-        <div className="flex overflow-x-auto  gap-3 pl-4 pr-4 pb-3 scrollbar-hide">
+        <div className="flex overflow-x-auto gap-3 pl-4 pr-4 pb-3 scrollbar-hide">
           {Array.isArray(shuffledVideos) &&
             shuffledVideos.map((video: Ivideo, index: number) => (
               <div key={index} className="flex-none">
@@ -63,13 +116,18 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
       </div>
 
       {/* Desktop view with Carousel */}
-      <div className="hidden sm:block ">
+      <div
+        className="hidden sm:block"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         <Carousel
           opts={{
             align: "start",
             loop: true,
           }}
           className="px-2"
+          setApi={setApi}
         >
           <CarouselContent className="-ml-4 md:-ml-6">
             {Array.isArray(shuffledVideos) &&

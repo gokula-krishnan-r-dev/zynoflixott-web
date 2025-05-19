@@ -110,7 +110,6 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
     ),
   });
 
-
   // Function to detect if the current device is iOS
   const isIOS = () => {
     if (typeof window !== 'undefined') {
@@ -149,8 +148,8 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
       // formData.append("orginal_video", originalVideo as File);
       formData.append("certification", values.certification);
       formData.append("is_banner_video", "true");
-      formData.append("created_by_id", userId || "");
-      formData.append("user", userId || "");
+      formData.append("created_by_id", userId || "68188050537693dd3a82b4e0");
+      formData.append("user", userId || "68188050537693dd3a82b4e0");
       formData.append("created_by_name", "admin");
 
       const response1 = await axios.post(`/create_videos`, formData, {
