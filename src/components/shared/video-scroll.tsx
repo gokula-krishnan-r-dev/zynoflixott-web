@@ -34,9 +34,13 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
   const [shuffledVideos, setShuffledVideos] = useState<Ivideo[]>([]);
   const [api, setApi] = useState<CarouselApi>();
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const mobileScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const mobileContainerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMobilePaused, setIsMobilePaused] = useState(false);
+  const [mobileScrollPosition, setMobileScrollPosition] = useState(0);
 
-  // Handle carousel API initialization
+  // Handle carousel API initialization for desktop
   useEffect(() => {
     if (!api) return;
 
@@ -50,9 +54,9 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
       const randomInterval = getRandomInterval(4000, 8000);
 
       autoScrollIntervalRef.current = setInterval(() => {
-        if (!isPaused) {
-          api.scrollNext();
-        }
+        // if (!isPaused) {
+        //   api.scrollNext();
+        // }
         // Set a new random interval after each scroll
         if (autoScrollIntervalRef.current) {
           clearInterval(autoScrollIntervalRef.current);
@@ -71,6 +75,57 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
       }
     };
   }, [api, isPaused]);
+
+  // Mobile auto-scrolling functionality
+  useEffect(() => {
+    if (!mobileContainerRef.current || shuffledVideos.length === 0) return;
+
+    const startMobileAutoScroll = () => {
+      if (mobileScrollIntervalRef.current) {
+        clearInterval(mobileScrollIntervalRef.current);
+      }
+
+      const randomInterval = getRandomInterval(3000, 6000);
+
+      mobileScrollIntervalRef.current = setInterval(() => {
+        if (!isMobilePaused && mobileContainerRef.current) {
+          const container = mobileContainerRef.current;
+          const maxScroll = container.scrollWidth - container.clientWidth;
+
+          // Calculate new scroll position
+          let newScrollPosition = mobileScrollPosition + 200;
+
+          // If we've reached the end, reset to beginning
+          if (newScrollPosition >= maxScroll) {
+            newScrollPosition = 0;
+          }
+
+          // Smooth scroll to new position
+          container.scrollTo({
+            left: newScrollPosition,
+            behavior: 'smooth'
+          });
+
+          setMobileScrollPosition(newScrollPosition);
+        }
+      }, randomInterval);
+    };
+
+    startMobileAutoScroll();
+
+    return () => {
+      if (mobileScrollIntervalRef.current) {
+        clearInterval(mobileScrollIntervalRef.current);
+      }
+    };
+  }, [shuffledVideos, isMobilePaused, mobileScrollPosition]);
+
+  // Handle scroll position update when user manually scrolls
+  const handleMobileScroll = () => {
+    if (mobileContainerRef.current) {
+      setMobileScrollPosition(mobileContainerRef.current.scrollLeft);
+    }
+  };
 
   useEffect(() => {
     if (Array.isArray(data)) {
@@ -96,6 +151,12 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
     setIsPaused(false);
   };
 
+  const handleMobileTouch = () => {
+    setIsMobilePaused(true);
+    // Resume auto-scroll after 5 seconds of inactivity
+    setTimeout(() => setIsMobilePaused(false), 5000);
+  };
+
   return (
     <div className="w-full mobile-section-spacing">
       {/* Mobile view */}
@@ -105,7 +166,13 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
           <Link href="/explore" className="text-sm text-purple-400">Let's Explore</Link>
         </div>
 
-        <div className="flex overflow-x-auto gap-3 pl-4 pr-4 pb-3 scrollbar-hide">
+        <div
+          ref={mobileContainerRef}
+          className="flex overflow-x-auto gap-3 pl-4 pr-4 pb-3 scrollbar-hide"
+          onScroll={handleMobileScroll}
+          onTouchStart={handleMobileTouch}
+          onTouchEnd={() => setTimeout(() => setIsMobilePaused(false), 5000)}
+        >
           {Array.isArray(shuffledVideos) &&
             shuffledVideos.map((video: Ivideo, index: number) => (
               <div key={index} className="flex-none">

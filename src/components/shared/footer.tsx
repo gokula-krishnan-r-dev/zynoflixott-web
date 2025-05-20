@@ -1,3 +1,4 @@
+import { Calendar, Megaphone } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -179,13 +180,13 @@ const Footer: React.FC = () => {
 
                 <li>
                   <a className="hover:underline " href="/event">
-                    Event
+                    <Calendar className="w-5 h-5" /> Event
                   </a>
                 </li>
 
                 <li>
                   <a className="hover:underline " href="/advertisement">
-                    Advertisement
+                    <Megaphone className="w-5 h-5" /> Advertisement
                   </a>
                 </li>
               </ul>
