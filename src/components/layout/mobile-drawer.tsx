@@ -166,7 +166,9 @@ export function SheetMobile() {
                           onClick={() => {
                             localStorage.removeItem("isLogin");
                             localStorage.removeItem("userRole");
+                            setOpen(false);
                             window.location.href = "/login";
+
                           }}
                           className="flex items-center px-4 py-3 text-white rounded-lg hover:bg-[#292c41]/50 transition-colors"
                         >
@@ -190,6 +192,6 @@ export function SheetMobile() {
           </>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 }
