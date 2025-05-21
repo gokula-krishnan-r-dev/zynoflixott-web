@@ -91,9 +91,7 @@ const Page = () => {
 
   return (
     <main className="px-3 sm:px-4 md:px-6 lg:px-8">
-      {isProduction === "production" ? (
-        <ProductionProfile />
-      ) : (
+      {isProduction === "user" ? (
         <section className="w-full overflow-hidden dark:bg-gray-900">
           <div className="w-full mx-auto">
 
@@ -128,13 +126,13 @@ const Page = () => {
                   src={user.profilePic}
                   alt="User Profile"
                   className="rounded-full object-cover 
-                    w-24 h-24 
-                    sm:w-28 sm:h-28 
-                    md:w-32 md:h-32 
-                    lg:w-36 lg:h-36 
-                    xl:w-40 xl:h-40
-                    outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl 
-                    relative -mt-12 sm:-mt-14 md:-mt-16 lg:-mt-20 xl:-mt-24"
+                  w-24 h-24 
+                  sm:w-28 sm:h-28 
+                  md:w-32 md:h-32 
+                  lg:w-36 lg:h-36 
+                  xl:w-40 xl:h-40
+                  outline outline-2 outline-offset-2 outline-yellow-500 shadow-xl 
+                  relative -mt-12 sm:-mt-14 md:-mt-16 lg:-mt-20 xl:-mt-24"
                 />
 
 
@@ -216,7 +214,7 @@ const Page = () => {
 
               {/* Video grid */}
               <div className="grid pt-8 gap-3 sm:gap-4 md:gap-5 lg:gap-6 
-                grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {userVideos?.length > 0 &&
                   userVideos?.map((video: any, index: number) => (
                     <VideoCard
@@ -230,9 +228,9 @@ const Page = () => {
             </div>
           </div>
         </section>
+      ) : (
+        <ProductionProfile />
       )}
-
-
     </main>
   );
 };

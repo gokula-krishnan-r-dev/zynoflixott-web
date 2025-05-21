@@ -301,7 +301,7 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
       localStorage.setItem("userId", user._id);
       localStorage.setItem(
         "userRole",
-        response.data.isProduction ? "production" : "user"
+        response.data.isProduction
       );
       localStorage.setItem("isLogin", "true");
 

@@ -179,14 +179,13 @@ const Footer: React.FC = () => {
                 </li>
 
                 <li>
-                  <a className="hover:underline " href="/event">
-                    <Calendar className="w-5 h-5" /> Event
+                  <a className="hover:underline " href="/event"> Event
                   </a>
                 </li>
 
                 <li>
                   <a className="hover:underline " href="/advertisement">
-                    <Megaphone className="w-5 h-5" /> Advertisement
+                    Advertisement
                   </a>
                 </li>
               </ul>

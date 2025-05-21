@@ -1,9 +1,15 @@
 import ProductionForm from "@/components/form/production-form";
-import SignupForm from "@/components/form/signup-form";
-import Link from "next/link";
 import React from "react";
 
 const page = () => {
+  const isIOS = () => {
+    if (typeof window !== 'undefined') {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test(userAgent) ||
+        (userAgent.includes('mac') && 'ontouchend' in document);
+    }
+    return false;
+  };
   return (
     <div>
       <div className="min-h-screen relative text-gray-900 flex justify-center">
@@ -18,6 +24,22 @@ const page = () => {
           <source src="/bg/bg-login-1.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video> */}
+        {isIOS() ? (
+          <video
+            loop
+            className="absolute z-20 inset-0 w-full h-full object-cover object-center bg-black opacity-70 [.ios &]:hidden"
+            autoPlay
+            muted
+            controls={false}
+            preload="none"
+            playsInline
+          >
+            <source src="/bg/bg-login-1.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <div className=""></div>
+        )}
         {/* <div className="hero-bg-gradient "></div> */}
         <div className="max-w-screen-xl z-30  m-0 sm:m-10 flex justify-center flex-1">
           <div className="lg:w-1/2 xl:w-5/12 text-white rounded-3xl p-6 sm:p-12">

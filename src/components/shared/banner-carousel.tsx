@@ -22,7 +22,7 @@ function TrendingSection({ activeTab, setActiveTab, refetch }: { activeTab: stri
 
   return (
     <div className="px-4 lg:px-12 lg:hidden block pt-4 lg:pt-8">
-      <div className="text-[#cccdd2] text-sm lg:text-base">Lets Explore</div>
+      <div className="text-[#cccdd2] text-sm lg:text-base"><Link href="/explore">Lets Explore</Link></div>
       <div className="flex justify-between items-center mt-1 mb-3">
         <div className="flex items-center">
           <h2 className="text-white text-xl lg:text-3xl font-bold uppercase tracking-wide">Trending</h2>

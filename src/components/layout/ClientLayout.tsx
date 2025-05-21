@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, Search, Play, Heart, User, Film, DollarSign } from "lucide-react";
+import { Home, User, Film, DollarSign } from "lucide-react";
 
 const MobileNavBar = () => {
   const pathname = usePathname();
