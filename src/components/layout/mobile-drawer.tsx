@@ -141,7 +141,7 @@ export function SheetMobile() {
                       );
                     })}
                     {!loggedIn && (
-                      <motion.li
+                      <motion.li onClick={() => setOpen(false)}
                         key="login"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}

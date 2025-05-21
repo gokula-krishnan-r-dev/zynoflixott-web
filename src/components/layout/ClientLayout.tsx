@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, Search, Play, Heart, User } from "lucide-react";
+import { Home, Search, Play, Heart, User, Film, DollarSign } from "lucide-react";
 
 const MobileNavBar = () => {
   const pathname = usePathname();
@@ -15,11 +15,11 @@ const MobileNavBar = () => {
         <span>Home</span>
       </Link>
       <Link href="/film-call" className={`mobile-nav-item ${pathname === '/film-call' ? 'active' : ''}`}>
-        <Search size={20} />
+        <Film size={20} />
         <span>Film Call</span>
       </Link>
       <Link href="/monetization" className={`mobile-nav-item ${pathname.includes('/monetization') ? 'active' : ''}`}>
-        <Play size={20} />
+        <DollarSign size={20} />
         <span>Monetization</span>
       </Link>
       <Link href="/profile" className={`mobile-nav-item ${pathname === '/profile' ? 'active' : ''}`}>
