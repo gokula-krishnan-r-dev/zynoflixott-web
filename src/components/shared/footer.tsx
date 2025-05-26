@@ -188,6 +188,12 @@ const Footer: React.FC = () => {
                     Advertisement
                   </a>
                 </li>
+
+                <li>
+                  <a className="hover:underline " href="/live-streams">
+                    Live Stream
+                  </a>
+                </li>
               </ul>
             </div>
           </div>

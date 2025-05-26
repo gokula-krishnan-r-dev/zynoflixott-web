@@ -1,3 +1,5 @@
+// Mock user ID for demonstration purposes
+// In a real application, this would come from authentication
 export const userId =
   typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 

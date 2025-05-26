@@ -2,7 +2,7 @@
 import { isLogin } from "@/lib/user";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, Home, Compass, Upload, MessageSquare, User, LogIn, Film, DollarSign, LogOut, Megaphone, Calendar } from "lucide-react";
+import { Menu, X, Home, Compass, Upload, MessageSquare, User, LogIn, Film, DollarSign, LogOut, Megaphone, Calendar, Video } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -19,6 +19,8 @@ const menuItems = [
   { label: "Event", href: "/event", icon: <Calendar className="w-5 h-5" /> },
   //Advertisement
   { label: "Advertisement", href: "/advertisement", icon: <Megaphone className="w-5 h-5" /> },
+  //Live Stream
+  { label: "My Live Streams", href: "/my-live-streams", icon: <Video className="w-5 h-5" /> },
 ];
 
 export function SheetMobile() {
