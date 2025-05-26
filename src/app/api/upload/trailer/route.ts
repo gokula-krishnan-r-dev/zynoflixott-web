@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { BlobServiceClient } from '@azure/storage-blob';
-import { v4 as uuidv4 } from 'uuid';
-
-// Azure Blob Storage configuration
-const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING || '');
-const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_STORAGE_CONTAINER || 'zynoflix');
+import { getContainerClient, generateUniqueBlobName, getMediaUrl, azureConfig } from '@/lib/azure-storage';
 
 export const maxDuration = 60; // Set max duration for the API route (in seconds)
 
@@ -35,32 +30,43 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'File size exceeds the 100MB limit.' }, { status: 400 });
         }
 
-        // Generate a unique file name
-        const fileExtension = file.name.split('.').pop();
-        const uniqueFileName = `${userId}/${uuidv4()}.${fileExtension}`;
+        // Get container client for trailers
+        const containerClient = getContainerClient(azureConfig.containerNames.trailers);
+        await containerClient.createIfNotExists({
+            access: 'blob'
+        });
 
-        // Get a block blob client
-        const blockBlobClient = containerClient.getBlockBlobClient(uniqueFileName);
+        // Generate unique blob name
+        const blobName = generateUniqueBlobName(userId, file.name);
+
+        // Get blob client
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
         // Convert file to ArrayBuffer and then to Buffer
         const fileBuffer = Buffer.from(await file.arrayBuffer());
 
         // Upload to Azure Blob Storage
-        await blockBlobClient.upload(fileBuffer, fileBuffer.length, {
+        await blockBlobClient.uploadData(fileBuffer, {
             blobHTTPHeaders: {
                 blobContentType: file.type
             }
         });
 
-        // Generate the URL for the uploaded file
-        const fileUrl = blockBlobClient.url;
+        // Get the direct URL and process it for playback
+        const directUrl = blockBlobClient.url;
+        const playableUrl = getMediaUrl(directUrl, 'trailer');
 
         // Return success response with the file URL
         return NextResponse.json({
             success: true,
-            fileUrl: fileUrl,
-            message: 'Trailer uploaded successfully'
+            fileUrl: playableUrl,
+            directUrl: directUrl,
+            fileName: file.name,
+            fileType: 'trailer',
+            fileSize: file.size,
+            contentType: file.type
         });
+
     } catch (error) {
         console.error('Error uploading trailer:', error);
         return NextResponse.json({
