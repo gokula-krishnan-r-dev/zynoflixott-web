@@ -34,7 +34,7 @@ export default function GiftButtonGroup({
 
     if (variant === 'mobile') {
         return (
-            <div className={cn("flex justify-center", className)}>
+            <div className={cn("flex justify-center  bg-purple-900 px-5 py-1 rounded-full", className)}>
                 <motion.div
                     className="w-full flex gap-2 max-w-md"
                     initial={{ opacity: 0, y: 10 }}
@@ -58,7 +58,7 @@ export default function GiftButtonGroup({
                                 disabled={loading}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-3 rounded-full shadow-sm flex items-center text-xs"
+                                className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-3 py-2.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs hover:brightness-110"
                             >
                                 {option.displayAmount}
                             </motion.button>
@@ -90,12 +90,7 @@ export default function GiftButtonGroup({
                                 disabled={loading}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className={cn(
-                                    "bg-gradient-to-r px-6 py-3 rounded-lg text-center text-white font-medium shadow-md transition-all duration-200",
-                                    selectedAmount === option.amount
-                                        ? "from-purple-600 to-indigo-600 ring-2 ring-purple-300/30"
-                                        : "from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800"
-                                )}
+                                className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-3 py-2.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs hover:brightness-110"
                             >
                                 {option.displayAmount}
 

@@ -1095,20 +1095,6 @@ export default function LiveStreamForm() {
                             </div>
                         </div>
 
-                        <div className="p-6 bg-[#172d3e] border border-green-900 rounded-md">
-                            <div className="flex items-center">
-                                <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                                <p className="text-green-400 font-medium">
-                                    Payment completed successfully!
-                                </p>
-                            </div>
-                            <p className="mt-2 text-blue-300 text-sm">
-                                Order ID: <span className="font-mono bg-[#0d1f2d] px-2 py-1 rounded">{orderId}</span>
-                            </p>
-                        </div>
-
                         <div className="flex justify-between">
                             <Button
                                 type="button"

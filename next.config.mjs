@@ -26,6 +26,12 @@ const nextConfig = {
       allowedForwardedHosts: ['*'],
     },
   },
+  api: {
+    bodyParser: {
+      sizeLimit: '100mb', // Increase the size limit for API routes
+    },
+    responseLimit: false, // Remove the response size limit
+  },
 };
 
 export default nextConfig;

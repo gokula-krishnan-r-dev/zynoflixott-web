@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { azureConfig, getContainerClient, generateUniqueBlobName, getMediaUrl } from '@/lib/azure-storage';
 
+// Set the export config to handle large files
+export const config = {
+    api: {
+        bodyParser: false,
+        responseLimit: false,
+    },
+};
+
 export async function POST(request: NextRequest) {
     try {
         const userId = request.headers.get('userId');
@@ -56,10 +64,15 @@ export async function POST(request: NextRequest) {
         // Set appropriate content type
         const contentType = file.type;
 
-        // Upload data
+        // Upload data with optimized settings for large files
         await blockBlobClient.uploadData(Buffer.from(fileBuffer), {
             blobHTTPHeaders: {
                 blobContentType: contentType
+            },
+            // Add chunking for better performance with large files
+            concurrency: 20,
+            onProgress: (progress) => {
+                console.log(`Upload progress: ${progress.loadedBytes} bytes`);
             }
         });
 
