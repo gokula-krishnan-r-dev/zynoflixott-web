@@ -398,26 +398,31 @@ export default function Page({ params }: { params: { videoId: string } }) {
                   </div>
                   <span className="font-medium">{formatViewCount(video.views)}</span>
                 </div>
+                <div className="flex items-center gap-2 w-full">
 
-                <button
-                  onClick={() => router.push('/monetization')}
-                  className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs hover:brightness-110"
-                >
-                  <div className="bg-white/20 p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-white"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                  <button
+                    onClick={() => router.push('/monetization')}
+                    className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-3 py-2.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs hover:brightness-110"
+                  >
+                    <div className="bg-white/20 p-1 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-white"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <span className="font-medium">Monetize</span>
+                  </button>
+                  <div className="w-full">
+
+                    <GiftPaymentContainer
+                      videoId={video._id}
+                      creatorId={video.created_by_id}
+                      creatorName={userprofile?.full_name}
+                      variant="mobile"
+                      className=""
+                    />
                   </div>
-                  <span className="font-medium">Monetize</span>
-                </button>
+                </div>
               </div>
 
-              {/* Gift buttons - Mobile */}
-              <GiftPaymentContainer
-                videoId={video._id}
-                creatorId={video.created_by_id}
-                creatorName={userprofile?.full_name}
-                variant="mobile"
-                className="mt-3 mb-1"
-              />
+
 
               {/* Profile with follow button - Mobile */}
               <div className="flex items-center justify-between bg-purple-900 bg-opacity-30 rounded-xl p-3">

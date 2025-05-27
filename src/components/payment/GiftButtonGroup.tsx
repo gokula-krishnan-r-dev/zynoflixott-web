@@ -8,8 +8,9 @@ import { Gift } from 'lucide-react';
 type GiftButtonGroupProps = {
     videoId: string;
     creatorId: string;
-    onSelect: (amount: number) => void;
+    // onSelect: (amount: number) => void;
     selectedAmount: number | null;
+    onClick: (amount: number) => void;
     loading: boolean;
     className?: string;
     variant?: 'mobile' | 'desktop';
@@ -18,10 +19,11 @@ type GiftButtonGroupProps = {
 export default function GiftButtonGroup({
     videoId,
     creatorId,
-    onSelect,
+    // onSelect,
     selectedAmount,
     loading,
     className,
+    onClick,
     variant = 'desktop'
 }: GiftButtonGroupProps) {
     const giftOptions = [
@@ -40,24 +42,23 @@ export default function GiftButtonGroup({
                     transition={{ duration: 0.3 }}
                 >
                     <div className="w-1/4 flex items-center justify-center">
-                        <div className="rounded-full bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-indigo-500/30 p-3 shadow-md">
+                        <div className="rounded-full bg-gradient-to-r mr-4 flex items-center justify-center gap-2 from-purple-600/20 to-indigo-600/20 border border-indigo-500/30 py-2 px-2.5 shadow-md">
                             <Gift className="h-5 w-5 text-indigo-400" />
+                            <span className="text-md font-medium">Gift</span>
                         </div>
                     </div>
-                    <div className="w-3/4 grid grid-cols-3 gap-2">
+                    <div className="flex items-center gap-2">
                         {giftOptions.map((option) => (
                             <motion.button
+                                onClick={() => {
+                                    onClick(option.amount);
+                                }}
                                 key={option.amount}
-                                onClick={() => onSelect(option.amount)}
+                                // onClick={() => onSelect(option.amount)}
                                 disabled={loading}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className={cn(
-                                    "bg-gradient-to-r rounded-lg py-2.5 px-1 text-center font-medium text-sm shadow-md transition-all duration-200 border",
-                                    selectedAmount === option.amount
-                                        ? "from-purple-600 to-indigo-600 text-white border-purple-300/30 ring-1 ring-white/30"
-                                        : "from-gray-800 to-gray-900 text-gray-200 border-gray-700/50 hover:from-gray-700 hover:to-gray-800"
-                                )}
+                                className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-3 rounded-full shadow-sm flex items-center text-xs"
                             >
                                 {option.displayAmount}
                             </motion.button>
@@ -85,7 +86,7 @@ export default function GiftButtonGroup({
                         {giftOptions.map((option) => (
                             <motion.button
                                 key={option.amount}
-                                onClick={() => onSelect(option.amount)}
+                                // onClick={() => onSelect(option.amount)}
                                 disabled={loading}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}

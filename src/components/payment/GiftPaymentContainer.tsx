@@ -46,8 +46,8 @@ export default function GiftPaymentContainer({
         };
     }, []);
 
-    const handlePayment = async () => {
-        if (!selectedAmount) {
+    const handlePayment = async (amount: number) => {
+        if (!amount) {
             toast.info('Please select a gift amount');
             return;
         }
@@ -70,7 +70,7 @@ export default function GiftPaymentContainer({
 
             // Create order on server
             const response = await axios.post('/api/payment/create-order', {
-                amount: selectedAmount * 100, // Convert to smallest currency unit (cents)
+                amount: amount * 100, // Convert to smallest currency unit (cents)
                 videoId,
                 creatorId,
                 currency: 'USD',
@@ -89,7 +89,7 @@ export default function GiftPaymentContainer({
             // Configure Razorpay options
             const options = {
                 key: process.env.RAZORPAY_KEY_ID || 'rzp_test_sFWdQDykS3jwfU',
-                amount: selectedAmount * 100, // Convert to smallest currency unit (cents)
+                amount: amount * 100, // Convert to smallest currency unit (cents)
                 currency: 'USD',
                 name: 'Zynoflix',
                 description: `Gift for ${creatorName}`,
@@ -156,7 +156,7 @@ export default function GiftPaymentContainer({
 
     if (isMobile) {
         return (
-            <div className={cn("px-4 py-3", className)}>
+            <div className={cn("px-4 py-0", className)}>
                 <AnimatePresence mode="wait">
                     {paymentComplete ? (
                         <motion.div
@@ -182,21 +182,16 @@ export default function GiftPaymentContainer({
                             exit={{ opacity: 0, y: -20 }}
                             className="flex flex-col items-center gap-4"
                         >
-                            <div className="text-center mb-2">
-                                <h3 className="text-base font-medium text-white">Send a Gift</h3>
-                                <p className="text-xs text-gray-400">Support {creatorName} with a gift</p>
-                            </div>
-
-                            <GiftButtonGroup
+                            <GiftButtonGroup onClick={handlePayment}
                                 videoId={videoId}
                                 creatorId={creatorId}
-                                onSelect={setSelectedAmount}
+                                // onSelect={setSelectedAmount}
                                 selectedAmount={selectedAmount}
                                 loading={loading}
                                 variant="mobile"
                             />
 
-                            <Button
+                            {/* <Button
                                 onClick={handlePayment}
                                 disabled={loading || !selectedAmount || !hasRazorpay}
                                 className="w-full max-w-md bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
@@ -207,7 +202,7 @@ export default function GiftPaymentContainer({
                                     <Gift className="h-4 w-4 mr-2" />
                                 )}
                                 {selectedAmount ? `Send $${selectedAmount} Gift` : 'Select Amount'}
-                            </Button>
+                            </Button> */}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -255,16 +250,17 @@ export default function GiftPaymentContainer({
                         </div>
 
                         <GiftButtonGroup
+                            onClick={handlePayment}
                             videoId={videoId}
                             creatorId={creatorId}
-                            onSelect={setSelectedAmount}
+                            // onSelect={setSelectedAmount}
                             selectedAmount={selectedAmount}
                             loading={loading}
                         />
 
                         <div className="mt-6 flex justify-center">
                             <Button
-                                onClick={handlePayment}
+                                onClick={() => handlePayment(selectedAmount || 0)}
                                 disabled={loading || !selectedAmount || !hasRazorpay}
                                 className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-2 h-12 text-base"
                             >
