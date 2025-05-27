@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { azureConfig, getContainerClient, generateUniqueBlobName, getMediaUrl } from '@/lib/azure-storage';
 
-
+// Updated route segment config for App Router
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const runtime = 'nodejs';
+export const preferredRegion = 'auto';
 
 export async function POST(request: NextRequest) {
     try {
