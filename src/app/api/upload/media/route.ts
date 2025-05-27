@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { azureConfig, getContainerClient, generateUniqueBlobName, getMediaUrl } from '@/lib/azure-storage';
 
-// Set the export config to handle large files
-export const config = {
-    api: {
-        bodyParser: false,
-        responseLimit: false,
-    },
-};
+
 
 export async function POST(request: NextRequest) {
     try {
