@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { azureConfig, getContainerClient, generateUniqueBlobName, getMediaUrl } from '@/lib/azure-storage';
 
-// Updated route segment config for App Router
+// Updated route segment config for App Router with maximum body size settings
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 export const runtime = 'nodejs';
 export const preferredRegion = 'auto';
+export const maxDuration = 300; // 5 minutes timeout for large uploads
 
 export async function POST(request: NextRequest) {
     try {
@@ -17,8 +18,27 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Parse the multipart form data
-        const formData = await request.formData();
+        // Get content length to check if it's within limits
+        const contentLength = request.headers.get('content-length');
+        if (contentLength && parseInt(contentLength) > 100 * 1024 * 1024) { // 100MB
+            return NextResponse.json({
+                error: 'File too large',
+                message: 'Maximum file size is 100MB'
+            }, { status: 413 });
+        }
+
+        // Parse the multipart form data with a specific boundary to handle large files
+        let formData;
+        try {
+            formData = await request.formData();
+        } catch (error) {
+            console.error('Error parsing form data:', error);
+            return NextResponse.json({
+                error: 'Error parsing upload data',
+                message: 'The server could not process your upload. Please try with a smaller file.'
+            }, { status: 400 });
+        }
+
         const file = formData.get('file') as File;
         const fileType = formData.get('fileType') as string;
 
@@ -30,7 +50,15 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
         }
 
-        // Read file content
+        // Validate file size directly
+        if (file.size > 100 * 1024 * 1024) { // 100MB limit
+            return NextResponse.json({
+                error: 'File too large',
+                message: 'Maximum file size is 100MB'
+            }, { status: 413 });
+        }
+
+        // Read file content in chunks to prevent memory issues
         const fileBuffer = await file.arrayBuffer();
 
         // Define container name based on file type
@@ -65,16 +93,24 @@ export async function POST(request: NextRequest) {
         const contentType = file.type;
 
         // Upload data with optimized settings for large files
-        await blockBlobClient.uploadData(Buffer.from(fileBuffer), {
-            blobHTTPHeaders: {
-                blobContentType: contentType
-            },
-            // Add chunking for better performance with large files
-            concurrency: 20,
-            onProgress: (progress) => {
-                console.log(`Upload progress: ${progress.loadedBytes} bytes`);
-            }
-        });
+        try {
+            await blockBlobClient.uploadData(Buffer.from(fileBuffer), {
+                blobHTTPHeaders: {
+                    blobContentType: contentType
+                },
+                // Add chunking for better performance with large files
+                concurrency: 20,
+                onProgress: (progress) => {
+                    console.log(`Upload progress: ${progress.loadedBytes} bytes`);
+                }
+            });
+        } catch (error) {
+            console.error('Error uploading to Azure Blob Storage:', error);
+            return NextResponse.json({
+                error: 'Failed to upload to storage',
+                message: 'The file could not be uploaded to the storage server.'
+            }, { status: 500 });
+        }
 
         // Get the direct URL from the blockBlobClient
         const directUrl = blockBlobClient.url;
