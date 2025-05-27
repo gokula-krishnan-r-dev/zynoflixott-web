@@ -301,7 +301,7 @@ export default function LiveStreamDetailPage() {
                             </p>
                         )}
 
-                        <div className="flex gap-4 mt-6">
+                        <div className="flex lg:flex-row flex-col gap-4 mt-6">
                             <Button
                                 onClick={handleBookNow}
                                 className="bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white px-8 py-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-3 font-bold text-lg"

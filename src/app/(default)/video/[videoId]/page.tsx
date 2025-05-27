@@ -20,6 +20,7 @@ import VideoComment from "@/components/shared/video-comment";
 import CategoryList from "@/components/shared/category-list";
 import DescriptionCard from "@/components/ui/description-card";
 import { motion } from "framer-motion";
+import GiftPaymentContainer from "@/components/payment/GiftPaymentContainer";
 
 // Format view count to K, M, B format
 const formatViewCount = (count: number): string => {
@@ -409,6 +410,15 @@ export default function Page({ params }: { params: { videoId: string } }) {
                 </button>
               </div>
 
+              {/* Gift buttons - Mobile */}
+              <GiftPaymentContainer
+                videoId={video._id}
+                creatorId={video.created_by_id}
+                creatorName={userprofile?.full_name}
+                variant="mobile"
+                className="mt-3 mb-1"
+              />
+
               {/* Profile with follow button - Mobile */}
               <div className="flex items-center justify-between bg-purple-900 bg-opacity-30 rounded-xl p-3">
                 <Link
@@ -568,6 +578,15 @@ export default function Page({ params }: { params: { videoId: string } }) {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Gift Payment - Desktop */}
+          <div className="mt-8 mb-6">
+            <GiftPaymentContainer
+              videoId={video._id}
+              creatorId={video.created_by_id}
+              creatorName={userprofile?.full_name}
+            />
           </div>
 
           {/* Video Stats - Desktop Professional UI */}

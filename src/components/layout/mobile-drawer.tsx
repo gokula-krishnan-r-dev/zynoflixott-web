@@ -20,7 +20,7 @@ const menuItems = [
   //Advertisement
   { label: "Advertisement", href: "/advertisement", icon: <Megaphone className="w-5 h-5" /> },
   //Live Stream
-  { label: "My Live Streams", href: "/my-live-streams", icon: <Video className="w-5 h-5" /> },
+  { label: "My Live Streams", href: "/live-streams", icon: <Video className="w-5 h-5" /> },
 ];
 
 export function SheetMobile() {

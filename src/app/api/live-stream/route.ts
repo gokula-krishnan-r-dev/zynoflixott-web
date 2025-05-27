@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
             ticketCost: data.ticketCost,
             paymentId: data.paymentId || '',
             orderId: data.orderId || '',
-            status: 'scheduled',
+            status: 'live',
             createdBy: userId
         });
 
