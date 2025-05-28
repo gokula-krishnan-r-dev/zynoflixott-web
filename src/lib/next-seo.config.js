@@ -9,7 +9,7 @@ const SEO = {
   titleTemplate: "%s | ZynoflixOTT",
   description: "Discover, watch and upload high-quality short films on ZynoflixOTT. The leading OTT platform for independent filmmakers featuring curated content in multiple languages.",
   canonical: "https://zynoflixott.com",
-  
+
   // Open Graph
   openGraph: {
     type: "website",
@@ -20,7 +20,7 @@ const SEO = {
     description: "Discover, watch and upload high-quality short films on ZynoflixOTT. The leading OTT platform for independent filmmakers.",
     images: [
       {
-        url: "/og-image.jpg", 
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "ZynoflixOTT",
@@ -28,14 +28,14 @@ const SEO = {
       },
     ],
   },
-  
+
   // Twitter
   twitter: {
     handle: "@zynoflixott",
     site: "@zynoflixott",
     cardType: "summary_large_image",
   },
-  
+
   // Additional metadata
   additionalMetaTags: [
     {
@@ -47,12 +47,12 @@ const SEO = {
       content: "ZynoflixOTT",
     },
   ],
-  
+
   // Additional link tags
   additionalLinkTags: [
     {
       rel: "icon",
-      href: "/seo.png",
+      href: "/logo_sm.png",
     },
     {
       rel: "apple-touch-icon",

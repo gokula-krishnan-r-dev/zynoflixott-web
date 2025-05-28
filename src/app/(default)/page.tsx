@@ -70,7 +70,7 @@ export default function Home() {
         <meta name="twitter:title" content="ZynoflixOTT - Premier Platform for Short Films & Independent Filmmakers" />
         <meta name="twitter:description" content="Discover, watch and upload high-quality short films on ZynoflixOTT. The leading OTT platform for independent filmmakers featuring curated content in multiple languages including Tamil, English, and Kannada." />
         <meta name="twitter:image" content="/og-image.jpg" />
-        <link rel="icon" href="/seo.png" />
+        <link rel="icon" href="/logo_sm.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="canonical" href="https://zynoflixott.com/" />
