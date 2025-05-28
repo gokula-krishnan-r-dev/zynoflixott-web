@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { CalendarIcon, Clock } from "lucide-react";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -164,7 +165,7 @@ export default function LiveStreamForm() {
 
             // Open Razorpay payment dialog
             const options = {
-                key: process.env.RAZORPAY_KEY_ID || "rzp_test_sFWdQDykS3jwfU",
+                key: process.env.RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
                 amount: data.amount * 100, // Amount in paisa
                 currency: data.currency,
                 name: "Zynoflix",
@@ -524,6 +525,28 @@ export default function LiveStreamForm() {
             setUploading(prev => ({ ...prev, video: false }));
         }
     };
+
+    // Animation variants for form elements
+    const fadeInUp = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                stiffness: 300,
+                damping: 20
+            }
+        }
+    };
+
+    // Date picker styles using Tailwind classes
+    const datePickerWrapperClass = "relative w-full";
+    const datePickerClass = "w-full bg-[#2a2742] border border-gray-700 focus:border-purple-500 text-white rounded-md p-2 pl-10 h-10 transition-all duration-200 hover:border-purple-400 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50";
+    const calendarClass = "bg-[#1e1b2d] text-white border border-gray-700 shadow-xl rounded-md ring-2 ring-purple-500 ring-opacity-20";
+
+    // Format today's date for date picker min date
+    const today = useMemo(() => new Date(), []);
 
     return (
         <div className="container mx-auto py-10 px-4 md:px-6 bg-gradient-to-b from-[#0f0f1a] to-[#1a0f2d] min-h-screen text-gray-100">
@@ -995,139 +1018,136 @@ export default function LiveStreamForm() {
                     </motion.div>
                 )}
 
-                {/* Step 2: Payment */}
-                {/* {formStep(2) && (
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-6 p-8 bg-[#1e1b2d] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-800"
-                    >
-                        <div className="text-center">
-                            <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-500">Payment</h2>
-                            <p className="text-gray-400 mb-8">
-                                To create a live stream, a payment of ₹199 is required as a platform fee.
-                            </p>
-
-                            <div className="p-8 border border-purple-800 rounded-lg bg-[#2a1f4a] mb-8">
-                                <h3 className="text-xl font-semibold mb-4 text-purple-300">What you get:</h3>
-                                <ul className="list-disc list-inside text-left space-y-3 text-gray-300">
-                                    <li>Host your short film live on our platform</li>
-                                    <li>Access to analytics dashboard</li>
-                                    <li>Promotion on our homepage</li>
-                                    <li>In-app notifications to subscribers</li>
-                                    <li>24/7 technical support during your stream</li>
-                                </ul>
-                            </div>
-
-                            <Button
-                                type="button"
-                                className="w-full md:w-auto bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white text-lg py-6 px-10"
-                                onClick={handlePayment}
-                                disabled={paymentLoading}
-                            >
-                                {paymentLoading ? (
-                                    <>
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Processing...
-                                    </>
-                                ) : (
-                                    <>Pay ₹199</>
-                                )}
-                            </Button>
-                        </div>
-
-                        <div className="flex justify-between mt-6">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={prevStep}
-                                disabled={loading}
-                                className="border-gray-600 text-gray-300 hover:bg-gray-800"
-                            >
-                                Previous Step
-                            </Button>
-                        </div>
-                    </motion.div>
-                )} */}
-
-                {/* Step 3: Streaming Details */}
+                {/* Step 2: Streaming Details with improved styling */}
                 {formStep(2) && (
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        className="space-y-6 p-8 bg-[#1e1b2d] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-800"
+                        className="space-y-6 p-4 sm:p-8 bg-[#1e1b2d] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-800"
                     >
-                        <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="streamingDateTime" className="text-gray-300">Streaming Date and Time</Label>
-                                <div className="relative">
+                        <motion.div
+                            className="grid grid-cols-1 gap-6"
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                visible: {
+                                    transition: {
+                                        staggerChildren: 0.1
+                                    }
+                                }
+                            }}
+                        >
+                            <motion.div className="space-y-2" variants={fadeInUp}>
+                                <Label htmlFor="streamingDateTime" className="text-gray-300 flex items-center gap-2">
+                                    <CalendarIcon className="h-4 w-4 text-purple-400" />
+                                    <span>Streaming Date and Time</span>
+                                </Label>
+                                <div className={datePickerWrapperClass}>
                                     <Controller
                                         control={control}
                                         name="streamingDateTime"
                                         render={({ field }) => (
-                                            <DatePicker
-                                                selected={field.value}
-                                                onChange={(date: Date | null) => {
-                                                    field.onChange(date || new Date());
-                                                }}
-                                                showTimeSelect
-                                                timeFormat="HH:mm"
-                                                timeIntervals={15}
-                                                timeCaption="Time"
-                                                dateFormat="MMMM d, yyyy h:mm aa"
-                                                minDate={new Date()}
-                                                className="w-full bg-[#2a2742] border border-gray-700 focus:border-purple-500 text-white rounded-md p-2"
-                                                calendarClassName="bg-[#2a2742] text-white border border-gray-700 shadow-xl rounded-md"
-                                                dayClassName={date =>
-                                                    date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth()
-                                                        ? "bg-purple-600 text-white rounded-full"
-                                                        : "text-white hover:bg-purple-500 hover:text-white rounded-full"
-                                                }
-                                                popperClassName="react-datepicker-popper"
-                                            />
+                                            <>
+                                                <div className="absolute left-3 top-2.5 text-purple-400">
+                                                    <Clock className="h-5 w-5" />
+                                                </div>
+                                                <DatePicker
+                                                    selected={field.value}
+                                                    onChange={(date: Date | null) => {
+                                                        field.onChange(date || new Date());
+                                                    }}
+                                                    showTimeSelect
+                                                    timeFormat="HH:mm"
+                                                    timeIntervals={15}
+                                                    timeCaption="Time"
+                                                    dateFormat="MMMM d, yyyy h:mm aa"
+                                                    minDate={today}
+                                                    className={datePickerClass}
+                                                    calendarClassName={calendarClass}
+                                                    dayClassName={date =>
+                                                        date.getDate() === today.getDate() &&
+                                                            date.getMonth() === today.getMonth() &&
+                                                            date.getFullYear() === today.getFullYear()
+                                                            ? "bg-purple-600 text-white rounded-full hover:bg-purple-700"
+                                                            : "text-white hover:bg-purple-500 hover:text-white rounded-full"
+                                                    }
+                                                    popperClassName="react-datepicker-popper z-50"
+                                                    wrapperClassName="w-full"
+                                                    monthClassName={() => "text-white"}
+                                                    weekDayClassName={() => "text-purple-400"}
+                                                    fixedHeight
+                                                />
+                                            </>
                                         )}
                                     />
                                 </div>
                                 {errors.streamingDateTime && (
-                                    <span className="text-red-400 text-sm">{errors.streamingDateTime.message}</span>
+                                    <motion.span
+                                        className="text-red-400 text-sm block mt-1"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        {errors.streamingDateTime.message}
+                                    </motion.span>
                                 )}
-                            </div>
+                            </motion.div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="ticketCost" className="text-gray-300">Ticket Cost (₹)</Label>
-                                <Input
-                                    id="ticketCost"
-                                    type="number"
-                                    placeholder="Enter ticket cost in rupees"
-                                    className="bg-[#2a2742] border-gray-700 focus:border-purple-500 text-white"
-                                    {...register("ticketCost")}
-                                />
+                            <motion.div className="space-y-2" variants={fadeInUp}>
+                                <Label htmlFor="ticketCost" className="text-gray-300 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                                        <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>Ticket Cost (₹)</span>
+                                </Label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-2.5 text-purple-400">₹</span>
+                                    <Input
+                                        id="ticketCost"
+                                        type="number"
+                                        placeholder="Enter ticket cost in rupees"
+                                        className="bg-[#2a2742] border-gray-700 focus:border-purple-500 pl-8 text-white transition-all duration-200 hover:border-purple-400 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                                        {...register("ticketCost")}
+                                    />
+                                </div>
                                 {errors.ticketCost && (
-                                    <span className="text-red-400 text-sm">{errors.ticketCost.message}</span>
+                                    <motion.span
+                                        className="text-red-400 text-sm block mt-1"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        {errors.ticketCost.message}
+                                    </motion.span>
                                 )}
-                            </div>
-                        </div>
+                            </motion.div>
+                        </motion.div>
 
-                        <div className="flex justify-between">
+                        <motion.div
+                            className="flex flex-col sm:flex-row justify-between gap-3 mt-8"
+                            variants={fadeInUp}
+                            initial="hidden"
+                            animate="visible"
+                        >
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={prevStep}
                                 disabled={loading}
-                                className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                                className="border-gray-600 text-gray-300 hover:bg-gray-800 transition-all duration-200 hover:border-purple-400"
                             >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                                </svg>
                                 Previous Step
                             </Button>
 
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white px-6"
+                                className="bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white px-6 transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.97]"
                             >
                                 {loading ? (
                                     <>
@@ -1138,10 +1158,15 @@ export default function LiveStreamForm() {
                                         Creating...
                                     </>
                                 ) : (
-                                    <>Create Live Stream</>
+                                    <>
+                                        Create Live Stream
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                        </svg>
+                                    </>
                                 )}
                             </Button>
-                        </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </form>

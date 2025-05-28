@@ -94,7 +94,7 @@ export default function TicketBookingForm({
 
             // 3. Open Razorpay payment dialog
             const razorpayOptions = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_sFWdQDykS3jwfU",
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
                 amount: paymentData.amount * 100, // Amount in paisa
                 currency: paymentData.currency || "INR",
                 name: "Zynoflix",

@@ -26,7 +26,8 @@ const config = {
       colors: {
         "green-500": "#b051ff",
         background: {
-          dark: "#2c1157",
+          // dark: "#2c1157",
+          dark: "#000",
           medium: "#34176c",
           light: "#3d1f62"
         },

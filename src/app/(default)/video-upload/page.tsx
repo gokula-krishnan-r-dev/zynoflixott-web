@@ -77,6 +77,10 @@ const Page = () => {
   };
 
   const openPayModal = async () => {
+
+
+
+
     // const response = await axios.post("/payment", options);
 
     // if (!response.data) {

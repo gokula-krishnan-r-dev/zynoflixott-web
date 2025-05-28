@@ -115,7 +115,7 @@ export default function LiveStreamDetailPage() {
 
             // Open Razorpay payment dialog
             const options = {
-                key: process.env.RAZORPAY_KEY_ID || "rzp_test_sFWdQDykS3jwfU",
+                key: process.env.RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
                 amount: data.amount * 100, // Amount in paisa
                 currency: data.currency,
                 name: "Zynoflix",

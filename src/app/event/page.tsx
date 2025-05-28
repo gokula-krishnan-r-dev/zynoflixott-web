@@ -5,6 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FaCalendarAlt, FaTrophy, FaFilm, FaAward, FaCertificate, FaArrowRight, FaCheckCircle } from 'react-icons/fa';
 
+// Define styles for the shadow-glow effect
+// This will be added to the existing element with className="shadow-glow"
+const shadowGlowStyle = {
+    boxShadow: '0 0 15px rgba(129, 140, 248, 0.5), 0 0 30px rgba(129, 140, 248, 0.3)'
+};
+
 const EventPage = () => {
     const [showRegistrationModal, setShowRegistrationModal] = useState(false);
     const [formData, setFormData] = useState({
@@ -246,61 +252,87 @@ const EventPage = () => {
 
                 {/* Timeline Section */}
                 <div className="mb-20">
-                    <h2 className="text-3xl font-bold text-center mb-12">Event Timeline</h2>
-                    <div className="relative">
-                        {/* Line */}
-                        <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-indigo-600"></div>
+                    <div className="flex items-center justify-center mb-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Event Timeline</h2>
+                    </div>
 
-                        {/* Timeline Items */}
-                        <div className="space-y-12 md:space-y-0">
-                            {/* Item 1 */}
-                            <div className="flex flex-col md:flex-row items-center">
-                                <div className="md:w-1/2 md:pr-12 md:text-right mb-4 md:mb-0">
-                                    <h3 className="text-xl font-bold text-indigo-300">Submissions Open</h3>
-                                    <p className="text-gray-300">23/05/2025</p>
-                                </div>
-                                <div className="bg-indigo-600 rounded-full h-8 w-8 flex items-center justify-center z-10 mb-4 md:mb-0">
-                                    <div className="bg-white h-3 w-3 rounded-full"></div>
-                                </div>
-                                <div className="md:w-1/2 md:pl-12 md:text-left hidden md:block"></div>
-                            </div>
+                    {/* Mobile Timeline */}
+                    <div className="md:hidden relative">
+                        <div className="absolute left-4 top-0 h-full w-1 bg-gradient-to-b from-indigo-600 via-purple-600 to-indigo-600 rounded-full"></div>
 
-                            {/* Item 2 */}
-                            <div className="flex flex-col md:flex-row items-center">
-                                <div className="md:w-1/2 md:pr-12 md:text-right hidden md:block"></div>
-                                <div className="bg-indigo-600 rounded-full h-8 w-8 flex items-center justify-center z-10 mb-4 md:mb-0">
-                                    <div className="bg-white h-3 w-3 rounded-full"></div>
+                        {/* Timeline Items - Mobile */}
+                        <div className="space-y-12 pl-12 relative">
+                            {[
+                                { title: "Submissions Open", date: "01/06/2025", icon: "📝", color: "from-green-500 to-emerald-700" },
+                                { title: "Submission Deadline", date: "20/07/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700" },
+                                { title: "Finalists Announcement", date: "27/07/2025", icon: "🏆", color: "from-blue-500 to-indigo-700" },
+                                { title: "Festival & Awards", date: "01/08/2025", icon: "🎬", color: "from-purple-500 to-pink-700" }
+                            ].map((item, index) => (
+                                <div key={index} className="relative group">
+                                    <div className="absolute -left-12 top-0 bg-indigo-600 border-4 border-indigo-900 rounded-full h-8 w-8 flex items-center justify-center z-10 group-hover:scale-110 transition-transform duration-300" style={shadowGlowStyle}>
+                                        <div className="bg-white h-2 w-2 rounded-full"></div>
+                                    </div>
+                                    <div className={`bg-gradient-to-br ${item.color} p-5 rounded-lg shadow-xl transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1`}>
+                                        <div className="text-2xl mb-2">{item.icon}</div>
+                                        <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
+                                        <p className="text-white text-opacity-80">{item.date}</p>
+                                    </div>
                                 </div>
-                                <div className="md:w-1/2 md:pl-12 md:text-left">
-                                    <h3 className="text-xl font-bold text-indigo-300">Submission Deadline</h3>
-                                    <p className="text-gray-300">07/07/2025</p>
-                                </div>
-                            </div>
-
-                            {/* Item 3 */}
-                            <div className="flex flex-col md:flex-row items-center">
-                                <div className="md:w-1/2 md:pr-12 md:text-right mb-4 md:mb-0">
-                                    <h3 className="text-xl font-bold text-indigo-300">Finalists Announcement</h3>
-                                    <p className="text-gray-300">15/07/2025</p>
-                                </div>
-                                <div className="bg-indigo-600 rounded-full h-8 w-8 flex items-center justify-center z-10 mb-4 md:mb-0">
-                                    <div className="bg-white h-3 w-3 rounded-full"></div>
-                                </div>
-                                <div className="md:w-1/2 md:pl-12 md:text-left hidden md:block"></div>
-                            </div>
-
-                            {/* Item 4 */}
-                            <div className="flex flex-col md:flex-row items-center">
-                                <div className="md:w-1/2 md:pr-12 md:text-right hidden md:block"></div>
-                                <div className="bg-indigo-600 rounded-full h-8 w-8 flex items-center justify-center z-10 mb-4 md:mb-0">
-                                    <div className="bg-white h-3 w-3 rounded-full"></div>
-                                </div>
-                                <div className="md:w-1/2 md:pl-12 md:text-left">
-                                    <h3 className="text-xl font-bold text-indigo-300">Festival & Awards</h3>
-                                    <p className="text-gray-300">20/07/2025</p>
-                                </div>
-                            </div>
+                            ))}
                         </div>
+                    </div>
+
+                    {/* Desktop Timeline */}
+                    <div className="hidden md:block relative mx-auto max-w-5xl">
+                        <div className="absolute left-1/2 transform -translate-x-1/2 top-0 h-full w-1 bg-gradient-to-b from-indigo-600 via-purple-600 to-indigo-600 rounded-full"></div>
+
+                        {/* Timeline Items - Desktop */}
+                        <div>
+                            {[
+                                { title: "Submissions Open", date: "01/06/2025", icon: "📝", color: "from-green-500 to-emerald-700", position: "left" },
+                                { title: "Submission Deadline", date: "20/07/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700", position: "right" },
+                                { title: "Finalists Announcement", date: "27/07/2025", icon: "🏆", color: "from-blue-500 to-indigo-700", position: "left" },
+                                { title: "Festival & Awards", date: "01/08/2025", icon: "🎬", color: "from-purple-500 to-pink-700", position: "right" }
+                            ].map((item, index) => (
+                                <div key={index} className={`flex items-center justify-center mb-16 ${item.position === 'left' ? 'md:justify-start' : 'md:justify-end'}`}>
+                                    <div className={`relative flex ${item.position === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center w-full mx-auto`}>
+                                        <div className="order-1 w-6/12"></div>
+
+                                        <div className="z-10 flex items-center order-1 bg-indigo-600 border-4 border-indigo-900 rounded-full w-10 h-10 md:absolute md:left-1/2 md:-ml-5" style={shadowGlowStyle}>
+                                            <div className="mx-auto bg-white h-3 w-3 rounded-full"></div>
+                                        </div>
+
+                                        <div className={`order-1 ${item.position === 'left' ? 'md:w-5/12 md:pr-10' : 'md:w-5/12 md:pl-10'}`}>
+                                            <div className={`p-6 bg-gradient-to-br ${item.color} rounded-lg shadow-xl transform transition-all duration-500 hover:scale-105 hover:-translate-y-1 group`}>
+                                                <div className="flex items-center mb-2">
+                                                    <span className="text-2xl mr-2">{item.icon}</span>
+                                                    <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                                                </div>
+                                                <p className="text-white text-opacity-80">{item.date}</p>
+                                                <div className="absolute inset-0 rounded-lg bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Call to Action */}
+                    <div className="mt-16 text-center">
+                        <p className="text-xl text-indigo-300 mb-6 animate-pulse">Mark your calendars for this exciting event!</p>
+                        <button
+                            onClick={openRegistrationModal}
+                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-full transform transition duration-300 hover:scale-105 shadow-xl flex items-center mx-auto"
+                        >
+                            <span>Register Now</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>

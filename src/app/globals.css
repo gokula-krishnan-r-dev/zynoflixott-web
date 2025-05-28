@@ -7,7 +7,8 @@
 .bg-body {
   --tw-bg-opacity: 1;
   /* background-color: rgb(4 1 28 / var(--tw-bg-opacity)); */
-  background: #0e0d2d;
+  /* background: #0e0d2d; */
+  background: #000;
 }
 
 :root {

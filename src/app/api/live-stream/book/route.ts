@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_sFWdQDykS3jwfU',
+    key_id: process.env.RAZORPAY_KEY_ID || 'rzp_live_2wtNMTtIzCco0O',
     key_secret: process.env.RAZORPAY_KEY_SECRET || 'HxRuTbFXa03EvbyN0suXN9YF'
 });
 
