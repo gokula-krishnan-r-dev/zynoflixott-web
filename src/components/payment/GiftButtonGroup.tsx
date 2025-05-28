@@ -34,15 +34,15 @@ export default function GiftButtonGroup({
 
     if (variant === 'mobile') {
         return (
-            <div className={cn("flex justify-center  bg-purple-900 px-5 py-1 rounded-full", className)}>
+            <div className={cn("flex justify-center bg-purple-900 py-2 px-4 rounded-full")}>
                 <motion.div
-                    className="w-full flex gap-2 max-w-md"
+                    className="w-full flex gap-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <div className="w-1/4 flex items-center justify-center">
-                        <div className="rounded-full bg-gradient-to-r mr-4 flex items-center justify-center gap-2 from-purple-600/20 to-indigo-600/20 border border-indigo-500/30 py-2 px-2.5 shadow-md">
+                    <div className="flex items-center justify-center">
+                        <div className="rounded-full bg-gradient-to-r mr-4 flex items-center justify-center gap-2 from-purple-600/20 to-indigo-600/20 border border-indigo-500/30 px-2.5 py-1.5 shadow-md">
                             <Gift className="h-5 w-5 text-indigo-400" />
                             <span className="text-md font-medium">Gift</span>
                         </div>
@@ -58,7 +58,7 @@ export default function GiftButtonGroup({
                                 disabled={loading}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-3 py-2.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs hover:brightness-110"
+                                className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-2.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs"
                             >
                                 {option.displayAmount}
                             </motion.button>

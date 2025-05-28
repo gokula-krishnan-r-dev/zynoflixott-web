@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -33,8 +35,10 @@ const liveStreamSchema = z.object({
     movieLength: z.coerce.number().min(1, "Movie length is required"),
     movieCertificate: z.string().min(1, "Movie certificate is required"),
     movieLanguage: z.string().min(1, "Movie language is required"),
-    streamingDate: z.string().min(1, "Streaming date is required"),
-    streamingTime: z.string().min(1, "Streaming time is required"),
+    streamingDateTime: z.date({
+        required_error: "Streaming date and time is required",
+        invalid_type_error: "That's not a valid date and time",
+    }),
     ticketCost: z.coerce.number().min(1, "Ticket cost must be at least 1"),
     paymentId: z.string().optional(),
     orderId: z.string().optional()
@@ -92,6 +96,7 @@ export default function LiveStreamForm() {
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors },
         watch,
         setValue,
@@ -113,8 +118,7 @@ export default function LiveStreamForm() {
             movieLength: 0,
             movieCertificate: "",
             movieLanguage: "",
-            streamingDate: "",
-            streamingTime: "",
+            streamingDateTime: new Date(),
             ticketCost: 199,
             paymentId: "",
             orderId: ""
@@ -218,23 +222,28 @@ export default function LiveStreamForm() {
         try {
             setLoading(true);
 
-            const streamingDateObj = new Date(data.streamingDate);
             const today = new Date();
 
             // Check if streaming date is in the future
-            if (streamingDateObj <= today) {
-                toast.error("Streaming date must be in the future");
+            if (data.streamingDateTime <= today) {
+                toast.error("Streaming date and time must be in the future");
                 setLoading(false);
                 return;
             }
 
+            // Format streamingDateTime for the API
+            const formattedData = {
+                ...data,
+                streamingDate: data.streamingDateTime.toISOString().split('T')[0],
+                streamingTime: data.streamingDateTime.toTimeString().split(' ')[0].slice(0, 5)
+            };
+
             // Submit data to API
-            const response = await axios.post("/api/live-stream", data, {
+            const response = await axios.post("/api/live-stream", formattedData, {
                 headers: {
                     userId: userId
                 }
             });
-
 
             if (response.status === 200) {
                 toast.success("Live stream created successfully!");
@@ -1053,30 +1062,39 @@ export default function LiveStreamForm() {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-6 p-8 bg-[#1e1b2d] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-800"
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 gap-6">
                             <div className="space-y-2">
-                                <Label htmlFor="streamingDate" className="text-gray-300">Streaming Date</Label>
-                                <Input
-                                    id="streamingDate"
-                                    type="date"
-                                    className="bg-[#2a2742] border-gray-700 focus:border-purple-500 text-white"
-                                    {...register("streamingDate")}
-                                />
-                                {errors.streamingDate && (
-                                    <span className="text-red-400 text-sm">{errors.streamingDate.message}</span>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="streamingTime" className="text-gray-300">Streaming Time</Label>
-                                <Input
-                                    id="streamingTime"
-                                    type="time"
-                                    className="bg-[#2a2742] border-gray-700 focus:border-purple-500 text-white"
-                                    {...register("streamingTime")}
-                                />
-                                {errors.streamingTime && (
-                                    <span className="text-red-400 text-sm">{errors.streamingTime.message}</span>
+                                <Label htmlFor="streamingDateTime" className="text-gray-300">Streaming Date and Time</Label>
+                                <div className="relative">
+                                    <Controller
+                                        control={control}
+                                        name="streamingDateTime"
+                                        render={({ field }) => (
+                                            <DatePicker
+                                                selected={field.value}
+                                                onChange={(date: Date | null) => {
+                                                    field.onChange(date || new Date());
+                                                }}
+                                                showTimeSelect
+                                                timeFormat="HH:mm"
+                                                timeIntervals={15}
+                                                timeCaption="Time"
+                                                dateFormat="MMMM d, yyyy h:mm aa"
+                                                minDate={new Date()}
+                                                className="w-full bg-[#2a2742] border border-gray-700 focus:border-purple-500 text-white rounded-md p-2"
+                                                calendarClassName="bg-[#2a2742] text-white border border-gray-700 shadow-xl rounded-md"
+                                                dayClassName={date =>
+                                                    date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth()
+                                                        ? "bg-purple-600 text-white rounded-full"
+                                                        : "text-white hover:bg-purple-500 hover:text-white rounded-full"
+                                                }
+                                                popperClassName="react-datepicker-popper"
+                                            />
+                                        )}
+                                    />
+                                </div>
+                                {errors.streamingDateTime && (
+                                    <span className="text-red-400 text-sm">{errors.streamingDateTime.message}</span>
                                 )}
                             </div>
 

@@ -47,6 +47,13 @@ export default function GiftPaymentContainer({
     }, []);
 
     const handlePayment = async (amount: number) => {
+
+        // Check if iOS device
+        const isIOS = /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) || /iPhone|iPad|iPod|Mac/.test(navigator.platform);
+        if (isIOS) {
+            toast.info('iOS payments are not supported yet. Coming soon!');
+            return;
+        }
         if (!amount) {
             toast.info('Please select a gift amount');
             return;
@@ -175,11 +182,11 @@ export default function GiftPaymentContainer({
                             </p>
                         </motion.div>
                     ) : (
-                        <motion.div
+                        <div
                             key="gift"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
+                            // initial={{ opacity: 0, y: 20 }}
+                            // animate={{ opacity: 1, y: 0 }}
+                            // exit={{ opacity: 0, y: -20 }}
                             className="flex flex-col items-center gap-4"
                         >
                             <GiftButtonGroup onClick={handlePayment}
@@ -203,7 +210,7 @@ export default function GiftPaymentContainer({
                                 )}
                                 {selectedAmount ? `Send $${selectedAmount} Gift` : 'Select Amount'}
                             </Button> */}
-                        </motion.div>
+                        </div>
                     )}
                 </AnimatePresence>
             </div>
@@ -212,7 +219,7 @@ export default function GiftPaymentContainer({
 
     // Desktop version
     return (
-        <div className={cn("mx-auto max-w-3xl", className)}>
+        <div className={cn("mx-auto max-w-3xl bg-purple-900 px-0 py-1 rounded-full", className)}>
             <AnimatePresence mode="wait">
                 {paymentComplete ? (
                     <motion.div
@@ -242,7 +249,7 @@ export default function GiftPaymentContainer({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="bg-gradient-to-r from-[rgba(30,32,51,0.8)] to-[rgba(41,44,65,0.8)] rounded-xl p-6 border border-indigo-900/30"
+                        className="bg-gradient-to-r  from-[rgba(30,32,51,0.8)] to-[rgba(41,44,65,0.8)] rounded-xl p-6 border border-indigo-900/30"
                     >
                         <div className="text-center mb-6">
                             <h3 className="text-xl font-medium text-white">Support {creatorName} with a Gift</h3>

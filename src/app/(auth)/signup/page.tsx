@@ -12,7 +12,7 @@ const page = () => {
     return false;
   };
   return (
-    <div className="">
+    <div className="bg-black ">
       <div className="min-h-screen  text-gray-900 flex justify-center relative">
         {isIOS() ? (
           <video

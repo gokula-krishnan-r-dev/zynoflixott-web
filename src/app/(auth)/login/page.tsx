@@ -11,7 +11,7 @@ const page = () => {
   }
   return (
     <div>
-      <div className="min-h-screen text-gray-900 flex justify-center relative">
+      <div className="min-h-screen text-gray-900 bg-black flex justify-center relative">
         {/* <video
           loop
           className="absolute z-20 inset-0 w-full h-full object-cover object-center bg-black opacity-70"
