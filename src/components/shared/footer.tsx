@@ -144,9 +144,9 @@ const Footer: React.FC = () => {
               </ul>
             </div>
             <div>
-              <h2 className="mb-6 text-sm font-semibold  uppercase text-white">
+              {/* <h2 className="mb-6 text-sm font-semibold  uppercase text-white">
                 OUR SERVICE
-              </h2>
+              </h2> */}
               <ul className=" text-gray-400 font-medium">
                 {/* <li className="">
                   <a className="hover:underline" href="/upload-video">
@@ -169,7 +169,7 @@ const Footer: React.FC = () => {
                     Live Streaming
                   </a>
                 </li> */}
-                <li>
+                {/* <li>
                   <a
                     className="hover:underline"
                     href="/film-call"
@@ -193,7 +193,7 @@ const Footer: React.FC = () => {
                   <a className="hover:underline " href="/live-streams">
                     Live Stream
                   </a>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>
@@ -244,7 +244,7 @@ const Footer: React.FC = () => {
         <hr className="my-6   sm:mx-auto border-gray-700 lg:my-8" />
         <div className="sm:flex sm:items-center sm:justify-between">
           <span className="text-sm  sm:text-center text-gray-400">
-            © 2024{" "}
+            © 2025{" "}
             <a className="hover:underline" href="https://flowbite.com/">
               ZynoFlixOTT
             </a>

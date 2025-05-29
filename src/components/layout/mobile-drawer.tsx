@@ -12,15 +12,15 @@ const menuItems = [
   { label: "Explore", href: "/explore", icon: <Compass className="w-5 h-5" /> },
   { label: "Upload a Video", href: "/video-upload", icon: <Upload className="w-5 h-5" /> },
   // { label: "Chat", href: "/chat", icon: <MessageSquare className="w-5 h-5" /> },
-  { label: "Film Call", href: "/film-call", icon: <Film className="w-5 h-5" /> },
+  // { label: "Film Call", href: "/film-call", icon: <Film className="w-5 h-5" /> },
   //Monetization
-  { label: "Monetization", href: "/monetization", icon: <DollarSign className="w-5 h-5" /> },
+  // { label: "Monetization", href: "/monetization", icon: <DollarSign className="w-5 h-5" /> },
   //Event
-  { label: "Event", href: "/event", icon: <Calendar className="w-5 h-5" /> },
+  // { label: "Event", href: "/event", icon: <Calendar className="w-5 h-5" /> },
   //Advertisement
-  { label: "Advertisement", href: "/advertisement", icon: <Megaphone className="w-5 h-5" /> },
+  // { label: "Advertisement", href: "/advertisement", icon: <Megaphone className="w-5 h-5" /> },
   //Live Stream
-  { label: "My Live Streams", href: "/live-streams", icon: <Video className="w-5 h-5" /> },
+  // { label: "My Live Streams", href: "/live-streams", icon: <Video className="w-5 h-5" /> },
 ];
 
 export function SheetMobile() {
