@@ -176,7 +176,8 @@ export default function GiftButton({
                             <motion.button
                                 key={option.amount}
                                 whileHover={{ backgroundColor: 'rgba(123, 97, 255, 0.2)' }}
-                                onClick={() => handlePayment(option.amount)}
+                                // onClick={() => handlePayment(option.amount)}
+                                onClick={() => toast.success("Coming Soon!")}
                                 disabled={loading}
                                 className={cn(
                                     "w-full px-4 py-3 text-left flex items-center justify-between transition-colors",
@@ -203,7 +204,8 @@ export default function GiftButton({
             {giftOptions.map((option) => (
                 <Button
                     key={option.amount}
-                    onClick={() => handlePayment(option.amount)}
+                    // onClick={() => handlePayment(option.amount)}
+                    onClick={() => toast.success("Coming Soon!")}
                     disabled={loading}
                     className={cn(
                         "relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium min-w-20",

@@ -261,7 +261,8 @@ export default function TicketBookingForm({
                     </div>
                 ) : (
                     <Button
-                        onClick={handleBookTicket}
+                        onClick={() => toast.success("Coming Soon!")}
+                        // onClick={handleBookTicket}
                         disabled={loading}
                         className="w-full bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white"
                     >

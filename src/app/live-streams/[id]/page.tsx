@@ -500,7 +500,8 @@ export default function LiveStreamDetailPage() {
                             Cancel
                         </Button>
                         <Button
-                            onClick={handlePayment}
+                            onClick={() => toast.success("Coming Soon!")}
+                            // onClick={handlePayment}
                             disabled={paymentLoading}
                             className="bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white"
                         >

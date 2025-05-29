@@ -189,7 +189,9 @@ export default function GiftPaymentContainer({
                             // exit={{ opacity: 0, y: -20 }}
                             className="flex flex-col items-center gap-4"
                         >
-                            <GiftButtonGroup onClick={handlePayment}
+                            <GiftButtonGroup
+                                onClick={() => toast.success("Coming Soon!")}
+                                // onClick={handlePayment}
                                 videoId={videoId}
                                 creatorId={creatorId}
                                 // onSelect={setSelectedAmount}
@@ -257,7 +259,8 @@ export default function GiftPaymentContainer({
                         </div>
 
                         <GiftButtonGroup
-                            onClick={handlePayment}
+                            // onClick={handlePayment}
+                            onClick={() => toast.success("Coming Soon!")}
                             videoId={videoId}
                             creatorId={creatorId}
                             // onSelect={setSelectedAmount}
@@ -267,7 +270,8 @@ export default function GiftPaymentContainer({
 
                         <div className="mt-6 flex justify-center">
                             <Button
-                                onClick={() => handlePayment(selectedAmount || 0)}
+                                // onClick={() => handlePayment(selectedAmount || 0)}
+                                onClick={() => toast.success("Coming Soon!")}
                                 disabled={loading || !selectedAmount || !hasRazorpay}
                                 className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-2 h-12 text-base"
                             >
