@@ -638,7 +638,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 </div>
               )}
               <div className="flex items-end justify-end">
-                {isIOS() && isSuccessful ? (
+                {isSuccessful ? (
                   <div
                     onClick={openPayModal}
                     className="px-6 py-3 rounded-3xl cursor-pointer border text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700"

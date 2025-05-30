@@ -77,23 +77,6 @@ const Page = () => {
   };
 
   const openPayModal = async () => {
-
-
-
-
-    // const response = await axios.post("/payment", options);
-
-    // if (!response.data) {
-    //   toast.error("login before upload video ");
-    //   router.push("/login");
-    // }
-
-    // console.log(response.data.order);
-
-    // options.order_id = response.data.order.transactionId;
-    // setTransactionId(response.data.order.transactionId);
-    // localStorage.setItem("transactionId", response.data.order._id);
-
     var rzp1 = new (window as any).Razorpay(options) as any;
     await rzp1.open();
   };

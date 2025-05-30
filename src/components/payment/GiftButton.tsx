@@ -204,8 +204,7 @@ export default function GiftButton({
             {giftOptions.map((option) => (
                 <Button
                     key={option.amount}
-                    // onClick={() => handlePayment(option.amount)}
-                    onClick={() => toast.success("Coming Soon!")}
+                    onClick={() => handlePayment(option.amount)}
                     disabled={loading}
                     className={cn(
                         "relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium min-w-20",
@@ -228,7 +227,8 @@ export default function GiftButton({
                         />
                     )}
                 </Button>
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 } 
