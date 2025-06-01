@@ -39,12 +39,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <script
-          src="//code.tidio.co/10qdqbeh4bzacrayxyrxave4vbbqqj6y.js"
-          async
-        ></script>
-
-
+        <script src="//code.tidio.co/10qdqbeh4bzacrayxyrxave4vbbqqj6y.js" async></script>
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="y/Hp6qltaCCSITbY89/pqg" async></script>
         <Header />
         <AuthProvider>
