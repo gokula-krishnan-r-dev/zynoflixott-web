@@ -21,6 +21,8 @@ const menuItems = [
   { label: "Advertisement", href: "/advertisement", icon: <Megaphone className="w-5 h-5" /> },
   //Live Stream
   { label: "My Live Streams", href: "/live-streams", icon: <Video className="w-5 h-5" /> },
+  //PRODUCTION
+  { label: "Production", href: "/production", icon: <Video className="w-5 h-5" /> },
 ];
 
 export function SheetMobile() {

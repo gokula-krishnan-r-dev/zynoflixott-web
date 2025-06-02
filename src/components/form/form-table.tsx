@@ -342,7 +342,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                                           "working",
                                           e.target.files[0]
                                         );
-                                        const MAX_FILE_SIZE = 1000000000; // 1GB
+                                        const MAX_FILE_SIZE = 2000000000; // 2GB
                                         const source = e.target.files[0];
                                         const fileSize = source.size;
                                         const fileType = source.type;
@@ -629,7 +629,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 </div>
               ))}
 
-              {isIOS() && isSuccessful && (
+              {isSuccessful && (
                 <div className="">
                   {/* price 499 per video upload */}
                   <p className="text-lg font-semibold">
@@ -638,7 +638,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 </div>
               )}
               <div className="flex items-end justify-end">
-                {isIOS() && isSuccessful ? (
+                {isSuccessful ? (
                   <div
                     onClick={openPayModal}
                     className="px-6 py-3 rounded-3xl cursor-pointer border text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700"
@@ -655,7 +655,7 @@ const CreateFormSubmit = ({ status, openPayModal, isSuccessful }: any) => {
                 )}
               </div>
               <div className="mt-6 flex items-center justify-between pt-3 ">
-                <p className="text-white">IF YOU NEED ANY ASSISTANCE REACH: <a href="tel:+918270895609" className="text-blue-400 hover:underline">+91-8270895609</a></p>
+                <p className="text-white">IF YOU NEED ANY ASSISTANCE REACH: <a href="tel:+918956562443" className="text-blue-400 hover:underline">+91-8956562443</a></p>
               </div>
               {/* add document */}
               <div className="mt-6 p-5 border border-gray-700 rounded-lg bg-gray-900/50">

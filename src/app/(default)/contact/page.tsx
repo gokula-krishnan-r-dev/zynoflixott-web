@@ -107,9 +107,8 @@ const Contact = () => {
             required
           />
           <button
-            className={`!bg-btn_bgcolor3 bg-green-500 rounded-xl capitalize col-span-2 h-[60px] ${
-              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`!bg-btn_bgcolor3 bg-green-500 rounded-xl capitalize col-span-2 h-[60px] ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             type="submit"
             disabled={isSubmitting}
             role="button"
@@ -143,13 +142,14 @@ const Contact = () => {
               </svg>
               <div className="flex flex-col gap-2">
                 <p className="capitalize">
-                INFOPOD MEDIA ENTERTAINMENT PRIVATE LIMITED 
+                  INFOPOD MEDIA ENTERTAINMENT PRIVATE LIMITED
                 </p>
                 <p className="normal-case">
-                Gopala Krishna Complex 45/3, Residency Road, 
+                  Gopala Krishna Complex 45/3, Residency Road,
                 </p>
                 <p className="normal-case"> Mahatma Gandhi Rd </p>
                 <p className="normal-case">Bengaluru, Karnataka 560025</p>
+                <p className="normal-case">Phone: +918956562443</p>
               </div>
             </div>
             <div className="flex md:justify-center gap-2 pb-2 md:basis-1/2">
@@ -169,19 +169,19 @@ const Contact = () => {
               </svg>
               <div className="flex flex-col gap-2">
                 <a className="text-[#646cff]" href="mailto:ads@zynoflix.com">
-                infozynoflixott@gmail.com
+                  infozynoflixott@gmail.com
                 </a>
                 <a className="text-[#646cff]" href="mailto:info@zynoflix.com">
-                Infopodmedia@gmail.com
+                  Infopodmedia@gmail.com
                 </a>
                 <a
                   className="text-[#646cff]"
                   href="mailto:feedback@zynoflix.com"
                 >
-Zynoflixott@live.com
+                  Zynoflixott@live.com
                 </a>
                 <a className="text-[#646cff]" href="mailto:Zynoflixott@help.com">
-                Zynoflixott@help.com
+                  Zynoflixott@help.com
                 </a>
               </div>
             </div>
