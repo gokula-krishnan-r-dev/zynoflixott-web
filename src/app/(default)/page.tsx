@@ -153,6 +153,58 @@ export default function Home() {
               />
             </Suspense>
 
+
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 p-2">
+              {/* Events */}
+              <button onClick={() => window.location.href = '/event'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-lg hover:shadow-lg transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="text-white font-medium text-sm">Events</span>
+              </button>
+
+              {/* Film Call */}
+              <button onClick={() => window.location.href = '/film-call'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-pink-600 to-red-600 rounded-lg hover:shadow-lg transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span className="text-white font-medium text-sm">Film Call</span>
+              </button>
+
+              {/* Monetization */}
+              <button onClick={() => window.location.href = '/monetization'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg hover:shadow-lg transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-white font-medium text-sm">Monetization</span>
+              </button>
+
+              {/* Explore */}
+              <button onClick={() => window.location.href = '/explore'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg hover:shadow-lg transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="text-white font-medium text-sm">Explore</span>
+              </button>
+
+              {/* Live Streaming */}
+              <button onClick={() => window.location.href = '/live-stream'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg hover:shadow-lg transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span className="text-white font-medium text-sm">Live Streaming</span>
+              </button>
+
+              {/* Advertisement */}
+              <button onClick={() => window.location.href = '/advertisement'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-yellow-500 to-amber-500 rounded-lg hover:shadow-lg transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                </svg>
+                <span className="text-white font-medium text-sm">Advertisement</span>
+              </button>
+            </div>
+
+
             <Suspense fallback={<CategorySkeleton />}>
               <CategoryList langage={"Tamil"}
                 title={"TAMIL SHORT FILMS"}
