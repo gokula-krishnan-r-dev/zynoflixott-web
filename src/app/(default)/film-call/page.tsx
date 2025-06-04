@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import {
@@ -17,6 +16,11 @@ import {
 
 const FilmCallPage = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [scriptFile, setScriptFile] = useState<File | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const genres = [
     { id: 'horror', name: 'Horror', icon: <FaSkull className="h-10 w-10 text-red-600" /> },
@@ -24,6 +28,79 @@ const FilmCallPage = () => {
     { id: 'comedy', name: 'Comedy', icon: <FaLaughSquint className="h-10 w-10 text-yellow-500" /> },
     { id: 'historical', name: 'Historical Drama', icon: <FaHistory className="h-10 w-10 text-amber-700" /> },
   ];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Validate file type (PDF only)
+      if (file.type !== "application/pdf") {
+        setErrorMessage("Only PDF files are allowed for scripts");
+        return;
+      }
+
+      // Validate file size (10MB max)
+      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+      if (file.size > MAX_FILE_SIZE) {
+        setErrorMessage("File size exceeds the 10MB limit");
+        return;
+      }
+
+      setScriptFile(file);
+      setErrorMessage(null);
+    }
+  };
+
+  const removeFile = () => {
+    setScriptFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+
+      // Add the file if present
+      if (scriptFile) {
+        formData.append("scriptFile", scriptFile);
+      }
+
+      // Submit the form
+      const response = await fetch('/api/film-call', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit film");
+      }
+
+      // Show success message
+      setSuccessMessage("Your film has been submitted successfully!");
+
+      // Reset form
+      form.reset();
+      setScriptFile(null);
+
+      // Scroll to top to show success message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setErrorMessage(error instanceof Error ? error.message : "An error occurred while submitting your film");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
@@ -166,43 +243,73 @@ const FilmCallPage = () => {
             <span className="border-b-4 border-purple-600 pb-2">Submit Your Film</span>
           </h2>
 
+          {successMessage && (
+            <div className="mb-8 p-4 bg-green-500/20 border border-green-500 rounded-lg text-center">
+              <p className="text-green-400 text-lg font-medium">{successMessage}</p>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="mb-8 p-4 bg-red-500/20 border border-red-500 rounded-lg text-center">
+              <p className="text-red-400 text-lg font-medium">{errorMessage}</p>
+            </div>
+          )}
+
           <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-8 rounded-xl border border-gray-700">
             <p className="text-center text-xl mb-8">
               Ready to showcase your talent? Fill out the form below to get started.
             </p>
 
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-300 mb-2">Full Name</label>
+                  <label htmlFor="fullName" className="block text-gray-300 mb-2">Full Name</label>
                   <input
                     type="text"
+                    id="fullName"
+                    name="fullName"
                     className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
                     placeholder="Your name"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-300 mb-2">Email Address</label>
+                  <label htmlFor="email" className="block text-gray-300 mb-2">Email Address</label>
                   <input
                     type="email"
+                    id="email"
+                    name="email"
                     className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
                     placeholder="your@email.com"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2">Film Title</label>
+                <label htmlFor="filmTitle" className="block text-gray-300 mb-2">Film Title</label>
                 <input
                   type="text"
+                  id="filmTitle"
+                  name="filmTitle"
                   className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
                   placeholder="Title of your film"
+                  required
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2">Genre</label>
-                <select className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white">
+                <label htmlFor="genre" className="block text-gray-300 mb-2">Genre</label>
+                <select
+                  id="genre"
+                  name="genre"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
+                  required
+                  disabled={isSubmitting}
+                >
                   <option value="" disabled selected>Select a genre</option>
                   <option value="horror">Horror</option>
                   <option value="thriller">Thriller</option>
@@ -213,28 +320,94 @@ const FilmCallPage = () => {
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2">Film Synopsis</label>
+                <label htmlFor="synopsis" className="block text-gray-300 mb-2">Film Synopsis</label>
                 <textarea
+                  id="synopsis"
+                  name="synopsis"
                   className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white h-32"
                   placeholder="Brief description of your film"
+                  required
+                  disabled={isSubmitting}
                 ></textarea>
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2">Film Link</label>
+                <label htmlFor="filmLink" className="block text-gray-300 mb-2">Film Link</label>
                 <input
                   type="url"
+                  id="filmLink"
+                  name="filmLink"
                   className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
                   placeholder="URL to your film on Zynoflix platform"
+                  required
+                  disabled={isSubmitting}
                 />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2">Script PDF (Optional)</label>
+
+                {scriptFile ? (
+                  <div className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg">
+                    <div className="flex-1 truncate">
+                      <p className="text-white truncate">{scriptFile.name}</p>
+                      <p className="text-gray-400 text-sm">
+                        {(scriptFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeFile}
+                      className="ml-4 text-gray-400 hover:text-white"
+                      disabled={isSubmitting}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center hover:bg-gray-800/30 cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      disabled={isSubmitting}
+                    />
+                    <div className="flex flex-col items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2 text-purple-500">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      <p className="text-white">Click to upload script (PDF)</p>
+                      <p className="text-gray-400 text-sm mt-1">Max file size: 10MB</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg transition duration-300 shadow-lg hover:shadow-xl"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg transition duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isSubmitting}
                 >
-                  Submit Your Film
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Submitting...
+                    </span>
+                  ) : "Submit Your Film"}
                 </button>
               </div>
             </form>

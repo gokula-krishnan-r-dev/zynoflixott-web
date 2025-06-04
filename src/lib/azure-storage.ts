@@ -8,7 +8,8 @@ export const azureConfig = {
     containerNames: {
         trailers: 'trailers',
         posters: 'posters',
-        videos: 'videos'
+        videos: 'videos',
+        scripts: 'scripts'
     },
     // Whether to use proxy endpoint for media playback
     useProxy: process.env.USE_MEDIA_PROXY === 'true'
