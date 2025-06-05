@@ -39,51 +39,51 @@ export async function POST(request: NextRequest) {
         let originalFileName = "";
 
         // Handle script PDF file upload (if provided)
-        // if (scriptFile) {
-        //     // Validate file type (PDF only)
-        //     if (scriptFile.type !== "application/pdf") {
-        //         return NextResponse.json(
-        //             { error: "Only PDF files are allowed for scripts" },
-        //             { status: 400 }
-        //         );
-        //     }
+        if (scriptFile) {
+            // Validate file type (PDF only)
+            if (scriptFile.type !== "application/pdf") {
+                return NextResponse.json(
+                    { error: "Only PDF files are allowed for scripts" },
+                    { status: 400 }
+                );
+            }
 
-        //     // Check file size (10MB max)
-        //     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
-        //     if (scriptFile.size > MAX_FILE_SIZE) {
-        //         return NextResponse.json(
-        //             { error: "File size exceeds the 10MB limit" },
-        //             { status: 400 }
-        //         );
-        //     }
+            // Check file size (10MB max)
+            const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+            if (scriptFile.size > MAX_FILE_SIZE) {
+                return NextResponse.json(
+                    { error: "File size exceeds the 10MB limit" },
+                    { status: 400 }
+                );
+            }
 
-        //     // Get container client for scripts
-        //     const containerClient = getContainerClient(azureConfig.containerNames.scripts);
-        //     await containerClient.createIfNotExists({
-        //         access: "blob",
-        //     });
+            // Get container client for scripts
+            const containerClient = getContainerClient(azureConfig.containerNames.scripts);
+            await containerClient.createIfNotExists({
+                access: "blob",
+            });
 
-        //     // Generate unique blob name
-        //     const userId = uuidv4(); // Generate a unique ID for the submission
-        //     const blobName = generateUniqueBlobName(userId, scriptFile.name);
+            // Generate unique blob name
+            const userId = uuidv4(); // Generate a unique ID for the submission
+            const blobName = generateUniqueBlobName(userId, scriptFile.name);
 
-        //     // Get blob client
-        //     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+            // Get blob client
+            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-        //     // Convert file to ArrayBuffer and then to Buffer
-        //     const fileBuffer = Buffer.from(await scriptFile.arrayBuffer());
+            // Convert file to ArrayBuffer and then to Buffer
+            const fileBuffer = Buffer.from(await scriptFile.arrayBuffer());
 
-        //     // Upload to Azure Blob Storage
-        //     await blockBlobClient.uploadData(fileBuffer, {
-        //         blobHTTPHeaders: {
-        //             blobContentType: scriptFile.type,
-        //         },
-        //     });
+            // Upload to Azure Blob Storage
+            await blockBlobClient.uploadData(fileBuffer, {
+                blobHTTPHeaders: {
+                    blobContentType: scriptFile.type,
+                },
+            });
 
-        //     // Save the URL and original filename
-        //     scriptPdfUrl = blockBlobClient.url;
-        //     originalFileName = scriptFile.name;
-        // }
+            // Save the URL and original filename
+            scriptPdfUrl = blockBlobClient.url;
+            originalFileName = scriptFile.name;
+        }
 
         // Connect to MongoDB
         await connectToDatabase();

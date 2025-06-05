@@ -345,13 +345,13 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
       full_name: "",
     });
 
-    if (mode === "signup") {
-      // For signup, send OTP first
-      await sendOtpToEmail();
-    } else {
-      // For login, directly submit the form
-      await submitForm();
-    }
+    // if (mode === "signup") {
+    //   // For signup, send OTP first
+    //   await sendOtpToEmail();
+    // } else {
+    // For login, directly submit the form
+    await submitForm();
+    // }
   };
 
   const handleResendOtp = async () => {

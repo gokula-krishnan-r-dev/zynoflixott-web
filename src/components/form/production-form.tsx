@@ -145,12 +145,12 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
   };
 
   const handleOtpSubmit = async (enteredOtp: string) => {
-    const isVerified = await verifyOtp(enteredOtp);
-    if (isVerified) {
-      // Close the modal and proceed with form submission
-      setShowOtpModal(false);
-      await submitProductionForm();
-    }
+    // const isVerified = await verifyOtp(enteredOtp);
+    // if (isVerified) {
+    // Close the modal and proceed with form submission
+    // setShowOtpModal(false);
+    await submitProductionForm();
+    // }
   };
 
   const handleCloseOtpModal = () => {
@@ -166,9 +166,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       setErrors(validationErrors);
       return;
     }
-
-    // Send OTP before proceeding with form submission
-    await sendOtpToEmail();
+    await submitProductionForm();
   };
 
   const submitProductionForm = async () => {
@@ -361,7 +359,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
       </form>
 
       {/* OTP Modal */}
-      <OtpModal
+      {/* <OtpModal
         isOpen={showOtpModal}
         onClose={handleCloseOtpModal}
         onOtpSubmit={handleOtpSubmit}
@@ -369,7 +367,7 @@ const ProductionForm: React.FC<{ type: string }> = ({ type }) => {
         error={otpError}
         onResendOtp={sendOtpToEmail}
         email={formData.email}
-      />
+      /> */}
     </>
   );
 };

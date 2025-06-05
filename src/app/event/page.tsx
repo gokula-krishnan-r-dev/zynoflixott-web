@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaCalendarAlt, FaTrophy, FaFilm, FaAward, FaCertificate, FaArrowRight, FaCheckCircle } from 'react-icons/fa';
@@ -20,11 +20,26 @@ const EventPage = () => {
         filmTitle: '',
         filmDuration: '',
         filmGenre: '',
+        driverLink: "",
         agreeToTerms: false
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [paymentProcessing, setPaymentProcessing] = useState(false);
+    const [formValidated, setFormValidated] = useState(false);
+
+    // Load Razorpay script
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -41,25 +56,88 @@ const EventPage = () => {
         }
     };
 
+    const validateForm = () => {
+        if (!formData.name || !formData.email || !formData.phone ||
+            !formData.filmTitle || !formData.filmDuration ||
+            !formData.filmGenre || !formData.driverLink ||
+            !formData.agreeToTerms) {
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            setError("Please fill all required fields");
+            return;
+        }
+
+        setFormValidated(true);
         setLoading(true);
         setError(null);
 
         try {
-            const response = await fetch('/api/event-registration', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            // Initialize Razorpay payment directly
+            const options = {
+                key: "rzp_live_2wtNMTtIzCco0O", // Replace with your Razorpay test key
+                amount: 10000, // ₹100 in paise
+                currency: "INR",
+                name: "Zynoflix OTT",
+                description: "Short Film Festival Registration Fee",
+                image: "/logo_sm.png",
+                handler: function (response: any) {
+                    // Payment successful, submit the form
+                    submitFormData(response);
                 },
-                body: JSON.stringify(formData),
-            });
+                prefill: {
+                    name: formData.name,
+                    email: formData.email,
+                    contact: formData.phone
+                },
+                notes: {
+                    filmTitle: formData.filmTitle,
+                    filmGenre: formData.filmGenre
+                },
+                theme: {
+                    color: "#6366F1" // Indigo color
+                },
+                modal: {
+                    ondismiss: function () {
+                        setLoading(false);
+                        setPaymentProcessing(false);
+                    }
+                }
+            };
 
-            const data = await response.json();
+            // Open Razorpay checkout
+            const razorpayInstance = new (window as any).Razorpay(options);
+            setPaymentProcessing(true);
+            razorpayInstance.open();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to submit registration');
-            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+            setLoading(false);
+            setPaymentProcessing(false);
+        }
+    };
+
+    const submitFormData = async (paymentResponse: any) => {
+        try {
+            // Form submission after successful payment
+            const submissionData = {
+                ...formData,
+                payment: {
+                    id: paymentResponse.razorpay_payment_id,
+                    amount: 100, // ₹100
+                    currency: "INR",
+                    status: "completed"
+                }
+            };
+
+            // Store in localStorage as a fallback
+            localStorage.setItem('filmFestivalRegistration', JSON.stringify(submissionData));
 
             // Registration submitted successfully
             setShowRegistrationModal(false);
@@ -69,6 +147,7 @@ const EventPage = () => {
                 email: '',
                 phone: '',
                 filmTitle: '',
+                driverLink: "",
                 filmDuration: '',
                 filmGenre: '',
                 agreeToTerms: false
@@ -76,11 +155,11 @@ const EventPage = () => {
 
             // Scroll to top to show success message
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+            setError(err instanceof Error ? err.message : 'An unexpected error occurred during registration');
         } finally {
             setLoading(false);
+            setPaymentProcessing(false);
         }
     };
 
@@ -156,7 +235,7 @@ const EventPage = () => {
                         <div className="bg-gradient-to-br from-yellow-600 to-yellow-800 rounded-xl p-6 transform hover:scale-105 transition duration-300 shadow-xl">
                             <div className="flex items-center mb-4">
                                 <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 font-bold text-xl mr-4">1</div>
-                                <h3 className="text-3xl font-bold">₹10 Lakhs</h3>
+                                <h3 className="text-3xl font-bold">$12,019.23 USD</h3>
                             </div>
                             <p className="text-yellow-100">+ Chance to Get Your Film Produced by Zynoflix</p>
                         </div>
@@ -165,7 +244,7 @@ const EventPage = () => {
                         <div className="bg-gradient-to-br from-gray-500 to-gray-700 rounded-xl p-6 transform hover:scale-105 transition duration-300 shadow-xl">
                             <div className="flex items-center mb-4">
                                 <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-800 font-bold text-xl mr-4">2</div>
-                                <h3 className="text-3xl font-bold">₹7.5 Lakhs</h3>
+                                <h3 className="text-3xl font-bold">$9,014.42 USD</h3>
                             </div>
                         </div>
 
@@ -173,7 +252,7 @@ const EventPage = () => {
                         <div className="bg-gradient-to-br from-amber-700 to-amber-900 rounded-xl p-6 transform hover:scale-105 transition duration-300 shadow-xl">
                             <div className="flex items-center mb-4">
                                 <div className="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center text-amber-900 font-bold text-xl mr-4">3</div>
-                                <h3 className="text-3xl font-bold">₹5 Lakhs</h3>
+                                <h3 className="text-3xl font-bold">$6,009.62 USD</h3>
                             </div>
                         </div>
                     </div>
@@ -184,19 +263,19 @@ const EventPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div className="flex items-center space-x-2">
                                 <span className="font-semibold text-indigo-300">4th Prize:</span>
-                                <span>₹2.5 Lakhs</span>
+                                <span>$3,004.81 USD</span>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <span className="font-semibold text-indigo-300">5th Prize:</span>
-                                <span>₹1 Lakh</span>
+                                <span>$1,165.50 USD</span>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <span className="font-semibold text-indigo-300">6th Prize:</span>
-                                <span>₹50,000</span>
+                                <span>$600 USD</span>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <span className="font-semibold text-indigo-300">7th Prize:</span>
-                                <span>₹10,000</span>
+                                <span>$116.51 USD</span>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <span className="font-semibold text-indigo-300">8th Prize:</span>
@@ -475,16 +554,51 @@ const EventPage = () => {
                                 </div>
                             </div>
 
+                            {/* //google link */}
+
+                            <div className="flex items-start mt-4">
+                                <div>
+                                    <label htmlFor="driverLink" className="block text-sm font-medium text-gray-300 mb-1">Google Driver Link</label>
+                                    <input
+                                        type="text"
+                                        id="driverLink"
+                                        name="driverLink"
+                                        value={formData.driverLink}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={loading}
+                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                </div>
+
+
+                            </div>
+
+                            <div className="mt-6 bg-indigo-900 bg-opacity-30 rounded-lg p-4">
+                                <div className="flex items-center mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="text-indigo-300 font-medium">Registration Fee</span>
+                                </div>
+                                <p className="text-gray-300 text-sm">A one-time registration fee of <span className="font-bold text-white">₹100</span> is required to submit your film.</p>
+                            </div>
+
                             <button
                                 type="submit"
-                                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mt-6"
+                                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mt-6 flex items-center justify-center"
                                 disabled={loading}
                             >
-                                {loading ? 'Submitting...' : 'Submit Registration'}
+                                {loading ? 'Processing...' : paymentProcessing ? 'Processing Payment...' : 'Pay ₹100 & Submit Registration'}
+                                {!loading && !paymentProcessing && (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                    </svg>
+                                )}
                             </button>
                         </form>
-                    </div>
-                </div>
+                    </div >
+                </div >
             )}
 
             {/* Footer */}
@@ -499,7 +613,7 @@ const EventPage = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
