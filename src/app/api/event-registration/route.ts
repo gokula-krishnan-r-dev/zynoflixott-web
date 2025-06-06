@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import EventRegistration from '@/models/EventRegistration';
-import env from '@/config/env';
-
 export async function POST(request: NextRequest) {
     try {
         // Connect to the database

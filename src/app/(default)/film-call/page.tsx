@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
 import {
   FaFilm,
   FaScroll,
@@ -11,7 +10,8 @@ import {
   FaSkull,
   FaLaughSquint,
   FaUpload,
-  FaEnvelope
+  FaEnvelope,
+  FaLock
 } from 'react-icons/fa';
 
 const FilmCallPage = () => {
@@ -20,7 +20,21 @@ const FilmCallPage = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [scriptFile, setScriptFile] = useState<File | null>(null);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [formData, setFormData] = useState<FormData | null>(null);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const genres = [
     { id: 'horror', name: 'Horror', icon: <FaSkull className="h-10 w-10 text-red-600" /> },
@@ -58,15 +72,67 @@ const FilmCallPage = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
+  const processPayment = (form: HTMLFormElement) => {
+    const formDataObj = new FormData(form);
+    setFormData(formDataObj);
+
+    const fullName = formDataObj.get('fullName') as string;
+    const email = formDataObj.get('email') as string;
+
+    setPaymentProcessing(true);
 
     try {
-      const form = e.target as HTMLFormElement;
-      const formData = new FormData(form);
+      // Initialize Razorpay payment
+      const options = {
+        key: "rzp_live_2wtNMTtIzCco0O", // Razorpay key
+        amount: 10000, // ₹100 in paise
+        currency: "INR",
+        name: "Zynoflix OTT",
+        description: "Film Submission Fee",
+        image: "/logo_sm.png",
+        handler: function (response: any) {
+          // Payment successful, proceed with form submission
+          submitFormWithPayment(response);
+        },
+        prefill: {
+          name: fullName,
+          email: email
+        },
+        notes: {
+          purpose: "Film Submission"
+        },
+        theme: {
+          color: "#6366F1" // Indigo color
+        },
+        modal: {
+          ondismiss: function () {
+            setIsSubmitting(false);
+            setPaymentProcessing(false);
+          }
+        }
+      };
+
+      // Open Razorpay checkout
+      const razorpayInstance = new (window as any).Razorpay(options);
+      razorpayInstance.open();
+
+    } catch (error) {
+      console.error("Payment error:", error);
+      setErrorMessage("Payment initialization failed. Please try again.");
+      setIsSubmitting(false);
+      setPaymentProcessing(false);
+    }
+  };
+
+  const submitFormWithPayment = async (paymentResponse: any) => {
+    try {
+      if (!formData) {
+        throw new Error("Form data is missing");
+      }
+
+      // Add the payment information to formData
+      formData.append("paymentId", paymentResponse.razorpay_payment_id);
+      formData.append("paymentAmount", "100");
 
       // Add the file if present
       if (scriptFile) {
@@ -89,8 +155,10 @@ const FilmCallPage = () => {
       setSuccessMessage("Your film has been submitted successfully!");
 
       // Reset form
-      form.reset();
+      const form = document.getElementById('filmSubmissionForm') as HTMLFormElement;
+      if (form) form.reset();
       setScriptFile(null);
+      setFormData(null);
 
       // Scroll to top to show success message
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -99,7 +167,18 @@ const FilmCallPage = () => {
       setErrorMessage(error instanceof Error ? error.message : "An error occurred while submitting your film");
     } finally {
       setIsSubmitting(false);
+      setPaymentProcessing(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    // Process payment first
+    processPayment(e.target as HTMLFormElement);
   };
 
   return (
@@ -260,7 +339,7 @@ const FilmCallPage = () => {
               Ready to showcase your talent? Fill out the form below to get started.
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form id="filmSubmissionForm" onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="fullName" className="block text-gray-300 mb-2">Full Name</label>
@@ -393,10 +472,19 @@ const FilmCallPage = () => {
                 )}
               </div>
 
+              {/* Payment Notice */}
+              <div className="mt-6 bg-indigo-900 bg-opacity-30 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <FaLock className="h-5 w-5 text-indigo-400 mr-2" />
+                  <span className="text-indigo-300 font-medium">Submission Fee</span>
+                </div>
+                <p className="text-gray-300 text-sm">A one-time submission fee of <span className="font-bold text-white">$1.3</span> is required to submit your film. This helps us manage and review submissions effectively.</p>
+              </div>
+
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg transition duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg transition duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -405,9 +493,14 @@ const FilmCallPage = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Submitting...
+                      {paymentProcessing ? "Processing Payment..." : "Submitting..."}
                     </span>
-                  ) : "Submit Your Film"}
+                  ) : (
+                    <>
+                      Pay $1.3 & Submit Your Film
+                      <FaLock className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </button>
               </div>
             </form>

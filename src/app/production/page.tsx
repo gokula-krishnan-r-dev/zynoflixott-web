@@ -459,43 +459,45 @@ export default function ProductionPage() {
                         TRUSTED BY TEAMS FROM AROUND THE WORLD
                     </h2>
                     <div className="mt-6">
-                        <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 md:gap-x-16">
-                            <li>
-                                <img
-                                    src="/images/company/1.png"
-                                    alt="Company 1"
-                                    className="h-auto w-full max-w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                />
-                            </li>
-                            <li>
-                                <img
-                                    src="/images/company/2.png"
-                                    alt="Company 2"
-                                    className="h-auto w-full max-w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                />
-                            </li>
-                            <li>
-                                <img
-                                    src="/images/company/3.png"
-                                    alt="Company 3"
-                                    className="h-auto w-full max-w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                />
-                            </li>
-                            <li>
-                                <img
-                                    src="/images/company/4.png"
-                                    alt="Company 4"
-                                    className="h-auto w-full max-w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                />
-                            </li>
-                            <li>
-                                <img
-                                    src="/images/company/5.png"
-                                    alt="Company 5"
-                                    className="h-auto w-full max-w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                />
-                            </li>
-                        </ul>
+                        <div className="overflow-x-auto">
+                            <ul className="flex items-center space-x-8 min-w-max px-4">
+                                <li>
+                                    <img
+                                        src="/images/company/1.png"
+                                        alt="Company 1"
+                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
+                                    />
+                                </li>
+                                <li>
+                                    <img
+                                        src="/images/company/2.png"
+                                        alt="Company 2"
+                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
+                                    />
+                                </li>
+                                <li>
+                                    <img
+                                        src="/images/company/3.png"
+                                        alt="Company 3"
+                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
+                                    />
+                                </li>
+                                <li>
+                                    <img
+                                        src="/images/company/4.png"
+                                        alt="Company 4"
+                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
+                                    />
+                                </li>
+                                <li>
+                                    <img
+                                        src="/images/company/5.png"
+                                        alt="Company 5"
+                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
+                                    />
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

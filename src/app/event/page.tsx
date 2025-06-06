@@ -534,6 +534,26 @@ const EventPage = () => {
                                 </div>
                             </div>
 
+                            {/* //google link */}
+
+                            <div className=" grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <label htmlFor="driverLink" className="block text-sm font-medium text-gray-300 mb-1">Google Driver Link</label>
+                                    <input
+                                        type="text"
+                                        id="driverLink"
+                                        name="driverLink"
+                                        value={formData.driverLink}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={loading}
+                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                </div>
+
+
+                            </div>
+
                             <div className="flex items-start mt-4">
                                 <div className="flex items-center h-5">
                                     <input
@@ -554,26 +574,6 @@ const EventPage = () => {
                                 </div>
                             </div>
 
-                            {/* //google link */}
-
-                            <div className="flex items-start mt-4">
-                                <div>
-                                    <label htmlFor="driverLink" className="block text-sm font-medium text-gray-300 mb-1">Google Driver Link</label>
-                                    <input
-                                        type="text"
-                                        id="driverLink"
-                                        name="driverLink"
-                                        value={formData.driverLink}
-                                        onChange={handleChange}
-                                        required
-                                        disabled={loading}
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    />
-                                </div>
-
-
-                            </div>
-
                             <div className="mt-6 bg-indigo-900 bg-opacity-30 rounded-lg p-4">
                                 <div className="flex items-center mb-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -581,7 +581,7 @@ const EventPage = () => {
                                     </svg>
                                     <span className="text-indigo-300 font-medium">Registration Fee</span>
                                 </div>
-                                <p className="text-gray-300 text-sm">A one-time registration fee of <span className="font-bold text-white">₹100</span> is required to submit your film.</p>
+                                <p className="text-gray-300 text-sm">A one-time registration fee of <span className="font-bold text-white">$1.3</span> is required to submit your film.</p>
                             </div>
 
                             <button
@@ -589,7 +589,7 @@ const EventPage = () => {
                                 className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mt-6 flex items-center justify-center"
                                 disabled={loading}
                             >
-                                {loading ? 'Processing...' : paymentProcessing ? 'Processing Payment...' : 'Pay ₹100 & Submit Registration'}
+                                {loading ? 'Processing...' : paymentProcessing ? 'Processing Payment...' : 'Pay $1.3 & Submit Registration'}
                                 {!loading && !paymentProcessing && (
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
