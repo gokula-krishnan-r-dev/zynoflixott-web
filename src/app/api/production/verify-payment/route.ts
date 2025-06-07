@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import connectToDatabase from "@/lib/mongodb";
 import Production from "@/models/Production";
-import crypto from "crypto";
-
-// Verify the payment signature from Razorpay
-function verifyPaymentSignature(orderId: string, paymentId: string, signature: string): boolean {
-    try {
-        const razorpaySecret = process.env.RAZORPAY_KEY_SECRET || "scJ6DIWgsqJBMSippsTgaluq";
-        const hmac = crypto.createHmac("sha256", razorpaySecret);
-        hmac.update(orderId + "|" + paymentId);
-        const generatedSignature = hmac.digest("hex");
-
-        return generatedSignature === signature;
-    } catch (error) {
-        console.error("Error verifying signature:", error);
-        return false;
-    }
-}
 
 export async function POST(request: NextRequest) {
     try {
@@ -24,17 +9,7 @@ export async function POST(request: NextRequest) {
 
         if (!orderId || !paymentId || !signature || !productionId) {
             return NextResponse.json(
-                { error: "Missing required fields" },
-                { status: 400 }
-            );
-        }
-
-        // Verify payment signature
-        const isValidSignature = verifyPaymentSignature(orderId, paymentId, signature);
-
-        if (!isValidSignature) {
-            return NextResponse.json(
-                { error: "Invalid payment signature" },
+                { error: "All payment details are required" },
                 { status: 400 }
             );
         }
@@ -42,11 +17,37 @@ export async function POST(request: NextRequest) {
         // Connect to database
         await connectToDatabase();
 
-        // Update production entry with payment details
-        await Production.findByIdAndUpdate(productionId, {
-            paymentId,
-            paymentStatus: "completed",
-        });
+        // Find production entry
+        const production = await Production.findById(productionId);
+        if (!production) {
+            return NextResponse.json(
+                { error: "Production not found" },
+                { status: 404 }
+            );
+        }
+
+        // Verify signature
+        const generatedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+            .update(`${orderId}|${paymentId}`)
+            .digest("hex");
+
+        if (generatedSignature !== signature) {
+            // Update production status
+            production.paymentStatus = "failed";
+            await production.save();
+
+            return NextResponse.json(
+                { error: "Invalid payment signature" },
+                { status: 400 }
+            );
+        }
+
+        // Update production with payment details
+        production.paymentId = paymentId;
+        production.paymentSignature = signature;
+        production.paymentStatus = "completed";
+        await production.save();
 
         return NextResponse.json({
             success: true,

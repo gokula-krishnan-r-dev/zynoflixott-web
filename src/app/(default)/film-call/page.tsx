@@ -1,580 +1,874 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import {
-  FaFilm,
-  FaScroll,
-  FaUserTie,
-  FaHistory,
-  FaSkull,
-  FaLaughSquint,
-  FaUpload,
-  FaEnvelope,
-  FaLock
-} from 'react-icons/fa';
+import { useState, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import axios from "axios";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { Loader2, CheckCircle, Upload, X, Calendar, Clock } from "lucide-react";
+import Image from "next/image";
 
-const FilmCallPage = () => {
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+// Form validation schema
+const formSchema = z.object({
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phoneNumber: z.string().min(10, "Phone number must be at least 10 characters"),
+  cityState: z.string().min(2, "City/State must be at least 2 characters"),
+  shortFilmTitle: z.string().min(1, "Short film title is required"),
+  runtime: z.string().min(1, "Runtime is required"),
+  filmLanguage: z.string().min(1, "Film language is required"),
+  isReleased: z.string(),
+  driveLink: z.string().url("Please enter a valid URL").or(z.literal("")),
+  synopsis: z.string().max(500, "Synopsis must be less than 500 words"),
+  appointmentDate: z.string().min(1, "Appointment date is required"),
+  appointmentTime: z.string().min(1, "Appointment time is required"),
+  budget: z.string().min(1, "Budget is required"),
+  rightsType: z.string().min(1, "Rights type is required"),
+  additionalNotes: z.string().optional(),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+export default function ProductionPage() {
+  const [poster, setPoster] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [scriptFile, setScriptFile] = useState<File | null>(null);
-  const [paymentProcessing, setPaymentProcessing] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [formData, setFormData] = useState<FormData | null>(null);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [posterError, setPosterError] = useState<string | null>(null);
+  const [productionId, setProductionId] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const posterInputRef = useRef<HTMLInputElement>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  });
+
+  // Handle poster file change
+  const handlePosterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPosterError(null);
+    const selectedFile = e.target.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    // Check file type (image only)
+    if (!selectedFile.type.startsWith("image/")) {
+      setPosterError("Only image files are allowed");
+      return;
+    }
+
+    // Check file size (5MB max)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setPosterError("File size exceeds the 5MB limit");
+      return;
+    }
+
+    setPoster(selectedFile);
+  };
+
+  // Remove selected poster
+  const removePoster = () => {
+    setPoster(null);
+    if (posterInputRef.current) {
+      posterInputRef.current.value = "";
+    }
+    setPosterError(null);
+  };
+
+  // Handle form submission
+  const onSubmit = async (data: FormData) => {
+    try {
+      setIsSubmitting(true);
+
+      // Create form data
+      const formData = new FormData();
+      formData.append("fullName", data.fullName);
+      formData.append("email", data.email);
+      formData.append("phoneNumber", data.phoneNumber);
+      formData.append("cityState", data.cityState);
+      formData.append("shortFilmTitle", data.shortFilmTitle);
+      formData.append("runtime", data.runtime);
+      formData.append("filmLanguage", data.filmLanguage);
+      formData.append("isReleased", data.isReleased);
+      formData.append("driveLink", data.driveLink);
+      formData.append("synopsis", data.synopsis);
+      formData.append("appointmentDate", data.appointmentDate);
+      formData.append("appointmentTime", data.appointmentTime);
+      formData.append("budget", data.budget);
+      formData.append("rightsType", data.rightsType);
+      formData.append("additionalNotes", data.additionalNotes || "");
+
+      if (poster) {
+        formData.append("poster", poster);
+      }
+
+      // Submit form
+      const response = await axios.post("/api/production/submit", formData);
+
+      if (response.data.success) {
+        setProductionId(response.data.productionId);
+        // Initiate payment
+        handlePayment(response.data.productionId);
+      }
+    } catch (error: any) {
+      console.error("Error submitting form:", error);
+      toast.error(error.response?.data?.error || "Failed to submit form");
+      setIsSubmitting(false);
+    }
+  };
 
   // Load Razorpay script
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  const genres = [
-    { id: 'horror', name: 'Horror', icon: <FaSkull className="h-10 w-10 text-red-600" /> },
-    { id: 'thriller', name: 'Thriller', icon: <FaUserTie className="h-10 w-10 text-purple-600" /> },
-    { id: 'comedy', name: 'Comedy', icon: <FaLaughSquint className="h-10 w-10 text-yellow-500" /> },
-    { id: 'historical', name: 'Historical Drama', icon: <FaHistory className="h-10 w-10 text-amber-700" /> },
-  ];
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-
-      // Validate file type (PDF only)
-      if (file.type !== "application/pdf") {
-        setErrorMessage("Only PDF files are allowed for scripts");
-        return;
-      }
-
-      // Validate file size (10MB max)
-      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-      if (file.size > MAX_FILE_SIZE) {
-        setErrorMessage("File size exceeds the 10MB limit");
-        return;
-      }
-
-      setScriptFile(file);
-      setErrorMessage(null);
-    }
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = resolve;
+      document.body.appendChild(script);
+    });
   };
 
-  const removeFile = () => {
-    setScriptFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const processPayment = (form: HTMLFormElement) => {
-    const formDataObj = new FormData(form);
-    setFormData(formDataObj);
-
-    const fullName = formDataObj.get('fullName') as string;
-    const email = formDataObj.get('email') as string;
-
-    setPaymentProcessing(true);
-
+  // Handle payment
+  const handlePayment = async (id: string) => {
     try {
-      // Initialize Razorpay payment
+      setIsPaymentLoading(true);
+
+      // Initialize payment with Razorpay
+      const { data } = await axios.post("/api/production/payment", {
+        productionId: id,
+      });
+
+      // Load Razorpay script
+      if (!(window as any).Razorpay) {
+        await loadRazorpay();
+      }
+
+      // Open Razorpay payment dialog
       const options = {
-        key: "rzp_live_2wtNMTtIzCco0O", // Razorpay key
-        amount: 10000, // ₹100 in paise
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
+        amount: 500 * 100, // Amount in paise
         currency: "INR",
-        name: "Zynoflix OTT",
-        description: "Film Submission Fee",
-        image: "/logo_sm.png",
+        name: "ZynoFlix",
+        description: "Short Film Purchase Review",
+        order_id: data.orderId,
         handler: function (response: any) {
-          // Payment successful, proceed with form submission
-          submitFormWithPayment(response);
+          handlePaymentSuccess(response, id);
         },
         prefill: {
-          name: fullName,
-          email: email
-        },
-        notes: {
-          purpose: "Film Submission"
+          name: "",
+          email: "",
+          contact: "",
         },
         theme: {
-          color: "#6366F1" // Indigo color
+          color: "#7c3aed",
         },
         modal: {
           ondismiss: function () {
+            setIsPaymentLoading(false);
             setIsSubmitting(false);
-            setPaymentProcessing(false);
-          }
-        }
+          },
+        },
       };
 
-      // Open Razorpay checkout
-      const razorpayInstance = new (window as any).Razorpay(options);
-      razorpayInstance.open();
-
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
     } catch (error) {
-      console.error("Payment error:", error);
-      setErrorMessage("Payment initialization failed. Please try again.");
+      console.error("Payment initialization failed:", error);
+      toast.error("Payment initialization failed. Please try again.");
+      setIsPaymentLoading(false);
       setIsSubmitting(false);
-      setPaymentProcessing(false);
     }
   };
 
-  const submitFormWithPayment = async (paymentResponse: any) => {
+  // Handle payment success
+  const handlePaymentSuccess = async (
+    response: any,
+    productionId: string
+  ) => {
     try {
-      if (!formData) {
-        throw new Error("Form data is missing");
-      }
-
-      // Add the payment information to formData
-      formData.append("paymentId", paymentResponse.razorpay_payment_id);
-      formData.append("paymentAmount", "100");
-
-      // Add the file if present
-      if (scriptFile) {
-        formData.append("scriptFile", scriptFile);
-      }
-
-      // Submit the form
-      const response = await fetch('/api/film-call', {
-        method: 'POST',
-        body: formData,
+      // Verify payment
+      await axios.post("/api/production/verify-payment", {
+        orderId: response.razorpay_order_id,
+        paymentId: response.razorpay_payment_id,
+        signature: response.razorpay_signature,
+        productionId,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to submit film");
-      }
-
-      // Show success message
-      setSuccessMessage("Your film has been submitted successfully!");
-
-      // Reset form
-      const form = document.getElementById('filmSubmissionForm') as HTMLFormElement;
-      if (form) form.reset();
-      setScriptFile(null);
-      setFormData(null);
-
-      // Scroll to top to show success message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setErrorMessage(error instanceof Error ? error.message : "An error occurred while submitting your film");
-    } finally {
+      setIsPaymentLoading(false);
       setIsSubmitting(false);
-      setPaymentProcessing(false);
+      setIsSuccess(true);
+      toast.success("Your request has been submitted successfully!");
+      reset();
+      setPoster(null);
+    } catch (error) {
+      console.error("Payment verification failed:", error);
+      toast.error("Payment verification failed. Please contact support.");
+      setIsPaymentLoading(false);
+      setIsSubmitting(false);
     }
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    // Process payment first
-    processPayment(e.target as HTMLFormElement);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
-      {/* Hero Section */}
-      <div className="relative h-[60vh] w-full overflow-hidden">
-        <div className="absolute inset-0 bg-black/60 z-10"></div>
-        <div className="absolute inset-0 flex items-center justify-center z-20">
-          <div className="text-center px-4 max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-              Submit Your Film to Zynoflix OTT
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-gray-300">
-              We're looking for the next big story. Is it yours?
+    <div className="min-h-screen bg-gradient-to-b from-[#1a0733] to-[#2c1157] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl pt-12 mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            SELL YOUR SHORTFILMS TO ZYNOFLIX OTT
+          </h1>
+
+          {/* Information Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="bg-[#292c41]/50 rounded-lg p-6 backdrop-blur-sm border border-[#7b61ff]/30"
+            >
+              <h2 className="text-2xl font-semibold text-white mb-4">
+                Ready to Monetize Your Short Film?
+              </h2>
+              <p className="text-gray-300">
+                Join our platform and reach a global audience. We offer competitive rates and professional distribution for your creative work.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="bg-[#292c41]/50 rounded-lg p-6 backdrop-blur-sm border border-[#7b61ff]/30"
+            >
+              <h2 className="text-2xl font-semibold text-white mb-4">
+                Fair Market Value
+              </h2>
+              <p className="text-gray-300">
+                Get the best value for your short film. We evaluate each submission individually and offer competitive rates based on quality and market potential.
+              </p>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="bg-[#292c41]/50 rounded-lg p-8 backdrop-blur-sm border border-[#7b61ff]/30 mb-10"
+          >
+            <h2 className="text-3xl font-bold text-white mb-2">REACH MILLIONS OF VIEWERS</h2>
+            <p className="text-xl text-[#7b61ff]">Start your journey to success today</p>
+          </motion.div>
+        </motion.div>
+
+        {/* Success Message */}
+        {isSuccess ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#292c41]/50 rounded-lg p-8 backdrop-blur-sm border border-[#7b61ff]/30 text-center max-w-2xl mx-auto"
+          >
+            <div className="flex justify-center mb-4">
+              <CheckCircle className="w-20 h-20 text-green-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-4">
+              Request Submitted Successfully!
+            </h2>
+            <p className="text-gray-300 mb-6">
+              Thank you for submitting your short film. Your appointment has been scheduled.
+              You will receive updates on your email within 48 hours.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button
-                onClick={() => document.getElementById('submission-form')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg hover:shadow-xl"
-              >
-                Submit Your Film
-              </button>
-              <Link href="/monetization">
-                <button
-                  className="bg-gradient-to-r from-[#7b61ff] to-[#a076ff] hover:from-[#6346e5] hover:to-[#8659ff] text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg hover:shadow-xl"
+            <button
+              onClick={() => setIsSuccess(false)}
+              className="bg-[#7b61ff] text-white px-6 py-3 rounded-full font-medium hover:bg-[#6a4ff1] transition-colors"
+            >
+              Submit Another Film
+            </button>
+          </motion.div>
+        ) : (
+          /* Form */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="bg-[#292c41]/50 rounded-lg p-6 md:p-8 backdrop-blur-sm border border-[#7b61ff]/30 max-w-2xl mx-auto"
+          >
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {/* Full Name */}
+              <div className="mb-6">
+                <label
+                  htmlFor="fullName"
+                  className="block text-white font-medium mb-2"
                 >
-                  MONETIZATION
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-        <div className="absolute inset-0 -z-10">
-          <div className="w-full h-full bg-[url('/film-background.jpg')] bg-cover bg-center opacity-30"></div>
-        </div>
-      </div>
-
-      {/* What We're Looking For */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-            <span className="border-b-4 border-purple-600 pb-2">What We're Looking For</span>
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-            {genres.map((genre) => (
-              <div
-                key={genre.id}
-                className={`bg-gray-800/50 backdrop-blur-md p-6 rounded-xl hover:bg-gray-700/70 transition duration-300 border border-gray-700 hover:border-purple-500 cursor-pointer ${activeCategory === genre.id ? 'border-purple-500 bg-gray-700/70' : ''
-                  }`}
-                onClick={() => setActiveCategory(genre.id === activeCategory ? null : genre.id)}
-              >
-                <div className="flex flex-col items-center text-center">
-                  {genre.icon}
-                  <h3 className="text-xl font-semibold mt-4 mb-2">{genre.name}</h3>
-                  <p className="text-gray-400">
-                    {genre.id === 'horror' && 'Terrifying tales that haunt viewers long after watching'}
-                    {genre.id === 'thriller' && 'Edge-of-seat suspense with unexpected twists'}
-                    {genre.id === 'comedy' && 'Fresh humor that delivers genuine laughs'}
-                    {genre.id === 'historical' && 'Compelling stories that bring history to life'}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 flex flex-col md:flex-row md:items-start gap-6 bg-gray-800/50 backdrop-blur-md p-6 rounded-xl border border-gray-700">
-            <div className="flex-shrink-0 flex justify-center">
-              <FaScroll className="h-16 w-16 text-purple-500" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-semibold mb-4 text-center md:text-left">What Makes a Great Submission</h3>
-              <ul className="space-y-3 text-gray-300">
-                <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  <span><strong className="text-white">Compelling Script:</strong> Stories that captivate from beginning to end with unique perspectives</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  <span><strong className="text-white">Technical Quality:</strong> Clear audio, good lighting, and thoughtful cinematography</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  <span><strong className="text-white">Authentic Characters:</strong> Well-developed characters that audiences can connect with</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  <span><strong className="text-white">Original Concepts:</strong> Fresh takes that stand out from the typical narratives</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Submission Process */}
-      <section className="py-20 px-4 bg-black/50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-            <span className="border-b-4 border-purple-600 pb-2">How to Submit</span>
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-8 rounded-xl border border-gray-700 hover:border-purple-500 transition duration-300">
-              <div className="h-16 w-16 flex items-center justify-center bg-purple-900/50 rounded-full mb-6 mx-auto">
-                <FaUpload className="h-8 w-8 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4 text-center">1. Upload Your Film</h3>
-              <p className="text-gray-400 text-center">
-                Upload your short film to the Zynoflix OTT platform through your creator account
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-8 rounded-xl border border-gray-700 hover:border-purple-500 transition duration-300">
-              <div className="h-16 w-16 flex items-center justify-center bg-purple-900/50 rounded-full mb-6 mx-auto">
-                <FaEnvelope className="h-8 w-8 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4 text-center">2. Email Us</h3>
-              <p className="text-gray-400 text-center">
-                Send the link to your film along with a brief synopsis to <span className="text-purple-400">zynoflixproduction@gmail.com</span>
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-8 rounded-xl border border-gray-700 hover:border-purple-500 transition duration-300">
-              <div className="h-16 w-16 flex items-center justify-center bg-purple-900/50 rounded-full mb-6 mx-auto">
-                <FaFilm className="h-8 w-8 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4 text-center">3. Get Featured</h3>
-              <p className="text-gray-400 text-center">
-                Selected films will be featured prominently on the Zynoflix OTT platform
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Submission Form */}
-      <section id="submission-form" className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-            <span className="border-b-4 border-purple-600 pb-2">Submit Your Film</span>
-          </h2>
-
-          {successMessage && (
-            <div className="mb-8 p-4 bg-green-500/20 border border-green-500 rounded-lg text-center">
-              <p className="text-green-400 text-lg font-medium">{successMessage}</p>
-            </div>
-          )}
-
-          {errorMessage && (
-            <div className="mb-8 p-4 bg-red-500/20 border border-red-500 rounded-lg text-center">
-              <p className="text-red-400 text-lg font-medium">{errorMessage}</p>
-            </div>
-          )}
-
-          <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-8 rounded-xl border border-gray-700">
-            <p className="text-center text-xl mb-8">
-              Ready to showcase your talent? Fill out the form below to get started.
-            </p>
-
-            <form id="filmSubmissionForm" onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="fullName" className="block text-gray-300 mb-2">Full Name</label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
-                    placeholder="Your name"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-gray-300 mb-2">Email Address</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
-                    placeholder="your@email.com"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="filmTitle" className="block text-gray-300 mb-2">Film Title</label>
+                  FULL NAME
+                </label>
                 <input
+                  id="fullName"
                   type="text"
-                  id="filmTitle"
-                  name="filmTitle"
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
-                  placeholder="Title of your film"
-                  required
+                  {...register("fullName")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Your full name"
                   disabled={isSubmitting}
                 />
+                {errors.fullName && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.fullName.message}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label htmlFor="genre" className="block text-gray-300 mb-2">Genre</label>
-                <select
-                  id="genre"
-                  name="genre"
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
-                  required
-                  disabled={isSubmitting}
+              {/* Email */}
+              <div className="mb-6">
+                <label
+                  htmlFor="email"
+                  className="block text-white font-medium mb-2"
                 >
-                  <option value="" disabled selected>Select a genre</option>
-                  <option value="horror">Horror</option>
-                  <option value="thriller">Thriller</option>
-                  <option value="comedy">Comedy</option>
-                  <option value="historical">Historical Drama</option>
-                  <option value="other">Other</option>
-                </select>
+                  EMAIL ID
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Your email address"
+                  disabled={isSubmitting}
+                />
+                {errors.email && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label htmlFor="synopsis" className="block text-gray-300 mb-2">Film Synopsis</label>
+              {/* Phone Number */}
+              <div className="mb-6">
+                <label
+                  htmlFor="phoneNumber"
+                  className="block text-white font-medium mb-2"
+                >
+                  PHONE NUMBER
+                </label>
+                <input
+                  id="phoneNumber"
+                  type="text"
+                  {...register("phoneNumber")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Your phone number"
+                  disabled={isSubmitting}
+                />
+                {errors.phoneNumber && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.phoneNumber.message}
+                  </p>
+                )}
+              </div>
+
+              {/* City/State */}
+              <div className="mb-6">
+                <label
+                  htmlFor="cityState"
+                  className="block text-white font-medium mb-2"
+                >
+                  CITY/STATE
+                </label>
+                <input
+                  id="cityState"
+                  type="text"
+                  {...register("cityState")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Your city and state"
+                  disabled={isSubmitting}
+                />
+                {errors.cityState && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.cityState.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Short Film Title */}
+              <div className="mb-6">
+                <label
+                  htmlFor="shortFilmTitle"
+                  className="block text-white font-medium mb-2"
+                >
+                  SHORT FILM TITLE
+                </label>
+                <input
+                  id="shortFilmTitle"
+                  type="text"
+                  {...register("shortFilmTitle")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Title of your short film"
+                  disabled={isSubmitting}
+                />
+                {errors.shortFilmTitle && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.shortFilmTitle.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Runtime */}
+              <div className="mb-6">
+                <label
+                  htmlFor="runtime"
+                  className="block text-white font-medium mb-2"
+                >
+                  RUNTIME (IN MINS)
+                </label>
+                <input
+                  id="runtime"
+                  type="text"
+                  {...register("runtime")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Duration in minutes"
+                  disabled={isSubmitting}
+                />
+                {errors.runtime && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.runtime.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Film Language */}
+              <div className="mb-6">
+                <label
+                  htmlFor="filmLanguage"
+                  className="block text-white font-medium mb-2"
+                >
+                  FILM LANGUAGE
+                </label>
+                <input
+                  id="filmLanguage"
+                  type="text"
+                  {...register("filmLanguage")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Language of your film"
+                  disabled={isSubmitting}
+                />
+                {errors.filmLanguage && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.filmLanguage.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Is Released */}
+              <div className="mb-6">
+                <label
+                  className="block text-white font-medium mb-2"
+                >
+                  IS THE FILM ALREADY RELEASED ELSEWHERE?
+                </label>
+                <div className="flex space-x-4">
+                  <label className="flex items-center text-white">
+                    <input
+                      type="radio"
+                      value="Yes"
+                      {...register("isReleased")}
+                      className="mr-2"
+                      disabled={isSubmitting}
+                    />
+                    Yes
+                  </label>
+                  <label className="flex items-center text-white">
+                    <input
+                      type="radio"
+                      value="No"
+                      {...register("isReleased")}
+                      className="mr-2"
+                      disabled={isSubmitting}
+                    />
+                    No
+                  </label>
+                </div>
+                {errors.isReleased && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.isReleased.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Drive Link */}
+              <div className="mb-6">
+                <label
+                  htmlFor="driveLink"
+                  className="block text-white font-medium mb-2"
+                >
+                  GOOGLE DRIVE/YOUTUBE LINK
+                </label>
+                <input
+                  id="driveLink"
+                  type="text"
+                  {...register("driveLink")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Link to your film"
+                  disabled={isSubmitting}
+                />
+                {errors.driveLink && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.driveLink.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Synopsis */}
+              <div className="mb-6">
+                <label
+                  htmlFor="synopsis"
+                  className="block text-white font-medium mb-2"
+                >
+                  SYNOPSIS (MAX 500 WORDS)
+                </label>
                 <textarea
                   id="synopsis"
-                  name="synopsis"
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white h-32"
+                  {...register("synopsis")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff] h-32"
                   placeholder="Brief description of your film"
-                  required
                   disabled={isSubmitting}
                 ></textarea>
+                {errors.synopsis && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.synopsis.message}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label htmlFor="filmLink" className="block text-gray-300 mb-2">Film Link</label>
+              {/* Budget */}
+              <div className="mb-6">
+                <label
+                  htmlFor="budget"
+                  className="block text-white font-medium mb-2"
+                >
+                  BUDGET (₹2,000 - ₹10 LAKHS)
+                </label>
                 <input
-                  type="url"
-                  id="filmLink"
-                  name="filmLink"
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500 text-white"
-                  placeholder="URL to your film on Zynoflix platform"
-                  required
+                  id="budget"
+                  type="text"
+                  {...register("budget")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  placeholder="Budget in rupees"
                   disabled={isSubmitting}
                 />
+                {errors.budget && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.budget.message}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label className="block text-gray-300 mb-2">Script PDF (Optional)</label>
+              {/* Rights Type */}
+              <div className="mb-6">
+                <label
+                  htmlFor="rightsType"
+                  className="block text-white font-medium mb-2"
+                >
+                  TYPE OF RIGHTS YOU'RE OFFERING
+                </label>
+                <select
+                  id="rightsType"
+                  {...register("rightsType")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                  disabled={isSubmitting}
+                >
+                  <option value="">Select rights type</option>
+                  <option value="Full rights">Full rights</option>
+                  <option value="Streaming rights only">Streaming rights only</option>
+                  <option value="Open to discussion">Open to discussion</option>
+                </select>
+                {errors.rightsType && (
+                  <p className="mt-1 text-red-400 text-sm">
+                    {errors.rightsType.message}
+                  </p>
+                )}
+              </div>
 
-                {scriptFile ? (
-                  <div className="flex items-center p-4 bg-gray-900 border border-gray-700 rounded-lg">
+              {/* Poster Upload */}
+              <div className="mb-6">
+                <label
+                  htmlFor="poster"
+                  className="block text-white font-medium mb-2"
+                >
+                  POSTER UPLOAD (OPTIONAL)
+                </label>
+
+                {poster ? (
+                  <div className="flex items-center p-4 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg">
                     <div className="flex-1 truncate">
-                      <p className="text-white truncate">{scriptFile.name}</p>
+                      <p className="text-white truncate">{poster.name}</p>
                       <p className="text-gray-400 text-sm">
-                        {(scriptFile.size / 1024 / 1024).toFixed(2)} MB
+                        {(poster.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
                     <button
                       type="button"
-                      onClick={removeFile}
+                      onClick={removePoster}
                       className="ml-4 text-gray-400 hover:text-white"
                       disabled={isSubmitting}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
                 ) : (
                   <div
-                    className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center hover:bg-gray-800/30 cursor-pointer"
-                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-lg p-6 text-center ${posterError
+                      ? "border-red-400 bg-red-400/10"
+                      : "border-[#7b61ff]/30 bg-[#1a0733]/80 hover:bg-[#1a0733] hover:border-[#7b61ff]/50"
+                      } transition-colors cursor-pointer`}
+                    onClick={() => posterInputRef.current?.click()}
                   >
                     <input
-                      ref={fileInputRef}
+                      ref={posterInputRef}
+                      id="poster"
                       type="file"
-                      accept=".pdf"
-                      onChange={handleFileChange}
+                      accept="image/*"
+                      onChange={handlePosterChange}
                       className="hidden"
                       disabled={isSubmitting}
                     />
                     <div className="flex flex-col items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2 text-purple-500">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                      </svg>
-                      <p className="text-white">Click to upload script (PDF)</p>
-                      <p className="text-gray-400 text-sm mt-1">Max file size: 10MB</p>
+                      <Upload className="w-8 h-8 text-[#7b61ff] mb-2" />
+                      <p className="text-white font-medium">
+                        Click to upload or drag and drop
+                      </p>
+                      <p className="text-gray-400 text-sm mt-1">
+                        Image files only (max 5MB)
+                      </p>
                     </div>
                   </div>
                 )}
+
+                {posterError && (
+                  <p className="mt-1 text-red-400 text-sm">{posterError}</p>
+                )}
               </div>
 
-              {/* Payment Notice */}
-              <div className="mt-6 bg-indigo-900 bg-opacity-30 rounded-lg p-4">
-                <div className="flex items-center mb-2">
-                  <FaLock className="h-5 w-5 text-indigo-400 mr-2" />
-                  <span className="text-indigo-300 font-medium">Submission Fee</span>
-                </div>
-                <p className="text-gray-300 text-sm">A one-time submission fee of <span className="font-bold text-white">$1.3</span> is required to submit your film. This helps us manage and review submissions effectively.</p>
-              </div>
-
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg transition duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      {paymentProcessing ? "Processing Payment..." : "Submitting..."}
-                    </span>
-                  ) : (
-                    <>
-                      Pay $1.3 & Submit Your Film
-                      <FaLock className="ml-2 h-4 w-4" />
-                    </>
+              {/* Appointment Date and Time */}
+              <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="appointmentDate"
+                    className="block text-white font-medium mb-2"
+                  >
+                    APPOINTMENT DATE
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <Calendar className="w-5 h-5 text-[#7b61ff]" />
+                    </div>
+                    <input
+                      id="appointmentDate"
+                      type="date"
+                      {...register("appointmentDate")}
+                      className="w-full pl-10 px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  {errors.appointmentDate && (
+                    <p className="mt-1 text-red-400 text-sm">
+                      {errors.appointmentDate.message}
+                    </p>
                   )}
-                </button>
+                </div>
+                <div>
+                  <label
+                    htmlFor="appointmentTime"
+                    className="block text-white font-medium mb-2"
+                  >
+                    APPOINTMENT TIME
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <Clock className="w-5 h-5 text-[#7b61ff]" />
+                    </div>
+                    <input
+                      id="appointmentTime"
+                      type="time"
+                      {...register("appointmentTime")}
+                      className="w-full pl-10 px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  {errors.appointmentTime && (
+                    <p className="mt-1 text-red-400 text-sm">
+                      {errors.appointmentTime.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Additional Notes */}
+              <div className="mb-8">
+                <label
+                  htmlFor="additionalNotes"
+                  className="block text-white font-medium mb-2"
+                >
+                  ADDITIONAL NOTES (OPTIONAL)
+                </label>
+                <textarea
+                  id="additionalNotes"
+                  {...register("additionalNotes")}
+                  className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff] h-24"
+                  placeholder="Any additional information you'd like to share"
+                  disabled={isSubmitting}
+                ></textarea>
+              </div>
+
+              {/* Payment Information */}
+              <div className="mb-8 p-4 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-white font-medium">
+                    Review Fee
+                  </span>
+                  <span className="text-white font-bold">₹500</span>
+                </div>
+                <p className="text-gray-400 text-sm mt-2">
+                  This fee covers the review process of your short film by our team.
+                </p>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-4 bg-[#7b61ff] text-white rounded-lg font-medium text-lg hover:bg-[#6a4ff1] transition-colors flex items-center justify-center"
+              >
+                {isSubmitting || isPaymentLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    {isPaymentLoading ? "Processing Payment..." : "Submitting..."}
+                  </>
+                ) : (
+                  "Request for Purchase Review - ₹500"
+                )}
+              </button>
+
+              {/* Additional Information */}
+              <div className="mt-6 text-center text-gray-400 text-sm">
+                <p>APPOINTMENT SCHEDULED</p>
+                <p className="mt-1">
+                  YOU WILL GET UPDATES ON YOUR EMAIL WITHIN 48 HOURS
+                </p>
               </div>
             </form>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Terms and Conditions Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-4xl mx-auto mt-16 mb-12"
+      >
+        <h2 className="text-3xl font-bold text-white mb-8 text-center">Terms & Conditions</h2>
+
+        <div className="bg-[#292c41]/50 rounded-lg p-8 backdrop-blur-sm border border-[#7b61ff]/30">
+          {/* Eligibility */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-3 flex items-center">
+              <span className="bg-[#7b61ff] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">1</span>
+              Eligibility
+            </h3>
+            <ul className="text-gray-300 space-y-2 ml-11">
+              <li>• Any independent filmmaker or production house can submit a completed short film for consideration.</li>
+              <li>• The film must be original and not under contract with any other platform (unless rights are available).</li>
+            </ul>
+          </div>
+
+          {/* Content Guidelines */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-3 flex items-center">
+              <span className="bg-[#7b61ff] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">2</span>
+              Content Guidelines
+            </h3>
+            <ul className="text-gray-300 space-y-2 ml-11">
+              <li>• Duration: Preferably under 30 minutes (flexible based on quality).</li>
+              <li>• Language: Any Indian language (with subtitles if not Tamil/English).</li>
+              <li>• Content: Should not promote hate speech, violence, or explicit adult content.</li>
+            </ul>
+          </div>
+
+          {/* Submission */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-3 flex items-center">
+              <span className="bg-[#7b61ff] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">3</span>
+              Submission
+            </h3>
+            <ul className="text-gray-300 space-y-2 ml-11">
+              <li>• All submissions must be done via the official form only.</li>
+              <li>• Submit: Film link (YouTube unlisted / Google Drive), trailer, synopsis, and poster (optional).</li>
+            </ul>
+          </div>
+
+          {/* Selection Process */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-3 flex items-center">
+              <span className="bg-[#7b61ff] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">4</span>
+              Selection Process
+            </h3>
+            <ul className="text-gray-300 space-y-2 ml-11">
+              <li>• Our content team will review all submissions within 7–10 working days.</li>
+              <li>• Only selected films will be contacted for further discussions.</li>
+            </ul>
+          </div>
+
+          {/* Rights & Purchase */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-3 flex items-center">
+              <span className="bg-[#7b61ff] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">5</span>
+              Rights & Purchase
+            </h3>
+            <ul className="text-gray-300 space-y-2 ml-11">
+              <li>• Selected films will be purchased for exclusive/limited-time OTT streaming.</li>
+              <li>• The purchase model can be:</li>
+              <ul className="ml-6 mt-2 space-y-1">
+                <li>- One-Time Buyout (full rights)</li>
+                <li>- Revenue Share (based on views)</li>
+              </ul>
+              <li className="mt-2">• Final decision on pricing and rights will be mutual.</li>
+            </ul>
+          </div>
+
+          {/* Copyright & Ownership */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-white mb-3 flex items-center">
+              <span className="bg-[#7b61ff] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">6</span>
+              Copyright & Ownership
+            </h3>
+            <ul className="text-gray-300 space-y-2 ml-11">
+              <li>• Filmmaker must own full rights to the film, including music, script, and footage.</li>
+              <li>• You may be asked to sign a declaration or contract confirming ownership.</li>
+            </ul>
+          </div>
+
+          {/* Platform Display */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-3 flex items-center">
+              <span className="bg-[#7b61ff] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">7</span>
+              Platform Display
+            </h3>
+            <ul className="text-gray-300 space-y-2 ml-11">
+              <li>• ZynoFlix OTT reserves the right to promote, modify thumbnails, or include branding.</li>
+              <li>• Filmmaker's name/director credit will be mentioned unless requested otherwise.</li>
+            </ul>
           </div>
         </div>
-      </section>
+      </motion.div>
 
-      {/* FAQ Section */}
-      <section className="py-20 px-4 bg-black/50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-            <span className="border-b-4 border-purple-600 pb-2">Frequently Asked Questions</span>
-          </h2>
-
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-6 rounded-xl border border-gray-700">
-              <h3 className="text-xl font-semibold mb-2">What types of films are eligible?</h3>
-              <p className="text-gray-300">
-                We accept short films in horror, thriller, comedy, and historical drama genres. The film should be between 10-30 minutes in length and must be original content.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-6 rounded-xl border border-gray-700">
-              <h3 className="text-xl font-semibold mb-2">Do I retain the rights to my film?</h3>
-              <p className="text-gray-300">
-                Yes, you retain the intellectual property rights to your film. By submitting, you grant Zynoflix OTT a non-exclusive license to stream your content on our platform.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-6 rounded-xl border border-gray-700">
-              <h3 className="text-xl font-semibold mb-2">Is there a submission deadline?</h3>
-              <p className="text-gray-300">
-                Submissions are accepted on a rolling basis, but for consideration in our next featured showcase, please submit by the end of the current quarter.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-md p-6 rounded-xl border border-gray-700">
-              <h3 className="text-xl font-semibold mb-2">Will I be compensated if my film is selected?</h3>
-              <p className="text-gray-300">
-                Selected filmmakers will receive revenue shares based on viewership metrics, plus potential opportunities for commissioned work on future Zynoflix original productions.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-20 px-4 bg-gradient-to-r from-purple-900/20 to-pink-900/20">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            This Is Your Chance to Shine
-          </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Join the Zynoflix family and showcase your storytelling talent to audiences worldwide.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button
-              onClick={() => document.getElementById('submission-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg hover:shadow-xl"
-            >
-              Submit Your Film Now
-            </button>
-            <Link href="/monetization">
-              <button
-                className="bg-gradient-to-r from-[#7b61ff] to-[#a076ff] hover:from-[#6346e5] hover:to-[#8659ff] text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg hover:shadow-xl"
-              >
-                EXPLORE MONETIZATION
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
-};
-
-export default FilmCallPage;
+} 

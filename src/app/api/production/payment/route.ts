@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import Razorpay from "razorpay";
 import connectToDatabase from "@/lib/mongodb";
 import Production from "@/models/Production";
-import Razorpay from "razorpay";
-
-// Initialize Razorpay
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
-    key_secret: process.env.RAZORPAY_KEY_SECRET || "scJ6DIWgsqJBMSippsTgaluq",
-});
+import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: NextRequest) {
     try {
@@ -23,9 +18,8 @@ export async function POST(request: NextRequest) {
         // Connect to database
         await connectToDatabase();
 
-        // Find the production entry
+        // Find production entry
         const production = await Production.findById(productionId);
-
         if (!production) {
             return NextResponse.json(
                 { error: "Production not found" },
@@ -33,33 +27,28 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Fixed amount - 100 INR as mentioned in the requirements
-        const amount = 10000; // 100 INR in paise (smallest unit)
-
-        // Create order in Razorpay
-        const orderOptions = {
-            amount,
-            currency: "INR",
-            receipt: `prod_${productionId}`,
-            notes: {
-                productionId: productionId,
-                name: production.name,
-                email: production.email,
-            },
-        };
-
-        const order = await razorpay.orders.create(orderOptions);
-
-        // Update production entry with order ID
-        await Production.findByIdAndUpdate(productionId, {
-            orderId: order.id,
-            paymentAmount: amount / 100, // Convert from paise to INR for storing
+        // Create Razorpay instance
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
+            key_secret: process.env.RAZORPAY_KEY_SECRET || "",
         });
 
+        // Create order
+        const options = {
+            amount: 500 * 100, // amount in paise (500 rupees)
+            currency: "INR",
+            receipt: `receipt_${uuidv4().substring(0, 8)}`,
+        };
+
+        const order = await razorpay.orders.create(options);
+
+        // Update production with order details
+        production.paymentOrderId = order.id;
+        await production.save();
+
         return NextResponse.json({
-            success: true,
             orderId: order.id,
-            amount: amount / 100,
+            amount: 500, // amount in rupees
             currency: "INR",
         });
     } catch (error) {

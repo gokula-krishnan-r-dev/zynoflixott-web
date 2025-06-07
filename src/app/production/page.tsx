@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Loader2, CheckCircle, Upload, X } from "lucide-react";
 import Image from "next/image";
+import CountdownTimer from "../../components/CountdownTimer";
 
 // Form validation schema
 const formSchema = z.object({
@@ -205,7 +206,7 @@ export default function ProductionPage() {
                     className="text-center mb-12"
                 >
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                        SHORT FILM PRODUCTION
+                        FILM PRODUCTION
                     </h1>
 
                     {/* Information Cards */}
@@ -217,7 +218,7 @@ export default function ProductionPage() {
                             className="bg-[#292c41]/50 rounded-lg p-6 backdrop-blur-sm border border-[#7b61ff]/30"
                         >
                             <h2 className="text-2xl font-semibold text-white mb-4">
-                                Do you have a good short film script?
+                                ARE YOU LOOKING PRODUCER FOR A FILM
                             </h2>
                             <p className="text-gray-300">
                                 We are looking for amazing scripts to produce. Submit your work and get a chance to bring your story to life.
@@ -231,10 +232,10 @@ export default function ProductionPage() {
                             className="bg-[#292c41]/50 rounded-lg p-6 backdrop-blur-sm border border-[#7b61ff]/30"
                         >
                             <h2 className="text-2xl font-semibold text-white mb-4">
-                                Are you looking for a producer for your short film?
+                                Are you looking for a producer for your  film?
                             </h2>
                             <p className="text-gray-300">
-                                We are interested in producing short films with creative minds like you!
+                                We are interested in producing  films with creative minds like you!
                             </p>
                         </motion.div>
                     </div>
@@ -246,7 +247,8 @@ export default function ProductionPage() {
                         className="bg-[#292c41]/50 rounded-lg p-8 backdrop-blur-sm border border-[#7b61ff]/30 mb-10"
                     >
                         <h2 className="text-3xl font-bold text-white mb-2">1000+ PRODUCTION COMPANIES</h2>
-                        <p className="text-xl text-[#7b61ff]">Post your script now</p>
+                        <p className="text-xl text-[#7b61ff]">WE ARE LOOKING EMOTIONAL SCRIPT
+                        </p>
                     </motion.div>
                 </motion.div>
 
@@ -453,7 +455,26 @@ export default function ProductionPage() {
                 )}
             </div>
 
-            <div className="py-14">
+            {/* //LAST DATE ( JUNE 30 ) ( live timer ) */}
+
+            <div className="w-full py-8 flex flex-col items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-gradient-to-r from-purple-900/80 to-indigo-900/80 rounded-xl p-6 md:p-8 border border-purple-500/30 shadow-lg max-w-md w-full"
+                >
+                    <h3 className="text-center text-xl md:text-2xl font-bold text-white mb-3">
+                        SUBMISSION DEADLINE
+                    </h3>
+                    <p className="text-center text-sm md:text-base text-purple-200 mb-6">
+                        Don't miss your chance! Submit before the deadline.
+                    </p>
+                    <CountdownTimer targetDate="June 30, 2025" />
+                </motion.div>
+            </div>
+
+            {/* <div className="py-14">
                 <div className="mx-auto max-w-screen-xl px-4 md:px-8">
                     <h2 className="text-center text-sm font-semibold text-gray-600">
                         TRUSTED BY TEAMS FROM AROUND THE WORLD
@@ -500,7 +521,7 @@ export default function ProductionPage() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
         </div>
     );
