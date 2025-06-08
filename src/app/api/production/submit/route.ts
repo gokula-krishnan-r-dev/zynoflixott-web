@@ -36,38 +36,31 @@ export async function POST(request: NextRequest) {
     try {
         // Get form data
         const formData = await request.formData();
-        const fullName = formData.get("fullName") as string;
+        const fullName = formData.get("name") as string;
         const email = formData.get("email") as string;
-        const phoneNumber = formData.get("phoneNumber") as string;
-        const cityState = formData.get("cityState") as string;
-        const shortFilmTitle = formData.get("shortFilmTitle") as string;
-        const runtime = formData.get("runtime") as string;
-        const filmLanguage = formData.get("filmLanguage") as string;
-        const isReleased = formData.get("isReleased") as string;
-        const driveLink = formData.get("driveLink") as string;
-        const synopsis = formData.get("synopsis") as string;
+        const phoneNumber = formData.get("contact") as string;
+        const cityState = formData.get("cityState") as string || "";
+        const shortFilmTitle = formData.get("shortFilmTitle") as string || "";
+        const runtime = formData.get("runtime") as string || "";
+        const filmLanguage = formData.get("filmLanguage") as string || "";
+        const isReleased = formData.get("isReleased") as string || "false";
+        const driveLink = formData.get("driveLink") as string || "";
+        const synopsis = formData.get("synopsis") as string || "";
         const appointmentDate = formData.get("appointmentDate") as string;
         const appointmentTime = formData.get("appointmentTime") as string;
-        const budget = formData.get("budget") as string;
-        const rightsType = formData.get("rightsType") as string;
-        const additionalNotes = formData.get("additionalNotes") as string;
+        const budget = formData.get("budget") as string || "";
+        const rightsType = formData.get("rightsType") as string || "";
+        const additionalNotes = formData.get("additionalNotes") as string || "";
         const poster = formData.get("poster") as File | null;
+        const file = formData.get("file") as File | null;
 
         // Validate form data
         if (
             !fullName ||
             !email ||
             !phoneNumber ||
-            !cityState ||
-            !shortFilmTitle ||
-            !runtime ||
-            !filmLanguage ||
-            !isReleased ||
-            !synopsis ||
             !appointmentDate ||
-            !appointmentTime ||
-            !budget ||
-            !rightsType
+            !appointmentTime
         ) {
             return NextResponse.json(
                 { error: "All required fields must be filled" },
@@ -106,6 +99,56 @@ export async function POST(request: NextRequest) {
             paymentStatus: "pending",
             status: "pending",
         };
+
+        // Handle file upload (script) if provided
+        if (file) {
+            // Validate file type (PDF only)
+            if (file.type !== "application/pdf") {
+                return NextResponse.json(
+                    { error: "Only PDF files are allowed for script" },
+                    { status: 400 }
+                );
+            }
+
+            // Check file size (10MB max)
+            const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+            if (file.size > MAX_FILE_SIZE) {
+                return NextResponse.json(
+                    { error: "Script file size exceeds the 10MB limit" },
+                    { status: 400 }
+                );
+            }
+
+            // Get container client for scripts (using the posters container for now)
+            const containerClient = getContainerClient(azureConfig.containerNames.posters);
+            await containerClient.createIfNotExists({
+                access: "blob",
+            });
+
+            // Generate unique blob name
+            const userId = uuidv4(); // Generate a unique ID for non-logged-in users
+            const blobName = generateUniqueBlobName(userId, file.name);
+
+            // Get blob client
+            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+            // Convert file to ArrayBuffer and then to Buffer
+            const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+            // Upload to Azure Blob Storage
+            await blockBlobClient.uploadData(fileBuffer, {
+                blobHTTPHeaders: {
+                    blobContentType: file.type,
+                },
+            });
+
+            // Get the direct URL
+            const fileUrl = blockBlobClient.url;
+
+            // Update production data with script info
+            productionData.scriptUrl = fileUrl;
+            productionData.scriptFileName = file.name;
+        }
 
         // Handle poster upload if provided
         if (poster) {

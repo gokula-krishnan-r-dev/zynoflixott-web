@@ -16,6 +16,8 @@ const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     contact: z.string().min(10, "Contact must be at least 10 characters"),
     email: z.string().email("Invalid email address"),
+    appointmentDate: z.string().min(1, "Please select a meeting date"),
+    appointmentTime: z.string().min(1, "Please select a meeting time"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -88,6 +90,8 @@ export default function ProductionPage() {
             formData.append("name", data.name);
             formData.append("contact", data.contact);
             formData.append("email", data.email);
+            formData.append("appointmentDate", data.appointmentDate);
+            formData.append("appointmentTime", data.appointmentTime);
             formData.append("file", file);
 
             // Submit form
@@ -210,7 +214,7 @@ export default function ProductionPage() {
                     </h1>
 
                     {/* Information Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-10">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -225,19 +229,7 @@ export default function ProductionPage() {
                             </p>
                         </motion.div>
 
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.2, duration: 0.4 }}
-                            className="bg-[#292c41]/50 rounded-lg p-6 backdrop-blur-sm border border-[#7b61ff]/30"
-                        >
-                            <h2 className="text-2xl font-semibold text-white mb-4">
-                                Are you looking for a producer for your  film?
-                            </h2>
-                            <p className="text-gray-300">
-                                We are interested in producing  films with creative minds like you!
-                            </p>
-                        </motion.div>
+
                     </div>
 
                     <motion.div
@@ -246,7 +238,7 @@ export default function ProductionPage() {
                         transition={{ delay: 0.3, duration: 0.4 }}
                         className="bg-[#292c41]/50 rounded-lg p-8 backdrop-blur-sm border border-[#7b61ff]/30 mb-10"
                     >
-                        <h2 className="text-3xl font-bold text-white mb-2">1000+ PRODUCTION COMPANIES</h2>
+                        <h2 className="text-3xl font-bold text-white mb-2">1000+ ZYNOFLIX PRODUCTION COMPANIES</h2>
                         <p className="text-xl text-[#7b61ff]">WE ARE LOOKING EMOTIONAL SCRIPT
                         </p>
                     </motion.div>
@@ -352,6 +344,54 @@ export default function ProductionPage() {
                                         {errors.email.message}
                                     </p>
                                 )}
+                            </div>
+
+                            {/* Date and Time for Meeting */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                {/* Date Input */}
+                                <div>
+                                    <label
+                                        htmlFor="appointmentDate"
+                                        className="block text-white font-medium mb-2"
+                                    >
+                                        MEETING DATE
+                                    </label>
+                                    <input
+                                        id="appointmentDate"
+                                        type="date"
+                                        {...register("appointmentDate")}
+                                        className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                                        disabled={isSubmitting}
+                                        min={new Date().toISOString().split('T')[0]}
+                                    />
+                                    {errors.appointmentDate && (
+                                        <p className="mt-1 text-red-400 text-sm">
+                                            {errors.appointmentDate.message}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Time Input */}
+                                <div>
+                                    <label
+                                        htmlFor="appointmentTime"
+                                        className="block text-white font-medium mb-2"
+                                    >
+                                        MEETING TIME
+                                    </label>
+                                    <input
+                                        id="appointmentTime"
+                                        type="time"
+                                        {...register("appointmentTime")}
+                                        className="w-full px-4 py-3 bg-[#1a0733]/80 border border-[#7b61ff]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7b61ff]"
+                                        disabled={isSubmitting}
+                                    />
+                                    {errors.appointmentTime && (
+                                        <p className="mt-1 text-red-400 text-sm">
+                                            {errors.appointmentTime.message}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
 
                             {/* File Upload */}
