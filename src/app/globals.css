@@ -50,6 +50,7 @@ body {
     radial-gradient(circle at 85% 85%, rgba(94, 47, 170, 0.3) 0%, transparent 40%),
     linear-gradient(135deg, #1a0733 0%, #2c1157 50%, #3c1973 100%);
   background-attachment: fixed;
+  top: 0 !important;
 }
 
 @media (min-width: 640px) {
@@ -428,4 +429,84 @@ body {
 .dark-overlay {
   background: rgba(1, 3, 20, 0.8);
   backdrop-filter: blur(4px);
+}
+
+/* Google Translate Styles */
+.translate-container {
+  position: relative;
+  z-index: 10;
+}
+
+.google-translate-container {
+  display: inline-block;
+  min-width: 160px;
+}
+
+/* Hide Google Translate attribution */
+.goog-te-gadget {
+  color: white !important;
+  font-family: inherit !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  background-color: rgba(123, 97, 255, 0.1) !important;
+  border: 1px solid rgba(123, 97, 255, 0.3) !important;
+  border-radius: 8px !important;
+  color: white !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  outline: none !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.goog-te-gadget .goog-te-combo:hover {
+  background-color: rgba(123, 97, 255, 0.2) !important;
+  border-color: rgba(123, 97, 255, 0.5) !important;
+}
+
+.goog-te-gadget .goog-te-combo:focus {
+  border-color: rgba(123, 97, 255, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(123, 97, 255, 0.2) !important;
+}
+
+.goog-te-gadget .goog-te-combo option {
+  background-color: #1a0733 !important;
+  color: white !important;
+  padding: 8px !important;
+}
+
+/* Hide the "Powered by Google Translate" text */
+.goog-te-gadget span {
+  display: none !important;
+}
+
+/* Hide the Google Translate banner */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+/* Fix the top margin issue */
+body {
+  top: 0 !important;
+}
+
+/* Custom scrollbar for the dropdown */
+.goog-te-combo::-webkit-scrollbar {
+  width: 8px;
+}
+
+.goog-te-combo::-webkit-scrollbar-track {
+  background: rgba(123, 97, 255, 0.1);
+  border-radius: 4px;
+}
+
+.goog-te-combo::-webkit-scrollbar-thumb {
+  background: rgba(123, 97, 255, 0.3);
+  border-radius: 4px;
+}
+
+.goog-te-combo::-webkit-scrollbar-thumb:hover {
+  background: rgba(123, 97, 255, 0.5);
 }

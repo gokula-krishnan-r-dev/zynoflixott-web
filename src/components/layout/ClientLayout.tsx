@@ -16,7 +16,7 @@ const MobileNavBar = () => {
       </Link>
       <Link href="/film-call" className={`mobile-nav-item ${pathname === '/film-call' ? 'active' : ''}`}>
         <Film size={20} />
-        <span>Film Call</span>
+        <span>Sell Shortfilms</span>
       </Link>
       <Link href="/monetization" className={`mobile-nav-item ${pathname.includes('/monetization') ? 'active' : ''}`}>
         <DollarSign size={20} />

@@ -1,6 +1,12 @@
-import { Calendar, Megaphone } from "lucide-react";
-import Link from "next/link";
-import React from "react";
+'use client'
+import React, { useEffect } from "react";
+import dynamic from 'next/dynamic';
+
+// Dynamically import the GoogleTranslate component with no SSR
+const GoogleTranslate = dynamic(
+  () => import('../GoogleTranslate'),
+  { ssr: false }
+);
 
 export interface FooterLink {
   label: string;
@@ -51,6 +57,14 @@ export const footerData: FooterSection[] = [
 ];
 
 const Footer: React.FC = () => {
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <footer className=" bg-gray-900 lg:pb-0 pb-14 relative">
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
@@ -174,7 +188,7 @@ const Footer: React.FC = () => {
                     className="hover:underline"
                     href="/film-call"
                   >
-                    Film Call
+                    Sell Shortfilms
                   </a>
                 </li>
 
@@ -198,15 +212,17 @@ const Footer: React.FC = () => {
                 {/* production */}
                 <li>
                   <a className="hover:underline " href="/production">
-                    Production
+                    Film Production
                   </a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <div id="google_translate_element"> </div>
-        {/* <hr className="my-6   sm:mx-auto border-gray-700 lg:my-8" /> */}
+        <div className="footer-section">
+          <GoogleTranslate />
+        </div>
+        <hr className="my-6   sm:mx-auto border-gray-700 lg:my-8" />
         <div className="flex justify-end  md:ml-auto gap-y-3 lg:gap-y-0 lg:flex-row flex-col md:mr-0 mx-auto items-center flex-shrink-0 space-x-0 lg:space-x-4">
           <a
             className="bg-background_body inline-flex py-3 px-5 rounded-xl items-center  hover:border-blue-500 duration-300 border-gray-400 border  focus:outline-none"
@@ -228,7 +244,7 @@ const Footer: React.FC = () => {
               </span>
             </span>
           </a>
-          <button className="bg-background_body inline-flex py-3 px-5 rounded-xl items-center hover:border-blue-500 duration-300 border-gray-400 border focus:outline-none">
+          <a href="https://apps.apple.com/us/app/zynoflix-ott/id6745213862" className="bg-background_body inline-flex py-3 px-5 rounded-xl items-center hover:border-blue-500 duration-300 border-gray-400 border focus:outline-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -246,7 +262,7 @@ const Footer: React.FC = () => {
                 App Store
               </span>
             </span>
-          </button>
+          </a>
         </div>
         <hr className="my-6   sm:mx-auto border-gray-700 lg:my-8" />
         <div className="sm:flex sm:items-center sm:justify-between">

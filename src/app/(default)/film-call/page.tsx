@@ -552,7 +552,7 @@ export default function ProductionPage() {
                   htmlFor="budget"
                   className="block text-white font-medium mb-2"
                 >
-                  BUDGET (₹2,000 - ₹10 LAKHS)
+                  Expected Price (₹2,000 - ₹10 LAKHS)
                 </label>
                 <input
                   id="budget"

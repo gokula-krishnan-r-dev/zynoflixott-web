@@ -200,7 +200,7 @@ export default function ProductionPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#1a0733] to-[#2c1157] py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl pt-12 mx-auto">
                 {/* Header */}
                 <motion.div
@@ -209,9 +209,14 @@ export default function ProductionPage() {
                     transition={{ duration: 0.5 }}
                     className="text-center mb-12"
                 >
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                        FILM PRODUCTION
-                    </h1>
+                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 rounded-lg shadow-lg mb-6">
+                        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200 mb-2">
+                            FILM
+                        </h1>
+                        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">
+                            PRODUCTION
+                        </h1>
+                    </div>
 
                     {/* Information Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-10">
@@ -238,7 +243,7 @@ export default function ProductionPage() {
                         transition={{ delay: 0.3, duration: 0.4 }}
                         className="bg-[#292c41]/50 rounded-lg p-8 backdrop-blur-sm border border-[#7b61ff]/30 mb-10"
                     >
-                        <h2 className="text-3xl font-bold text-white mb-2">1000+ ZYNOFLIX PRODUCTION COMPANIES</h2>
+                        <h2 className="text-3xl font-bold text-white mb-2">ZYNOFLIX PRODUCTION </h2>
                         <p className="text-xl text-[#7b61ff]">WE ARE LOOKING EMOTIONAL SCRIPT
                         </p>
                     </motion.div>
@@ -514,54 +519,350 @@ export default function ProductionPage() {
                 </motion.div>
             </div>
 
-            {/* <div className="py-14">
-                <div className="mx-auto max-w-screen-xl px-4 md:px-8">
-                    <h2 className="text-center text-sm font-semibold text-gray-600">
-                        TRUSTED BY TEAMS FROM AROUND THE WORLD
+            {/* Production Process Timeline */}
+            <div className="max-w-6xl mx-auto px-4 py-16">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-center mb-16"
+                >
+                    <h2 className="text-4xl font-bold text-white mb-4">
+                        Script to Film: Step-by-Step Process
                     </h2>
-                    <div className="mt-6">
-                        <div className="overflow-x-auto">
-                            <ul className="flex items-center space-x-8 min-w-max px-4">
-                                <li>
-                                    <img
-                                        src="/images/company/1.png"
-                                        alt="Company 1"
-                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                    />
-                                </li>
-                                <li>
-                                    <img
-                                        src="/images/company/2.png"
-                                        alt="Company 2"
-                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                    />
-                                </li>
-                                <li>
-                                    <img
-                                        src="/images/company/3.png"
-                                        alt="Company 3"
-                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                    />
-                                </li>
-                                <li>
-                                    <img
-                                        src="/images/company/4.png"
-                                        alt="Company 4"
-                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                    />
-                                </li>
-                                <li>
-                                    <img
-                                        src="/images/company/5.png"
-                                        alt="Company 5"
-                                        className="h-auto w-24 lg:w-[150px] object-contain px-2 dark:brightness-0 dark:invert"
-                                    />
-                                </li>
-                            </ul>
+                    <p className="text-gray-300 text-lg">
+                        Your journey from script submission to screen
+                    </p>
+                </motion.div>
+
+                {/* Phase Cards */}
+                <div className="space-y-16">
+                    {/* Phase 1 */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <div className="flex items-center mb-6">
+                            <div className="bg-purple-600 rounded-full p-3">
+                                <span className="text-2xl">🧩</span>
+                            </div>
+                            <h3 className="text-2xl font-bold text-white ml-4">PHASE 1: Script Acquisition</h3>
                         </div>
-                    </div>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">1. Script Submission</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Submit via zynoflixott.com/production or email</li>
+                                    <li>• Include logline, synopsis, screenplay</li>
+                                    <li>• Attach writer's profile</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">2. Initial Screening</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Evaluation for originality</li>
+                                    <li>• Budget feasibility check</li>
+                                    <li>• Zynoflix audience fit analysis</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">3. Shortlist</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Move promising scripts to shortlist</li>
+                                    <li>• Assign internal reviewer</li>
+                                    <li>• Begin detailed evaluation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Phase 2 */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <div className="flex items-center mb-6">
+                            <div className="bg-blue-600 rounded-full p-3">
+                                <span className="text-2xl">📞</span>
+                            </div>
+                            <h3 className="text-2xl font-bold text-white ml-4">PHASE 2: Writer Communication</h3>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">4. First Contact</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Initial communication</li>
+                                    <li>• Schedule discussion call</li>
+                                    <li>• Share preliminary feedback</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">5. Concept Development</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Creative discussion</li>
+                                    <li>• Character arc review</li>
+                                    <li>• Audience targeting</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">6. Script Approval</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Final script lock</li>
+                                    <li>• Move to legal phase</li>
+                                    <li>• Prepare for agreements</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Phase 3 */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <div className="flex items-center mb-6">
+                            <div className="bg-green-600 rounded-full p-3">
+                                <span className="text-2xl">📝</span>
+                            </div>
+                            <h3 className="text-2xl font-bold text-white ml-4">PHASE 3: Agreement & Rights</h3>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">7. Production Agreement</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Rights transfer/license</li>
+                                    <li>• Compensation terms</li>
+                                    <li>• Credit and copyright</li>
+                                    <li>• NDA and confidentiality</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <h4 className="text-xl font-semibold text-white mb-3">8. Script Registration</h4>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• SWA registration</li>
+                                    <li>• Legal documentation</li>
+                                    <li>• Rights protection</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Phase 4-8 */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <div className="flex items-center mb-4">
+                                    <span className="text-2xl mr-2">🎥</span>
+                                    <h4 className="text-xl font-semibold text-white">PHASE 4: Pre-Production</h4>
+                                </div>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Planning and scheduling</li>
+                                    <li>• Cast and crew finalization</li>
+                                    <li>• Location scouting</li>
+                                    <li>• Technical preparations</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <div className="flex items-center mb-4">
+                                    <span className="text-2xl mr-2">🎬</span>
+                                    <h4 className="text-xl font-semibold text-white">PHASE 5: Production</h4>
+                                </div>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Principal photography</li>
+                                    <li>• Daily progress monitoring</li>
+                                    <li>• Budget management</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <div className="flex items-center mb-4">
+                                    <span className="text-2xl mr-2">🧑‍💻</span>
+                                    <h4 className="text-xl font-semibold text-white">PHASE 6: Post-Production</h4>
+                                </div>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Editing and sound design</li>
+                                    <li>• Color grading and VFX</li>
+                                    <li>• Final review and delivery</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <div className="flex items-center mb-4">
+                                    <span className="text-2xl mr-2">📡</span>
+                                    <h4 className="text-xl font-semibold text-white">PHASE 7: Release</h4>
+                                </div>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Platform upload</li>
+                                    <li>• Marketing campaign</li>
+                                    <li>• Social media promotion</li>
+                                </ul>
+                            </div>
+                            <div className="bg-[#1a0733]/80 p-6 rounded-lg">
+                                <div className="flex items-center mb-4">
+                                    <span className="text-2xl mr-2">✅</span>
+                                    <h4 className="text-xl font-semibold text-white">PHASE 8: Post-Release</h4>
+                                </div>
+                                <ul className="text-gray-300 space-y-2">
+                                    <li>• Performance tracking</li>
+                                    <li>• Revenue distribution</li>
+                                    <li>• Feedback collection</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
-            </div> */}
+            </div>
+
+
+            {/* Terms & Conditions Section */}
+            <div className="max-w-6xl mx-auto px-4 py-16">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-center mb-16"
+                >
+                    <h2 className="text-4xl font-bold text-white mb-4">
+                        Terms & Conditions
+                    </h2>
+                    <p className="text-gray-300 text-lg">
+                        For Script Submission & Film Production
+                    </p>
+                    <div className="mt-4 text-purple-400">
+                        <p>Effective Date: June 1, 2024</p>
+                        <p>Jurisdiction: India</p>
+                    </div>
+                </motion.div>
+
+                <div className="space-y-8">
+                    {/* Eligibility */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">1. Eligibility</h3>
+                        <p className="text-gray-300 mb-4">
+                            By submitting a script to Zynoflix Production, the submitter confirms that they:
+                        </p>
+                        <ul className="text-gray-300 space-y-3 list-disc pl-6">
+                            <li>Are 18 years or older</li>
+                            <li>Are the original creator and legal copyright holder of the script</li>
+                            <li>Have full rights to submit the script for consideration</li>
+                        </ul>
+                    </motion.div>
+
+                    {/* Script Submission */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">2. Script Submission</h3>
+                        <ul className="text-gray-300 space-y-3 list-disc pl-6">
+                            <li>Scripts must be original, unpublished, and not under contract with any third party</li>
+                            <li>Zynoflix Production reserves the right to accept or reject any script without explanation</li>
+                            <li>Submissions must be made via the official form or email listed on https://zynoflixott.com/production</li>
+                        </ul>
+                    </motion.div>
+
+                    {/* Evaluation & Selection */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">3. Evaluation & Selection</h3>
+                        <ul className="text-gray-300 space-y-3 list-disc pl-6">
+                            <li>All submissions will be reviewed by our internal creative team</li>
+                            <li>Shortlisted scripts will be contacted for further discussion</li>
+                            <li>Final selection does not guarantee production unless mutually agreed upon</li>
+                        </ul>
+                    </motion.div>
+
+                    {/* Ownership & Rights */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">4. Ownership & Rights</h3>
+                        <ul className="text-gray-300 space-y-3 list-disc pl-6">
+                            <li>The scriptwriter retains copyright of the script until a Production Agreement is signed</li>
+                            <li>Upon agreement, Zynoflix Production may acquire exclusive rights to develop, produce, distribute, and monetize the content in all formats and platforms</li>
+                            <li>All rights transferred will be clearly outlined in a separate legal agreement</li>
+                        </ul>
+                    </motion.div>
+
+                    {/* Compensation */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">5. Compensation</h3>
+                        <ul className="text-gray-300 space-y-3 list-disc pl-6">
+                            <li>Writers of selected scripts will be compensated as per mutual agreement outlined in the Production Agreement</li>
+                            <li>Compensation may include a fixed fee, revenue share, or other benefits</li>
+                        </ul>
+                    </motion.div>
+
+                    {/* Confidentiality */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.6 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">6. Confidentiality</h3>
+                        <ul className="text-gray-300 space-y-3 list-disc pl-6">
+                            <li>All scripts submitted will be treated as confidential</li>
+                            <li>Zynoflix Production agrees not to share scripts with third parties without prior written consent</li>
+                        </ul>
+                    </motion.div>
+
+                    {/* Dispute Resolution */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.7 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">7. Dispute Resolution</h3>
+                        <ul className="text-gray-300 space-y-3 list-disc pl-6">
+                            <li>In the event of a dispute, parties agree to resolve matters amicably</li>
+                            <li>If unresolved, disputes will be subject to the jurisdiction of courts in Coimbatore, Tamil Nadu, India</li>
+                        </ul>
+                    </motion.div>
+
+                    {/* Modification of Terms */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.8 }}
+                        className="bg-[#292c41]/50 rounded-xl p-8 backdrop-blur-sm border border-[#7b61ff]/30"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">8. Modification of Terms</h3>
+                        <p className="text-gray-300">
+                            Zynoflix Production reserves the right to update these terms at any time. Continued submission implies acceptance of the latest terms.
+                        </p>
+                    </motion.div>
+                </div>
+            </div>
 
         </div>
     );
