@@ -216,7 +216,7 @@ export default function ProductionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1a0733] to-[#2c1157] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl pt-12 mx-auto">
         {/* Header */}
         <motion.div
