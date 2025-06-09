@@ -66,4 +66,4 @@ const ProductionSchema: Schema = new Schema(
 );
 
 // Create and export the Production model
-export default mongoose.models.Production || mongoose.model<IProduction>('Production', ProductionSchema); 
+export default mongoose.models.Production || mongoose.model<IProduction>('sell-shortfilm', ProductionSchema); 

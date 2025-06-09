@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
     try {
         // Get form data
         const formData = await request.formData();
-        const fullName = formData.get("name") as string;
+        const fullName = formData.get("fullName") as string;
         const email = formData.get("email") as string;
-        const phoneNumber = formData.get("contact") as string;
+        const phoneNumber = formData.get("phoneNumber") as string;
         const cityState = formData.get("cityState") as string || "";
         const shortFilmTitle = formData.get("shortFilmTitle") as string || "";
         const runtime = formData.get("runtime") as string || "";
@@ -53,20 +53,8 @@ export async function POST(request: NextRequest) {
         const additionalNotes = formData.get("additionalNotes") as string || "";
         const poster = formData.get("poster") as File | null;
         const file = formData.get("file") as File | null;
+        console.log(formData, "formData");
 
-        // Validate form data
-        if (
-            !fullName ||
-            !email ||
-            !phoneNumber ||
-            !appointmentDate ||
-            !appointmentTime
-        ) {
-            return NextResponse.json(
-                { error: "All required fields must be filled" },
-                { status: 400 }
-            );
-        }
 
         // Validate email
         const emailRegex = /^\S+@\S+\.\S+$/;
