@@ -85,6 +85,20 @@ export default function ProductionPage() {
                 return;
             }
 
+            // Validate file type and size
+            if (file.type !== "application/pdf") {
+                setFileError("Only PDF files are allowed");
+                setIsSubmitting(false);
+                return;
+            }
+
+            const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+            if (file.size > MAX_FILE_SIZE) {
+                setFileError("File size exceeds the 10MB limit");
+                setIsSubmitting(false);
+                return;
+            }
+
             // Create form data
             const formData = new FormData();
             formData.append("name", data.name);
@@ -95,7 +109,7 @@ export default function ProductionPage() {
             formData.append("file", file);
 
             // Submit form
-            const response = await axios.post("/api/production/submit", formData);
+            const response = await axios.post("/api/sell/submit", formData);
 
             if (response.data.success) {
                 setProductionId(response.data.productionId);
@@ -104,7 +118,8 @@ export default function ProductionPage() {
             }
         } catch (error: any) {
             console.error("Error submitting form:", error);
-            toast.error(error.response?.data?.error || "Failed to submit form");
+            const errorMessage = error.response?.data?.error || "Failed to submit form";
+            toast.error(errorMessage);
             setIsSubmitting(false);
         }
     };
@@ -137,10 +152,10 @@ export default function ProductionPage() {
             // Open Razorpay payment dialog
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
-                amount: data.amount * 100, // Amount in paise
-                currency: data.currency,
+                amount: 10000, // ₹100 in paise
+                currency: "INR",
                 name: "ZynoFlix",
-                description: "Short Film Production Submission",
+                description: "Script Submission Fee",
                 order_id: data.orderId,
                 handler: function (response: any) {
                     handlePaymentSuccess(response, id);
@@ -151,7 +166,7 @@ export default function ProductionPage() {
                     contact: "",
                 },
                 theme: {
-                    color: "#7c3aed",
+                    color: "#7b61ff",
                 },
                 modal: {
                     ondismiss: function () {
@@ -172,10 +187,7 @@ export default function ProductionPage() {
     };
 
     // Handle payment success
-    const handlePaymentSuccess = async (
-        response: any,
-        productionId: string
-    ) => {
+    const handlePaymentSuccess = async (response: any, productionId: string) => {
         try {
             // Verify payment
             await axios.post("/api/production/verify-payment", {

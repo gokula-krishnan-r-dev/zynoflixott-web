@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import connectToDatabase from "@/lib/mongodb";
-import Production from "@/models/Production";
+import sell from "@/models/sell";
 
 export async function POST(request: NextRequest) {
     try {
-        const { orderId, paymentId, signature, productionId } = await request.json();
+        const body = await request.json();
+        const { orderId, paymentId, signature, productionId } = body;
 
-        if (!orderId || !paymentId || !signature || !productionId) {
+        // Verify Razorpay signature
+        const text = orderId + "|" + paymentId;
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+            .update(text)
+            .digest("hex");
+
+        if (expectedSignature !== signature) {
             return NextResponse.json(
-                { error: "All payment details are required" },
+                { error: "Invalid payment signature" },
                 { status: 400 }
             );
         }
@@ -17,37 +25,24 @@ export async function POST(request: NextRequest) {
         // Connect to database
         await connectToDatabase();
 
-        // Find production entry
-        const production = await Production.findById(productionId);
-        if (!production) {
+        // Update submission status
+        const submission = await sell.findByIdAndUpdate(
+            productionId,
+            {
+                paymentId,
+                orderId,
+                paymentStatus: "completed",
+                status: "scheduled",
+            },
+            { new: true }
+        );
+
+        if (!submission) {
             return NextResponse.json(
-                { error: "Production not found" },
+                { error: "Submission not found" },
                 { status: 404 }
             );
         }
-
-        // Verify signature
-        const generatedSignature = crypto
-            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
-            .update(`${orderId}|${paymentId}`)
-            .digest("hex");
-
-        if (generatedSignature !== signature) {
-            // Update production status
-            production.paymentStatus = "failed";
-            await production.save();
-
-            return NextResponse.json(
-                { error: "Invalid payment signature" },
-                { status: 400 }
-            );
-        }
-
-        // Update production with payment details
-        production.paymentId = paymentId;
-        production.paymentSignature = signature;
-        production.paymentStatus = "completed";
-        await production.save();
 
         return NextResponse.json({
             success: true,
