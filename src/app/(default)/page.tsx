@@ -180,11 +180,11 @@ export default function Home() {
               </button>
 
               {/* Explore */}
-              <button onClick={() => window.location.href = '/explore'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg hover:shadow-lg transition-all duration-300">
+              <button onClick={() => window.location.href = '/production'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg hover:shadow-lg transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <span className="text-white font-medium text-sm">Explore</span>
+                <span className="text-white font-medium text-sm">Film Production</span>
               </button>
 
               {/* Live Streaming */}
