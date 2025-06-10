@@ -81,7 +81,7 @@ const EventPage = () => {
         try {
             // Initialize Razorpay payment directly
             const options = {
-                key: "rzp_live_2wtNMTtIzCco0O", // Replace with your Razorpay test key
+                key: "rzp_live_N9cN73EC0erg5Y", // Replace with your Razorpay test key
                 amount: 10000, // ₹100 in paise
                 currency: "INR",
                 name: "Zynoflix OTT",

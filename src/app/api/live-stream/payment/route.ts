@@ -6,8 +6,8 @@ import LiveStream from "@/models/LiveStream";
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
-    key_secret: process.env.RAZORPAY_KEY_SECRET || "rzp_test_key_secret",
+    key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_N9cN73EC0erg5Y",
+    key_secret: process.env.RAZORPAY_KEY_SECRET || "TnaYiO5l4LOVv3Y1hu72kg84",
 });
 
 // MongoDB connection

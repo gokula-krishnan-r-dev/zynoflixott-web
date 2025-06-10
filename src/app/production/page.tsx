@@ -151,7 +151,7 @@ export default function ProductionPage() {
 
             // Open Razorpay payment dialog
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_2wtNMTtIzCco0O",
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_N9cN73EC0erg5Y",
                 amount: 10000, // ₹100 in paise
                 currency: "INR",
                 name: "ZynoFlix",
