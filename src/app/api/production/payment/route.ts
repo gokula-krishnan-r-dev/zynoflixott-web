@@ -24,14 +24,6 @@ export async function POST(request: NextRequest) {
         // Connect to database
         await connectToDatabase();
 
-        // Find submission
-        const submission = await sell.findById(productionId);
-        if (!submission) {
-            return NextResponse.json(
-                { error: "Submission not found" },
-                { status: 404 }
-            );
-        }
 
         // Create Razorpay order
         const orderOptions = {
