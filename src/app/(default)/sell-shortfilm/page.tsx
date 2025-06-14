@@ -217,6 +217,19 @@ export default function ProductionPage() {
 
   return (
     <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+
+      {/* Google tag (gtag.js) */}
+      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17080281160"></script>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17080281160');
+          `
+        }}
+      />
       <div className="max-w-5xl pt-12 mx-auto">
         {/* Header */}
         <motion.div
