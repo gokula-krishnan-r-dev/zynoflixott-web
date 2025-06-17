@@ -219,14 +219,14 @@ export default function ProductionPage() {
     <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
 
       {/* Google tag (gtag.js) */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17080281160"></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"></script>
       <script
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'AW-17080281160');
+            gtag('config', 'G-R92MZPEMQD');
           `
         }}
       />
