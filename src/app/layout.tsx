@@ -39,10 +39,6 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-
-
-
-
         <script
           dangerouslySetInnerHTML={{
             __html: `

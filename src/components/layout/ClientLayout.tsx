@@ -14,7 +14,7 @@ const MobileNavBar = () => {
         <Home size={20} />
         <span>Home</span>
       </Link>
-      <Link href="/sell-shortfilm-contact" className={`mobile-nav-item ${pathname === '/sell-shortfilm-contact' ? 'active' : ''}`}>
+      <Link href="/submit-film" className={`mobile-nav-item ${pathname === '/submit-film' ? 'active' : ''}`}>
         <Film size={20} />
         <span>Sell Shortfilms</span>
       </Link>

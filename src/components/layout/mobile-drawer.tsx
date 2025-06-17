@@ -13,7 +13,7 @@ const menuItems = [
   { label: "Upload a Video", href: "/video-upload", icon: <Upload className="w-5 h-5" /> },
   // { label: "Chat", href: "/chat", icon: <MessageSquare className="w-5 h-5" /> },
   {
-    label: "Sell Shortfilms", href: "/sell-shortfilm-contact", icon: <Film className="w-5 h-5" />
+    label: "Sell Shortfilms", href: "/submit-film", icon: <Film className="w-5 h-5" />
   },
   //Monetization
   { label: "Monetization", href: "/monetization", icon: <DollarSign className="w-5 h-5" /> },
