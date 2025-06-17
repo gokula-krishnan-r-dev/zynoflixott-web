@@ -186,7 +186,7 @@ const Footer: React.FC = () => {
                 <li>
                   <a
                     className="hover:underline"
-                    href="/sell-shortfilm"
+                    href="/sell-shortfilm-form"
                   >
                     Sell Shortfilms
                   </a>
