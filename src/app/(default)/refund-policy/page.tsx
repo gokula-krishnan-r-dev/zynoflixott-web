@@ -10,6 +10,10 @@ const RefundPolicy: NextPage = () => {
       </Head>
       <main className="max-w-6xl mt-12 mx-auto bg-body p-8 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-6">ZynoFlix Refund Policy</h1>
+
+        <h2 className="text-2xl font-semibold mb-4">
+          Refund will be Initiated within 7 Days. (for Unacceptable ShortFilm / Video like adult contents)
+        </h2>
         <p className="mb-4">
           ZynoFlix is an Over-The-Top (OTT) platform that provides streaming
           services to its subscribers. Like any other online service provider,
