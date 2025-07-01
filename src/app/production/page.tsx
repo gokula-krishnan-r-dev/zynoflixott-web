@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -64,6 +64,15 @@ export default function ProductionPage() {
 
         setFile(selectedFile);
     };
+
+    // Google Analytics conversion tracking
+    useEffect(() => {
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'conversion', {
+                'send_to': 'AW-17096022152/J8kWCP3PlucaEIixgtg_'
+            });
+        }
+    }, []);
 
     // Remove selected file
     const removeFile = () => {

@@ -56,6 +56,16 @@ const EventPage = () => {
         }
     };
 
+
+    useEffect(() => {
+        // Google Ads conversion tracking
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'conversion', {
+                'send_to': 'AW-17096022152/xRn6CKrZlucaEIixgtg_'
+            });
+        }
+    }, []);
+
     const validateForm = () => {
         if (!formData.name || !formData.email || !formData.phone ||
             !formData.filmTitle || !formData.filmDuration ||

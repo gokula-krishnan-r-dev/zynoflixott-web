@@ -51,6 +51,16 @@ const AdvertisementPage = () => {
         validateField(name, formData[name as keyof typeof formData]);
     };
 
+
+    useEffect(() => {
+        // Google Ads conversion tracking
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'conversion', {
+                'send_to': 'AW-17096022152/a2q_CK3ZlucaEIixgtg_'
+            });
+        }
+    }, []);
+
     const validateField = (name: string, value: string) => {
         let errors = { ...validationErrors };
 

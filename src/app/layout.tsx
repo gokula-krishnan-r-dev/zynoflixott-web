@@ -94,6 +94,21 @@ export default function RootLayout({
           }}
         />
 
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-R92MZPEMQD');
+            `
+          }}
+        />
+
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="y/Hp6qltaCCSITbY89/pqg" async></script>
         <Header />
         <noscript>
