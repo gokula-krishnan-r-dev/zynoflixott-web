@@ -356,7 +356,7 @@ const EventPage = () => {
                         <div className="space-y-12 pl-12 relative">
                             {[
                                 { title: "Submissions Open", date: "01/06/2025", icon: "📝", color: "from-green-500 to-emerald-700" },
-                                { title: "Submission Deadline", date: "20/07/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700" },
+                                { title: "Submission Deadline", date: "06/08/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700" },
                                 { title: "Finalists Announcement", date: "27/07/2025", icon: "🏆", color: "from-blue-500 to-indigo-700" },
                                 { title: "Festival & Awards", date: "01/08/2025", icon: "🎬", color: "from-purple-500 to-pink-700" }
                             ].map((item, index) => (
@@ -382,7 +382,7 @@ const EventPage = () => {
                         <div>
                             {[
                                 { title: "Submissions Open", date: "01/06/2025", icon: "📝", color: "from-green-500 to-emerald-700", position: "left" },
-                                { title: "Submission Deadline", date: "20/07/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700", position: "right" },
+                                { title: "Submission Deadline", date: "06/08/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700", position: "right" },
                                 { title: "Finalists Announcement", date: "27/07/2025", icon: "🏆", color: "from-blue-500 to-indigo-700", position: "left" },
                                 { title: "Festival & Awards", date: "01/08/2025", icon: "🎬", color: "from-purple-500 to-pink-700", position: "right" }
                             ].map((item, index) => (
