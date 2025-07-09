@@ -4,7 +4,7 @@ import { SocialButtons } from "@/components/shared/list-production";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
 import { Edit, MessageCircle } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "react-query";
 import { isLogin, userId } from "@/lib/user";
 import { useRouter } from "next/navigation";
@@ -34,7 +34,30 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   if (isLoading)
     return <Loading className="flex items-center h-screen justify-center" />;
-
+ // Google Analytics conversion tracking
+ useEffect(() => {
+  if (typeof window !== 'undefined') {
+      // Google Tag Manager
+      (function(w: Window, d: Document, s: string, l: string, i: string) {
+          const wl = w as any;
+          wl[l] = wl[l] || [];
+          wl[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+          const f = d.getElementsByTagName(s)[0];
+          const j = d.createElement(s) as HTMLScriptElement;
+          const dl = l !== 'dataLayer' ? '&l='+l : '';
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id='+i+dl;
+          f.parentNode?.insertBefore(j,f);
+      })(window, document, 'script', 'dataLayer', 'GTM-P7RJCDB2');
+      
+      // Google Ads conversion tracking
+      if ((window as any).gtag) {
+          (window as any).gtag('event', 'conversion', {
+              'send_to': 'AW-17096022152/J8kWCP3PlucaEIixgtg_'
+          });
+      }
+  }
+}, []);
   const handletoCreateRoom = async () => {
     const RoomName = window.prompt("Enter Room Name");
     if (!RoomName) {
