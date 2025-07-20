@@ -60,7 +60,6 @@ const AdvertisementPage = () => {
             });
         }
     }, []);
-
      // Google Analytics conversion tracking
      useEffect(() => {
         if (typeof window !== 'undefined') {
