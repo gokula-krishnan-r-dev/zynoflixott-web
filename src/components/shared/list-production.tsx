@@ -106,10 +106,10 @@ const ListProduction = ({ url, title }: any) => {
                               }
                             `}</style>
                           </div>
-                          <Image
+                          <img
                             width={180}
                             height={180}
-                            src={company.logo}
+                            src={company.logo.split('?')[0]}
                             className="hover:scale-105 transition-transform lg:w-24 w-12 h-12 lg:h-24 rounded-full object-cover object-center duration-300 ease-in-out"
                             alt={`${company.name} Logo`}
                           />

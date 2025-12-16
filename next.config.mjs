@@ -16,7 +16,8 @@ const nextConfig = {
       "www.koimoi.com",
       'pbs.twimg.com',
       "static.toiimg.com",
-      "placehold.co"
+      "placehold.co",
+      "ott.blob.core.windows.net"
     ],
   },
   experimental: {
