@@ -1,8 +1,10 @@
 'use client'
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Ivideo } from "../types/video";
 import "./video-player.css";
 import SubscriptionModal from "../subscription/SubscriptionModal";
+import axios from "@/lib/axios";
+import { userId } from "@/lib/user";
 
 // Icons for player controls
 import {
@@ -17,13 +19,15 @@ interface VideoPlayerProps {
   isMembership: boolean;
   mode?: "orignal" | "preview";
   miniPlayer?: boolean;
+  onSubscriptionSuccess?: () => void;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   video,
   isMembership,
   mode = "preview",
-  miniPlayer = false
+  miniPlayer = false,
+  onSubscriptionSuccess
 }) => {
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,9 +53,67 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 2;
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  
+  // Check localStorage flag for recently activated subscription (only on client side)
+  // Declare this FIRST before any useEffects that use it
+  const [subscriptionJustActivated, setSubscriptionJustActivated] = useState(false);
+  
+  // Initialize subscription flag from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const active = localStorage.getItem('subscriptionActive') === 'true';
+      setSubscriptionJustActivated(active);
+    }
+  }, []);
 
-  // Video source based on membership
-  const videoLink = video ? (isMembership ? video?.original_video : video?.preview_video) : '';
+  // Check if subscription was just activated (prevent modal from showing immediately after payment)
+  useEffect(() => {
+    const subscriptionActive = localStorage.getItem('subscriptionActive');
+    const subscriptionActivatedAt = localStorage.getItem('subscriptionActivatedAt');
+    
+    if (subscriptionActive === 'true' && subscriptionActivatedAt) {
+      const activatedTime = new Date(subscriptionActivatedAt).getTime();
+      const now = new Date().getTime();
+      // Clear the flag after 5 minutes or if subscription is confirmed active
+      if (now - activatedTime > 5 * 60 * 1000) {
+        localStorage.removeItem('subscriptionActive');
+        localStorage.removeItem('subscriptionActivatedAt');
+        setSubscriptionJustActivated(false);
+      }
+      
+      // If subscription was just activated, close any open modals
+      if (showSubscriptionModal) {
+        setShowSubscriptionModal(false);
+      }
+    }
+  }, [showSubscriptionModal]);
+  
+  // Determine video source: original ONLY if membership is active OR subscription was just activated
+  // STRICT: Never show original_video without subscription
+  const videoLink = useMemo(() => {
+    if (!video) return '';
+    
+    // STRICT CHECK: Only show original video if user has active membership
+    // OR subscription was just activated (temporary flag before page reload)
+    if (isMembership || subscriptionJustActivated) {
+      // User has subscription - allow original video
+      if (video?.original_video) {
+        return video.original_video;
+      }
+      // Fallback to preview if no original
+      return video?.preview_video || '';
+    }
+    
+    // NO SUBSCRIPTION - ONLY show preview video, NEVER original
+    // This is the critical check - if user doesn't have subscription,
+    // they should NEVER see original_video URL
+    if (video?.preview_video) {
+      return video.preview_video;
+    }
+    
+    // No preview available either
+    return '';
+  }, [video, isMembership, subscriptionJustActivated]);
 
   // Handle video source issues
   const retryVideoLoad = () => {
@@ -103,16 +165,83 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Toggle play/pause
-  const togglePlay = () => {
-    // Check if user has subscription before playing original video
+  // Real-time subscription check function - calls Next.js API route
+  const checkSubscriptionStatus = async (): Promise<boolean> => {
+    if (!userId) return false;
+    
+    try {
+      // Use fetch for Next.js API routes (not the backend API)
+      const response = await fetch('http://localhost:3000/api/subscription/check', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'userId': userId
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Subscription check failed: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return data?.hasSubscription || false;
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      return isMembership; // Fallback to prop value
+    }
+  };
+
+  // Toggle play/pause - STRICT subscription check with real-time API call
+  const togglePlay = async () => {
+    // CRITICAL CHECK: If video has original_video, user MUST have subscription to play
     if (video?.original_video) {
-      // Show subscription modal if trying to play original video without subscription
-      setShowSubscriptionModal(true);
-      return;
+      // Real-time subscription check before allowing playback
+      const hasActiveSubscription = await checkSubscriptionStatus();
+      
+      if (!hasActiveSubscription && !subscriptionJustActivated) {
+        // Show subscription modal immediately - BLOCK playback
+        console.log('🔒 BLOCKED: Subscription required for original video', { 
+          isMembership, 
+          hasActiveSubscription,
+          subscriptionJustActivated, 
+          hasOriginal: !!video?.original_video,
+          videoId: video?._id,
+          currentVideoSource: videoLink
+        });
+        setShowSubscriptionModal(true);
+        // STOP - Do not proceed with playback
+        return;
+      }
     }
 
+    // Additional safety check: If current video source is original but no membership
+    // This prevents playback if somehow original URL was set
+    if (videoLink && video?.original_video && videoLink === video.original_video) {
+      if (!isMembership && !subscriptionJustActivated) {
+        console.log('🔒 BLOCKED: Original video URL detected without subscription');
+        setShowSubscriptionModal(true);
+        return;
+      }
+    }
+
+    // If subscription was just activated but membership not yet updated, allow playback temporarily
+    if (subscriptionJustActivated && !isMembership) {
+      // Allow playback - page will reload soon to update status
+      console.log('✅ Subscription just activated, allowing playback temporarily');
+    }
+
+    // Proceed with normal playback only if user has access
     if (videoRef.current) {
+      // Final check before playing
+      const currentSrc = videoRef.current.src;
+      if (currentSrc && video?.original_video && currentSrc.includes(video.original_video)) {
+        if (!isMembership && !subscriptionJustActivated) {
+          console.log('🔒 BLOCKED: Video element has original URL without subscription');
+          setShowSubscriptionModal(true);
+          return;
+        }
+      }
+
       if (isPlaying) {
         videoRef.current.pause();
       } else {
@@ -363,6 +492,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     initializeVideo();
   }, [videoLink, video]);
 
+  // Prevent video from playing if it's original_video without subscription
+  useEffect(() => {
+    if (videoRef.current && video?.original_video) {
+      const videoElement = videoRef.current;
+      
+      // Check if current source is original video
+      const isOriginalVideo = videoElement.src && 
+        (videoElement.src.includes(video.original_video) || 
+         videoLink === video.original_video);
+      
+      if (isOriginalVideo && !isMembership && !subscriptionJustActivated) {
+        // Block playback - pause immediately
+        videoElement.pause();
+        videoElement.currentTime = 0;
+        console.log('🛑 Blocked playback: Original video without subscription');
+        
+        // Show subscription modal
+        setShowSubscriptionModal(true);
+      }
+    }
+  }, [videoRef.current?.src, videoLink, video?.original_video, isMembership, subscriptionJustActivated]);
+
   // Handle video events
   useEffect(() => {
     if (!video) return;
@@ -392,7 +543,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       setIsPlaying(false);
     };
 
-    const handlePlay = () => {
+    const handlePlay = async () => {
+      // STRICT CHECK: Block play event if trying to play original video without subscription
+      if (video?.original_video) {
+        // Real-time subscription check
+        const hasActiveSubscription = await checkSubscriptionStatus();
+        
+        if (!hasActiveSubscription && !subscriptionJustActivated) {
+          const videoElement = videoRef.current;
+          if (videoElement) {
+            const currentSrc = videoElement.src || '';
+            if (currentSrc.includes(video.original_video) || videoLink === video.original_video) {
+              console.log('🛑 Blocked play event: Original video without subscription');
+              videoElement.pause();
+              videoElement.currentTime = 0;
+              setShowSubscriptionModal(true);
+              return;
+            }
+          }
+        }
+      }
+      
       setIsPlaying(true);
     };
 
@@ -533,7 +704,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     <div
       className="video-player-container"
       ref={playerRef}
-      onClick={togglePlay}
+      onClick={(e) => {
+        // If no subscription and has original video, show modal instead of playing
+        if (!isMembership && video?.original_video && !subscriptionJustActivated) {
+          e.stopPropagation();
+          setShowSubscriptionModal(true);
+          return;
+        }
+        togglePlay();
+      }}
     >
       {/* Video Element */}
       <video
@@ -656,21 +835,36 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       {/* Centered Play Button (shows when paused) */}
       {!isPlaying && showControls && (
-        <div className="big-play-button" onClick={togglePlay}>
+        <div 
+          className="big-play-button" 
+          onClick={(e) => {
+            e.stopPropagation();
+            // If no subscription and has original video, show modal
+            if (!isMembership && video?.original_video && !subscriptionJustActivated) {
+              setShowSubscriptionModal(true);
+              return;
+            }
+            togglePlay();
+          }}
+        >
           <FaPlay />
         </div>
       )}
 
-      {/* Subscription Lock Overlay - Shows when user doesn't have subscription and tries to play original video */}
-      {!isMembership && video?.original_video && !video?.preview_video && (
+      {/* Subscription Lock Overlay - Shows when user doesn't have subscription and video has original_video */}
+      {!isMembership && video?.original_video && !subscriptionJustActivated && (
         <div 
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 cursor-pointer"
-          onClick={() => setShowSubscriptionModal(true)}
+          className="absolute inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-30 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log('🔓 Overlay clicked - opening subscription modal');
+            setShowSubscriptionModal(true);
+          }}
         >
-          <div className="text-center p-8">
-            <div className="mb-4">
+          <div className="text-center p-8 max-w-md">
+            <div className="mb-4 animate-pulse">
               <svg 
-                className="w-16 h-16 mx-auto text-purple-400" 
+                className="w-20 h-20 mx-auto text-purple-400" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -684,29 +878,31 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </svg>
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">Premium Content</h3>
-            <p className="text-gray-300 mb-4">Subscribe to unlock full video access</p>
+            <p className="text-gray-300 mb-6">Subscribe to unlock full video access</p>
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                console.log('🔓 Button clicked - opening subscription modal');
                 setShowSubscriptionModal(true);
               }}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all shadow-lg"
+              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all shadow-lg text-lg transform hover:scale-105"
             >
               Subscribe Now - ₹500
             </button>
+            <p className="text-gray-400 text-sm mt-4">Click anywhere to subscribe</p>
           </div>
         </div>
       )}
 
       {/* Premium Badge - Shows when preview is available but original requires subscription */}
-      {!isMembership && video?.original_video && video?.preview_video && showControls && (
-        <div className="absolute top-4 right-4 z-10">
+      {!isMembership && video?.original_video && video?.preview_video && showControls && !subscriptionJustActivated && (
+        <div className="absolute top-4 right-4 z-20">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowSubscriptionModal(true);
             }}
-            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg transition-all shadow-lg flex items-center gap-2"
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg transition-all shadow-lg flex items-center gap-2 animate-pulse"
           >
             <svg 
               className="w-4 h-4" 
@@ -729,13 +925,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       {/* Subscription Modal */}
       <SubscriptionModal
         isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
-        onSuccess={() => {
+        onClose={() => {
+          console.log('Closing subscription modal');
           setShowSubscriptionModal(false);
+        }}
+        onSuccess={() => {
+          console.log('Subscription success callback');
+          setShowSubscriptionModal(false);
+          // Call parent callback to refresh user data
+          onSubscriptionSuccess?.();
           // Reload will happen automatically after subscription
         }}
         videoTitle={video?.title}
       />
+      
+      {/* Debug: Log subscription status */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 left-4 bg-black/80 text-white p-2 rounded text-xs z-50">
+          <div>Membership: {isMembership ? 'Yes' : 'No'}</div>
+          <div>Has Original: {video?.original_video ? 'Yes' : 'No'}</div>
+          <div>Modal Open: {showSubscriptionModal ? 'Yes' : 'No'}</div>
+        </div>
+      )}
 
       {/* Video Title */}
       {showControls && (

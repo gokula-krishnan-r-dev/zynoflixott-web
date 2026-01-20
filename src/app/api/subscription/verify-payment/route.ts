@@ -103,7 +103,14 @@ export async function POST(request: NextRequest) {
         const endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 1); // 1 month subscription
 
-        await User.findByIdAndUpdate(
+        // Get month name and time
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
+        const startMonth = monthNames[startDate.getMonth()];
+        const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}:${String(startDate.getSeconds()).padStart(2, '0')}`;
+
+        // Update User model with subscription (including startMonth and startTime)
+        const userUpdateResult = await User.findByIdAndUpdate(
             userId,
             {
                 $set: {
@@ -112,22 +119,42 @@ export async function POST(request: NextRequest) {
                         status: 'active',
                         plan: 'premium',
                         startDate: startDate,
-                        endDate: endDate
+                        startMonth: startMonth,
+                        startTime: startTime,
+                        endDate: endDate,
+                        paymentId: razorpayPaymentId,
+                        orderId: razorpayOrderId,
+                        amount: amount || 49
                     }
                 }
-            }
+            },
+            { new: true } // Return updated document
         );
 
-        // Record subscription in database
-        await mongoose.connection.collection('subscriptions').insertOne({
+        console.log('✅ User model updated with subscription:', {
+            userId,
+            isPremium: userUpdateResult?.isPremium,
+            subscriptionStatus: userUpdateResult?.subscription?.status
+        });
+
+        // Record subscription in subscriptions collection (primary source of truth)
+        const subscriptionResult = await mongoose.connection.collection('subscriptions').insertOne({
             userId: new mongoose.Types.ObjectId(userId),
             orderId: razorpayOrderId,
             paymentId: razorpayPaymentId,
-            amount: amount,
+            amount: amount || 49,
             status: 'active',
             startDate: startDate,
             endDate: endDate,
-            createdAt: new Date()
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        console.log('✅ Subscription recorded in database:', {
+            subscriptionId: subscriptionResult.insertedId,
+            userId,
+            status: 'active',
+            endDate
         });
 
         // Return success response

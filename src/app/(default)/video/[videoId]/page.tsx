@@ -132,11 +132,35 @@ export default function Page({ params }: { params: { videoId: string } }) {
     const response = await axios.get(`/video/${videoId}`);
     return response.data.video;
   });
-  const { data: user, isLoading: userLoading } = useQuery(
+  const { data: user, isLoading: userLoading, refetch: refetchUser } = useQuery(
     ["user", userId],
     async () => {
       const response = await axios.get(`/auth/user/${userId}`);
       return response.data.user;
+    },
+    {
+      // Refetch user data when subscription might have changed
+      refetchOnWindowFocus: true,
+      staleTime: 0, // Always check for fresh subscription status
+    }
+  );
+
+  // Separate query for subscription status - checks database directly using new optimized API
+  const { data: subscriptionStatus, refetch: refetchSubscription } = useQuery(
+    ["subscription-status", userId],
+    async () => {
+      const response = await axios.get('http://localhost:3000/api/subscription/check', {
+        headers: {
+          userId: userId || ''
+        }
+      });
+      return response.data;
+    },
+    {
+      enabled: !!userId,
+      refetchOnWindowFocus: true,
+      refetchInterval: 10000, // Check every 10 seconds for better responsiveness
+      staleTime: 0,
     }
   );
   const { data: follower, refetch: refetchF } = useQuery(
@@ -147,14 +171,37 @@ export default function Page({ params }: { params: { videoId: string } }) {
     }
   );
 
-  // Check subscription status - prioritize new subscription system, fallback to old membership
-  const hasSubscription = user?.subscription 
+  // Check subscription status - prioritize API subscription check, then user model, then old membership
+  const hasSubscriptionFromAPI = subscriptionStatus?.hasSubscription || false;
+  const hasSubscriptionFromUser = user?.subscription 
     ? isSubscriptionActive(user.subscription) 
     : false;
   const hasOldMembership = isMonthMembershipCompleted(
     user?.membershipId?.createdAt || new Date(-1)
   );
-  const isMembership = hasSubscription || hasOldMembership || user?.isPremium;
+
+  console.log(user, "hasOldMembership");
+  console.log(user?.isPremium, "user?.isPremium");
+  
+  // Final membership status - prioritize API check (most reliable)
+  const isMembership = hasSubscriptionFromAPI || hasSubscriptionFromUser || user?.isPremium;
+  
+  // Debug log subscription status
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📊 Subscription Status Check:', {
+        hasSubscriptionFromAPI,
+        hasSubscriptionFromUser,
+        hasOldMembership,
+        isPremium: user?.isPremium,
+        isMembership,
+        subscriptionFromAPI: subscriptionStatus?.subscription,
+        subscriptionFromUser: user?.subscription,
+        hasOriginalVideo: !!video?.original_video,
+        subscriptionSource: subscriptionStatus?.subscriptionStatus?.source
+      });
+    }
+  }, [hasSubscriptionFromAPI, hasSubscriptionFromUser, hasOldMembership, isMembership, user, video, subscriptionStatus]);
 
   const {
     data: like,
@@ -330,7 +377,19 @@ export default function Page({ params }: { params: { videoId: string } }) {
       {/* Mobile design - Movie Card UI */}
       <div className="lg:hidden mx-auto px-0 max-w-2xl">
         <div className="relative">
-          <VideoPlayer isMembership={isMembership} video={video} />
+          <VideoPlayer 
+            isMembership={isMembership} 
+            video={video}
+            onSubscriptionSuccess={async () => {
+              // Refetch both user data and subscription status after payment
+              console.log('🔄 Refreshing subscription status after payment (mobile)...');
+              await Promise.all([
+                refetchUser(),
+                refetchSubscription()
+              ]);
+              console.log('✅ Subscription status refreshed (mobile)');
+            }}
+          />
           <div className="h-[60vh] overflow-y-auto">
             {/* Fullscreen rotate button */}
             <Button
@@ -489,7 +548,19 @@ export default function Page({ params }: { params: { videoId: string } }) {
       {/* Desktop design - keep existing layout */}
       <div className="hidden lg:block">
         <div className="pt-24">
-          <VideoPlayer isMembership={isMembership} video={video} />
+          <VideoPlayer 
+            isMembership={isMembership} 
+            video={video}
+            onSubscriptionSuccess={async () => {
+              // Refetch both user data and subscription status after payment
+              console.log('🔄 Refreshing subscription status after payment (desktop)...');
+              await Promise.all([
+                refetchUser(),
+                refetchSubscription()
+              ]);
+              console.log('✅ Subscription status refreshed (desktop)');
+            }}
+          />
         </div>
         <div className="p-6">
           <div className="w-full mt-4 flex flex-row pb-3 justify-between items-center">

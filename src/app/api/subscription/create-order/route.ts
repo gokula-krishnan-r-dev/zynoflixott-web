@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Create order in Razorpay
-        const order = await razorpay.orders.create({
+        const orderOptions = {
             amount: Math.round(amount * 100), // Convert to paise
             currency: currency,
             receipt: receiptId,
@@ -99,8 +99,49 @@ export async function POST(request: NextRequest) {
                 type: 'subscription',
                 plan: 'premium'
             },
-            payment_capture: true // Auto capture payment
+            payment_capture: 1 // Auto capture payment (use 1 instead of true for Razorpay)
+        };
+
+        console.log('Creating Razorpay order with options:', {
+            amount: orderOptions.amount,
+            currency: orderOptions.currency,
+            receipt: orderOptions.receipt,
+            userId: userId
         });
+
+        let order;
+        try {
+            order = await razorpay.orders.create(orderOptions);
+        } catch (razorpayError: any) {
+            console.error('Razorpay order creation error:', razorpayError);
+            
+            // Handle specific Razorpay errors
+            if (razorpayError.statusCode === 401) {
+                return NextResponse.json(
+                    { 
+                        error: 'Razorpay authentication failed. Please check your API keys.',
+                        details: 'Make sure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are correct and match (test with test, live with live)'
+                    },
+                    { status: 401 }
+                );
+            }
+            
+            throw razorpayError;
+        }
+
+        // Validate order was created
+        if (!order || !order.id) {
+            console.error('Razorpay order creation failed - no order ID returned');
+            return NextResponse.json(
+                { 
+                    error: 'Failed to create order in Razorpay',
+                    details: 'Order ID is missing from Razorpay response'
+                },
+                { status: 500 }
+            );
+        }
+
+        console.log('Razorpay order created successfully:', order.id);
 
         // Store order details in database
         await mongoose.connection.collection('subscriptionOrders').insertOne({
@@ -113,6 +154,17 @@ export async function POST(request: NextRequest) {
             createdAt: new Date(),
             updatedAt: new Date()
         });
+
+        // Validate order was created successfully
+        if (!order || !order.id) {
+            return NextResponse.json(
+                { 
+                    error: 'Failed to create order - invalid response from Razorpay',
+                    details: 'Order ID is missing'
+                },
+                { status: 500 }
+            );
+        }
 
         // Return order details
         return NextResponse.json({

@@ -32,7 +32,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const router = useRouter();
 
-  const subscriptionPrice = 500; // ₹500
+  const subscriptionPrice = 49; // ₹49
   const subscriptionFeatures = [
     {
       icon: <Video className="w-5 h-5" />,
@@ -122,37 +122,81 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
     try {
       setLoading(true);
 
-      // Create subscription order
-      const response = await axios.post('/api/subscription/create-order', {
-        amount: subscriptionPrice,
-        currency: 'INR'
-      }, {
-        headers: {
-          userId: authId
+      // Create subscription order with better error handling
+      let response;
+      try {
+        response = await axios.post('http://localhost:3000/api/subscription/create-order', {
+          amount: subscriptionPrice,
+          currency: 'INR'
+        }, {
+          headers: {
+            userId: authId
+          },
+          timeout: 30000 // 30 second timeout
+        });
+      } catch (axiosError: any) {
+        // Handle axios errors with detailed messages
+        if (axiosError.response) {
+          const errorData = axiosError.response.data;
+          const errorMessage = errorData?.error || errorData?.details || errorData?.message || 'Failed to create subscription order';
+          throw new Error(errorMessage);
+        } else if (axiosError.request) {
+          throw new Error('Network error. Please check your internet connection and try again.');
+        } else {
+          throw new Error(axiosError.message || 'Failed to create subscription order');
         }
-      });
+      }
 
-      if (!response.data.success || !response.data.order) {
-        throw new Error('Failed to create subscription order');
+      // Check for errors in response
+      if (response.data.error) {
+        throw new Error(response.data.error || 'Failed to create subscription order');
+      }
+
+      if (!response.data.success) {
+        throw new Error(response.data.error || 'Failed to create subscription order');
+      }
+
+      if (!response.data.order || !response.data.order.id) {
+        console.error('Invalid order response:', response.data);
+        throw new Error('Invalid order response from server. Order ID is missing.');
       }
 
       const { order } = response.data;
 
+      // Validate order ID exists and is valid
+      if (!order || !order.id) {
+        console.error('Invalid order response:', response.data);
+        throw new Error('Invalid order response from server. Order ID is missing.');
+      }
+
+      // Log order details for debugging (remove in production)
+      console.log('Order created successfully:', {
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency
+      });
+
       // Configure Razorpay options
       const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_HJG5Rtuy8Xh2NB';
+      
+      // Validate Razorpay key
+      if (!razorpayKey || razorpayKey.length < 10) {
+        throw new Error('Invalid Razorpay key configuration');
+      }
+
       const options = {
         key: razorpayKey,
-        amount: subscriptionPrice * 100, // Convert to paise
+        amount: Math.round(subscriptionPrice * 100), // Convert to paise, ensure it's an integer
         currency: 'INR',
         name: 'ZynoflixOTT',
         description: 'Premium Subscription - Unlimited Video Access',
-        order_id: order.id,
+        order_id: order.id, // Use the order ID from Razorpay
         handler: async function (paymentResponse: any) {
           try {
             setLoading(true);
 
             // Verify payment
-            const verifyResponse = await axios.post('/api/subscription/verify-payment', {
+            const verifyResponse = await axios.post('http://localhost:3000/api/subscription/verify-payment', {
               razorpayPaymentId: paymentResponse.razorpay_payment_id,
               razorpayOrderId: paymentResponse.razorpay_order_id,
               razorpaySignature: paymentResponse.razorpay_signature,
@@ -163,21 +207,63 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               }
             });
 
-            if (verifyResponse.data.success) {
-              toast.success('Subscription activated successfully! 🎉');
-              onSuccess?.();
-              onClose();
-              // Refresh the page to update subscription status
+      if (verifyResponse.data.success) {
+        toast.success('Subscription activated successfully! 🎉');
+        
+        // Store subscription status in localStorage temporarily
+        localStorage.setItem('subscriptionActive', 'true');
+        localStorage.setItem('subscriptionActivatedAt', new Date().toISOString());
+        
+        // Close modal immediately
+        onClose();
+        
+        // Call success callback to update parent component (this will refetch subscription status)
+        onSuccess?.();
+        
+        // Wait a moment for the API to update, then refresh subscription status
+        setTimeout(async () => {
+          try {
+            // Trigger a manual refetch by calling the subscription status API
+            const statusResponse = await axios.get('http://localhost:3000/api/subscription/status', {
+              headers: {
+                userId: authId
+              }
+            });
+            
+            if (statusResponse.data.hasSubscription) {
+              console.log('✅ Subscription confirmed active in database');
+              // Clear localStorage flags
+              localStorage.removeItem('subscriptionActive');
+              localStorage.removeItem('subscriptionActivatedAt');
+              
+              // Small delay then reload to ensure everything is synced
               setTimeout(() => {
                 window.location.reload();
               }, 1000);
             } else {
-              toast.error('Payment verification failed. Please contact support.');
+              console.warn('⚠️ Subscription not yet active in database, retrying...');
+              // Retry after another second
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
             }
+          } catch (error) {
+            console.error('Error checking subscription status:', error);
+            // Reload anyway after delay
+            setTimeout(() => {
+              localStorage.removeItem('subscriptionActive');
+              localStorage.removeItem('subscriptionActivatedAt');
+              window.location.reload();
+            }, 2000);
+          }
+        }, 1500);
+      } else {
+        toast.error('Payment verification failed. Please contact support.');
+        setLoading(false);
+      }
           } catch (error: any) {
             console.error('Payment verification error:', error);
             toast.error(error.response?.data?.error || 'Payment verification failed. Please contact support.');
-          } finally {
             setLoading(false);
           }
         },
@@ -202,14 +288,41 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
     } catch (error: any) {
       console.error('Subscription error:', error);
-      toast.error(error.response?.data?.error || 'Failed to process subscription. Please try again.');
-    } finally {
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to process subscription. Please try again.';
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.details) {
+        errorMessage = error.response.data.details;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Check for Razorpay specific errors
+      if (error.response?.data?.error?.code === 'BAD_REQUEST_ERROR') {
+        if (error.response.data.error.description?.includes('id provided does not exist')) {
+          errorMessage = 'Order ID is invalid. Please try again.';
+        } else {
+          errorMessage = error.response.data.error.description || 'Invalid request to payment gateway';
+        }
+      }
+      
+      toast.error(errorMessage);
       setLoading(false);
     }
   };
 
+  // Debug log when modal should be open
+  useEffect(() => {
+    if (isOpen) {
+      console.log('🎯 Subscription Modal is OPEN');
+    }
+  }, [isOpen]);
+
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <>
           {/* Backdrop */}
@@ -217,12 +330,15 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
+            onClick={(e) => {
+              // Prevent closing on backdrop click - force user to subscribe
+              e.stopPropagation();
+            }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999]"
           />
 
-          {/* Modal - Compact Design */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          {/* Modal - Enhanced Design with Better Messaging */}
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -247,11 +363,16 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                     <Crown className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-1">
-                    Unlock Premium
+                    Premium Content Locked 🔒
                   </h2>
-                  <p className="text-gray-400 text-sm">
-                    {videoTitle ? `Watch "${videoTitle.length > 30 ? videoTitle.substring(0, 30) + '...' : videoTitle}"` : 'Get unlimited access'}
+                  <p className="text-gray-300 text-sm font-medium">
+                    Subscribe to unlock full video access
                   </p>
+                  {videoTitle && (
+                    <p className="text-gray-400 text-xs mt-1">
+                      "{videoTitle.length > 40 ? videoTitle.substring(0, 40) + '...' : videoTitle}"
+                    </p>
+                  )}
                 </div>
 
                 {/* Pricing - Compact */}

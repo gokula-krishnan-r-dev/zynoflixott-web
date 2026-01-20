@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useQuery } from "react-query";
 import { toast } from "sonner";
+import SubscriptionCard from "@/components/subscription/SubscriptionCard";
+import { isSubscriptionActive } from "@/lib/subscription";
 
 const VideoCard = dynamic(() => import("@/components/card/video-card"));
 
@@ -181,6 +183,16 @@ const Page = () => {
             </div>
 
             <div className="py-6 px-4 sm:px-6 md:px-8 lg:px-12">
+              {/* Subscription Management Card */}
+              <div className="mb-6">
+                <SubscriptionCard 
+                  user={user} 
+                  onUpdate={() => {
+                    refetch();
+                  }}
+                />
+              </div>
+
               {/* Action buttons */}
               <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
                 <button className="flex items-center bg-green-500 hover:bg-green-600 text-black rounded-xl px-4 py-2 sm:px-6 sm:py-3 gap-2 transition-colors">

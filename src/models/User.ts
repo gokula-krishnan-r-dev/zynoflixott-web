@@ -4,7 +4,12 @@ interface ISubscription {
     status: string;
     plan: string;
     startDate?: Date;
+    startMonth?: string; // e.g., "January", "February"
+    startTime?: string; // e.g., "15:30:00"
     endDate?: Date;
+    paymentId?: string;
+    orderId?: string;
+    amount?: number;
 }
 
 export interface IUser extends Document {
@@ -62,8 +67,23 @@ const UserSchema: Schema = new Schema(
             startDate: {
                 type: Date
             },
+            startMonth: {
+                type: String // Store month name like "January", "February"
+            },
+            startTime: {
+                type: String // Store time in HH:mm:ss format
+            },
             endDate: {
                 type: Date
+            },
+            paymentId: {
+                type: String
+            },
+            orderId: {
+                type: String
+            },
+            amount: {
+                type: Number
             }
         }
     },
