@@ -196,53 +196,37 @@ export default function GiftPaymentContainer({
 
     if (isMobile) {
         return (
-            <div className={cn("px-4 py-0", className)}>
+            <div className={cn("w-full", className)}>
                 <AnimatePresence mode="wait">
                     {paymentComplete ? (
                         <motion.div
                             key="success"
-                            initial={{ opacity: 0, scale: 0.9 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 rounded-xl p-4 flex flex-col items-center"
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-gradient-to-r from-purple-900/40 to-indigo-900/40 rounded-lg p-2.5 flex flex-col items-center"
                         >
-                            <div className="rounded-full bg-green-500/20 p-3 mb-3">
-                                <HeartHandshake className="h-6 w-6 text-green-400" />
+                            <div className="rounded-full bg-green-500/20 p-2 mb-2">
+                                <HeartHandshake className="h-4 w-4 text-green-400" />
                             </div>
-                            <h3 className="text-center text-lg font-medium text-white mb-1">Thank You!</h3>
-                            <p className="text-center text-sm text-gray-300 mb-3">
-                                Your gift has been sent to {creatorName}
+                            <h3 className="text-center text-xs font-semibold text-white mb-0.5">Thank You!</h3>
+                            <p className="text-center text-[10px] text-gray-300 leading-tight">
+                                Gift sent to {creatorName?.length > 15 ? creatorName.substring(0, 15) + '...' : creatorName}
                             </p>
                         </motion.div>
                     ) : (
                         <div
                             key="gift"
-                            // initial={{ opacity: 0, y: 20 }}
-                            // animate={{ opacity: 1, y: 0 }}
-                            // exit={{ opacity: 0, y: -20 }}
-                            className="flex flex-col items-center gap-4"
+                            className="w-full"
                         >
-                            <GiftButtonGroup onClick={handlePayment}
+                            <GiftButtonGroup 
+                                onClick={handlePayment}
                                 videoId={videoId}
                                 creatorId={creatorId}
-                                // onSelect={setSelectedAmount}
                                 selectedAmount={selectedAmount}
                                 loading={loading}
                                 variant="mobile"
                             />
-
-                            {/* <Button
-                                onClick={handlePayment}
-                                disabled={loading || !selectedAmount || !hasRazorpay}
-                                className="w-full max-w-md bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                            >
-                                {loading ? (
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                ) : (
-                                    <Gift className="h-4 w-4 mr-2" />
-                                )}
-                                {selectedAmount ? `Send $${selectedAmount} Gift` : 'Select Amount'}
-                            </Button> */}
                         </div>
                     )}
                 </AnimatePresence>
@@ -252,7 +236,7 @@ export default function GiftPaymentContainer({
 
     // Desktop version
     return (
-        <div className={cn("mx-auto max-w-3xl bg-purple-900 px-0 py-1 rounded-full", className)}>
+        <div className={cn("mx-auto lg:max-w-3xl max-w-full bg-purple-900 px-0 py-1 rounded-full", className)}>
             <AnimatePresence mode="wait">
                 {paymentComplete ? (
                     <motion.div
@@ -260,7 +244,7 @@ export default function GiftPaymentContainer({
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 rounded-xl p-6 flex flex-col items-center"
+                        className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 rounded-xl lg:p-6 p-1 flex flex-col items-center"
                     >
                         <div className="rounded-full bg-green-500/20 p-4 mb-4">
                             <HeartHandshake className="h-8 w-8 text-green-400" />
@@ -282,9 +266,9 @@ export default function GiftPaymentContainer({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="bg-gradient-to-r  from-[rgba(30,32,51,0.8)] to-[rgba(41,44,65,0.8)] rounded-xl p-6 border border-indigo-900/30"
+                        className="bg-gradient-to-r  from-[rgba(30,32,51,0.8)] to-[rgba(41,44,65,0.8)] rounded-xl lg:p-6 p-1 border border-indigo-900/30"
                     >
-                        <div className="text-center mb-6">
+                        <div className="text-center lg:mb-6 mb-1">
                             <h3 className="text-xl font-medium text-white">Support {creatorName} with a Gift</h3>
                             <p className="text-sm text-gray-400 mt-1">Choose an amount to send as a gift</p>
                         </div>
@@ -298,7 +282,7 @@ export default function GiftPaymentContainer({
                             loading={loading}
                         />
 
-                        <div className="mt-6 flex justify-center">
+                        <div className="lg:mt-6 mt-1 flex justify-center">
                             <Button
                                 onClick={() => handlePayment(selectedAmount || 0)}
                                 disabled={loading || !selectedAmount || !hasRazorpay}
@@ -313,7 +297,7 @@ export default function GiftPaymentContainer({
                             </Button>
                         </div>
 
-                        <p className="text-xs text-center text-gray-500 mt-4">
+                        <p className="text-xs text-center text-gray-500 lg:mt-4 mt-1">
                             Your support helps creators continue making great content
                         </p>
                     </motion.div>

@@ -34,31 +34,33 @@ export default function GiftButtonGroup({
 
     if (variant === 'mobile') {
         return (
-            <div className={cn("flex justify-center bg-purple-900 py-2 px-4 rounded-full")}>
+            <div className={cn("w-full bg-purple-900/80 py-1.5 px-2 rounded-full")}>
                 <motion.div
-                    className="w-full flex gap-2"
-                    initial={{ opacity: 0, y: 10 }}
+                    className="w-full flex items-center gap-1.5"
+                    initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.2 }}
                 >
-                    <div className="flex items-center justify-center">
-                        <div className="rounded-full bg-gradient-to-r mr-4 flex items-center justify-center gap-2 from-purple-600/20 to-indigo-600/20 border border-indigo-500/30 px-2.5 py-1.5 shadow-md">
-                            <Gift className="h-5 w-5 text-indigo-400" />
-                            <span className="text-md font-medium">Gift</span>
+                    <div className="flex items-center justify-center flex-shrink-0">
+                        <div className="rounded-full bg-gradient-to-r from-purple-600/30 to-indigo-600/30 border border-indigo-500/40 px-1.5 py-1 flex items-center justify-center gap-1">
+                            <Gift className="h-3 w-3 text-indigo-300" />
+                            <span className="text-[10px] font-semibold text-white">Gift</span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 flex-1 justify-center">
                         {giftOptions.map((option) => (
                             <motion.button
                                 onClick={() => {
                                     onClick(option.amount);
                                 }}
                                 key={option.amount}
-                                // onClick={() => onSelect(option.amount)}
                                 disabled={loading}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-2.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs"
+                                className={cn(
+                                    "bg-gradient-to-br from-emerald-600/90 to-green-500/90 text-white border border-green-400/50 px-2 py-1 rounded-lg shadow-sm flex items-center justify-center text-[10px] font-semibold min-w-[45px]",
+                                    selectedAmount === option.amount && "ring-1 ring-green-300 ring-offset-1 ring-offset-purple-900"
+                                )}
                             >
                                 {option.displayAmount}
                             </motion.button>
