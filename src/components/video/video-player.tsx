@@ -887,7 +887,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               }}
               className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all shadow-lg text-lg transform hover:scale-105"
             >
-              Subscribe Now - ₹500
+              Subscribe Now - ₹49
             </button>
             <p className="text-gray-400 text-sm mt-4">Click anywhere to subscribe</p>
           </div>
