@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 
 // Connection URI
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const dbName = process.env.MONGODB_DB || 'zynoflix';
+const dbName = process.env.MONGODB_DB || 'ott'; // Default to 'ott' database
 
 // Connection cache
 let client: MongoClient | null = null;

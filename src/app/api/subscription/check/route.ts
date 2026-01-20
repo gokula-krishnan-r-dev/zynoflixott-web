@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/mongodb';
-import mongoose from 'mongoose';
+import { connectDB } from '@/lib/mongo';
+import { ObjectId } from 'mongodb';
 import { isSubscriptionActive } from '@/lib/subscription';
-import type { IUser } from '@/models/User';
 
 /**
  * Optimized subscription check API
- * Checks User model subscription field with startMonth, startTime, startDate
+ * Checks user_profiles collection subscription field with startMonth, startTime, startDate
  * This API is called every time before video playback
+ * Uses MongoDB native driver for better performance
  */
 export async function GET(request: NextRequest) {
     try {
@@ -24,12 +24,28 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // Connect to database
-        await connectToDatabase();
+        // Connect to database using MongoDB native driver
+        const { db } = await connectDB();
+        const userProfilesCollection = db.collection('user_profiles');
+        const subscriptionsCollection = db.collection('subscriptions');
 
-        // Get user from User model
-        const User = (await import('@/models/User')).default;
-        const user = await User.findById(userId).lean() as IUser | null;
+        // Convert userId to ObjectId
+        let userObjectId: ObjectId;
+        try {
+            userObjectId = new ObjectId(userId);
+        } catch (error) {
+            return NextResponse.json(
+                { 
+                    hasSubscription: false,
+                    isPremium: false,
+                    message: 'Invalid user ID format'
+                },
+                { status: 400 }
+            );
+        }
+
+        // Get user from user_profiles collection (primary source)
+        const user = await userProfilesCollection.findOne({ _id: userObjectId });
 
         if (!user) {
             return NextResponse.json(
@@ -42,28 +58,40 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // Check subscription in User model (primary check)
-        const hasActiveSubscription = isSubscriptionActive(user.subscription) || (user.isPremium ?? false);
+        // Check subscription in user_profiles collection (primary check)
+        const userSubscription = user.subscription as {
+            status?: string;
+            plan?: string;
+            startDate?: Date;
+            startMonth?: string;
+            startTime?: string;
+            endDate?: Date;
+            paymentId?: string;
+            orderId?: string;
+            amount?: number;
+        } | undefined;
 
-        // Get subscription details
-        const subscriptionDetails = user.subscription ? {
-            status: user.subscription.status,
-            plan: user.subscription.plan,
-            startDate: user.subscription.startDate,
-            startMonth: user.subscription.startMonth,
-            startTime: user.subscription.startTime,
-            endDate: user.subscription.endDate,
-            paymentId: user.subscription.paymentId,
-            orderId: user.subscription.orderId,
-            amount: user.subscription.amount
+        const hasActiveSubscription = isSubscriptionActive(userSubscription) || (user.isPremium ?? false) || (user.isMembership ?? false);
+
+        // Get subscription details from user_profiles
+        const subscriptionDetails = userSubscription ? {
+            status: userSubscription.status,
+            plan: userSubscription.plan,
+            startDate: userSubscription.startDate,
+            startMonth: userSubscription.startMonth,
+            startTime: userSubscription.startTime,
+            endDate: userSubscription.endDate,
+            paymentId: userSubscription.paymentId,
+            orderId: userSubscription.orderId,
+            amount: userSubscription.amount
         } : null;
 
-        // Also check subscriptions collection as backup
+        // Also check subscriptions collection as backup/verification
         let dbSubscriptionActive = false;
+        let dbSubscriptionDetails = null;
         try {
-            const subscriptionsCollection = mongoose.connection.collection('subscriptions');
             const activeSubscription = await subscriptionsCollection.findOne({
-                userId: new mongoose.Types.ObjectId(userId),
+                userId: userObjectId,
                 status: 'active',
                 endDate: { $gt: new Date() }
             }, {
@@ -72,29 +100,50 @@ export async function GET(request: NextRequest) {
 
             if (activeSubscription) {
                 dbSubscriptionActive = true;
+                // Extract month and time from startDate if available
+                const subStartDate = activeSubscription.startDate ? new Date(activeSubscription.startDate) : new Date();
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+                const subStartMonth = monthNames[subStartDate.getMonth()];
+                const subStartTime = `${String(subStartDate.getHours()).padStart(2, '0')}:${String(subStartDate.getMinutes()).padStart(2, '0')}:${String(subStartDate.getSeconds()).padStart(2, '0')}`;
+                
+                dbSubscriptionDetails = {
+                    status: activeSubscription.status,
+                    plan: 'premium',
+                    startDate: activeSubscription.startDate,
+                    startMonth: subStartMonth,
+                    startTime: subStartTime,
+                    endDate: activeSubscription.endDate,
+                    paymentId: activeSubscription.paymentId,
+                    orderId: activeSubscription.orderId,
+                    amount: activeSubscription.amount
+                };
             }
         } catch (dbError) {
             console.error('Error checking subscriptions collection:', dbError);
-            // Continue with User model check
+            // Continue with user_profiles check
         }
 
-        // Final subscription status (User model takes priority)
+        // Final subscription status (user_profiles takes priority, subscriptions collection as backup)
         const finalHasSubscription = hasActiveSubscription || dbSubscriptionActive;
+        
+        // Use user_profiles subscription if available, otherwise use subscriptions collection data
+        const finalSubscriptionDetails = subscriptionDetails || dbSubscriptionDetails;
 
         return NextResponse.json({
             success: true,
             hasSubscription: finalHasSubscription,
             isPremium: finalHasSubscription,
-            subscription: subscriptionDetails,
+            subscription: finalSubscriptionDetails,
             subscriptionStatus: {
                 isActive: finalHasSubscription,
-                status: subscriptionDetails?.status || 'inactive',
-                plan: subscriptionDetails?.plan || null,
-                startDate: subscriptionDetails?.startDate || null,
-                startMonth: subscriptionDetails?.startMonth || null,
-                startTime: subscriptionDetails?.startTime || null,
-                endDate: subscriptionDetails?.endDate || null,
-                source: 'user_model'
+                status: finalSubscriptionDetails?.status || 'inactive',
+                plan: finalSubscriptionDetails?.plan || null,
+                startDate: finalSubscriptionDetails?.startDate || null,
+                startMonth: finalSubscriptionDetails?.startMonth || null,
+                startTime: finalSubscriptionDetails?.startTime || null,
+                endDate: finalSubscriptionDetails?.endDate || null,
+                source: subscriptionDetails ? 'user_profiles' : (dbSubscriptionDetails ? 'subscriptions_collection' : 'none')
             },
             timestamp: new Date().toISOString()
         });

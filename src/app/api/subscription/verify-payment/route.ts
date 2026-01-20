@@ -97,8 +97,7 @@ export async function POST(request: NextRequest) {
             }
         );
 
-        // Update user subscription status
-        const User = mongoose.models.User || (await import('@/models/User')).default;
+        // Calculate subscription dates
         const startDate = new Date();
         const endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 1); // 1 month subscription
@@ -109,33 +108,65 @@ export async function POST(request: NextRequest) {
         const startMonth = monthNames[startDate.getMonth()];
         const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}:${String(startDate.getSeconds()).padStart(2, '0')}`;
 
-        // Update User model with subscription (including startMonth and startTime)
-        const userUpdateResult = await User.findByIdAndUpdate(
-            userId,
+        // Update user_profiles collection (primary source)
+        const { connectDB } = await import('@/lib/mongo');
+        const { db } = await connectDB();
+        const userProfilesCollection = db.collection('user_profiles');
+        const userObjectId = new mongoose.Types.ObjectId(userId);
+
+        const subscriptionData = {
+            status: 'active',
+            plan: 'premium',
+            startDate: startDate,
+            startMonth: startMonth,
+            startTime: startTime,
+            endDate: endDate,
+            paymentId: razorpayPaymentId,
+            orderId: razorpayOrderId,
+            amount: amount || 49
+        };
+
+        // Update user_profiles collection with subscription
+        const userProfileUpdateResult = await userProfilesCollection.updateOne(
+            { _id: userObjectId },
             {
                 $set: {
                     isPremium: true,
-                    subscription: {
-                        status: 'active',
-                        plan: 'premium',
-                        startDate: startDate,
-                        startMonth: startMonth,
-                        startTime: startTime,
-                        endDate: endDate,
-                        paymentId: razorpayPaymentId,
-                        orderId: razorpayOrderId,
-                        amount: amount || 49
-                    }
+                    isMembership: true,
+                    subscription: subscriptionData
                 }
-            },
-            { new: true } // Return updated document
+            }
         );
 
-        console.log('✅ User model updated with subscription:', {
+        console.log('✅ user_profiles collection updated with subscription:', {
             userId,
-            isPremium: userUpdateResult?.isPremium,
-            subscriptionStatus: userUpdateResult?.subscription?.status
+            matchedCount: userProfileUpdateResult.matchedCount,
+            modifiedCount: userProfileUpdateResult.modifiedCount
         });
+
+        // Also update User model (Mongoose) for backward compatibility
+        try {
+            const User = mongoose.models.User || (await import('@/models/User')).default;
+            const userUpdateResult = await User.findByIdAndUpdate(
+                userId,
+                {
+                    $set: {
+                        isPremium: true,
+                        subscription: subscriptionData
+                    }
+                },
+                { new: true }
+            );
+
+            console.log('✅ User model (Mongoose) updated with subscription:', {
+                userId,
+                isPremium: userUpdateResult?.isPremium,
+                subscriptionStatus: userUpdateResult?.subscription?.status
+            });
+        } catch (mongooseError) {
+            console.warn('⚠️ Could not update User model (Mongoose):', mongooseError);
+            // Continue even if Mongoose update fails - user_profiles is primary
+        }
 
         // Record subscription in subscriptions collection (primary source of truth)
         const subscriptionResult = await mongoose.connection.collection('subscriptions').insertOne({
