@@ -10,7 +10,7 @@ const connectMongoDB = async () => {
         if (mongoose.connection.readyState === 1) {
             return mongoose.connection;
         }
-        const uri = process.env.MONGODB_URI || "mongodb+srv://admin:zyn0f1ix@cluster0.fjf3fcj.mongodb.net/zynoflix";
+        const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/ott";
         await mongoose.connect(uri);
         return mongoose.connection;
     } catch (error) {

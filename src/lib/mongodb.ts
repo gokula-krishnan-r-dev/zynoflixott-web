@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import env from '@/config/env';
 
-const MONGODB_URI = env.MONGODB_URI;
+const MONGODB_URI = env.MONGODB_URI || 'mongodb://localhost:27017/ott';
 
 if (!MONGODB_URI) {
     throw new Error('Please define the MONGODB_URI environment variable');
@@ -39,7 +39,7 @@ async function connectToDatabase(): Promise<typeof mongoose> {
             bufferCommands: false,
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+        cached.promise = mongoose.connect(MONGODB_URI || 'mongodb://localhost:27017/ott', opts).then((mongoose) => {
             console.log('Connected to MongoDB');
             return mongoose;
         });

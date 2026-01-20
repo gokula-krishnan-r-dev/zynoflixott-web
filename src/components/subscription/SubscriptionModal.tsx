@@ -139,7 +139,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       const { order } = response.data;
 
       // Configure Razorpay options
-      const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_N9cN73EC0erg5Y';
+      const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_HJG5Rtuy8Xh2NB';
       const options = {
         key: razorpayKey,
         amount: subscriptionPrice * 100, // Convert to paise

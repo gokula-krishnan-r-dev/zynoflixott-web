@@ -3,14 +3,36 @@ import Razorpay from 'razorpay';
 import connectToDatabase from '@/lib/mongodb';
 import mongoose from 'mongoose';
 
+// Get Razorpay credentials from environment
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_HJG5Rtuy8Xh2NB';
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET || '';
+
+// Validate that key_secret is provided
+if (!razorpayKeySecret) {
+    console.error('⚠️ RAZORPAY_KEY_SECRET is missing! Please set it in your .env.local file.');
+    console.error('For test mode, get your test key_secret from: https://dashboard.razorpay.com/app/keys');
+}
+
 // Initialize Razorpay
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || 'rzp_live_N9cN73EC0erg5Y',
-    key_secret: process.env.RAZORPAY_KEY_SECRET || 'TnaYiO5l4LOVv3Y1hu72kg84'
+    key_id: razorpayKeyId,
+    key_secret: razorpayKeySecret
 });
 
 export async function POST(request: NextRequest) {
     try {
+        // Validate Razorpay credentials before processing
+        if (!razorpayKeySecret) {
+            return NextResponse.json(
+                { 
+                    error: 'Razorpay configuration error',
+                    message: 'RAZORPAY_KEY_SECRET is not set. Please add it to your .env.local file.',
+                    help: 'Get your test key_secret from: https://dashboard.razorpay.com/app/keys'
+                },
+                { status: 500 }
+            );
+        }
+
         // Verify user authentication
         const userId = request.headers.get('userId');
         if (!userId) {
@@ -55,9 +77,17 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Create a unique receipt ID
+        // Create a unique receipt ID (max 40 chars for Razorpay)
+        // Format: sub_<8char_userId>_<8char_timestamp> = max 25 chars
         const timestamp = Date.now();
-        const receiptId = `sub_${userId}_${timestamp}`;
+        const shortUserId = userId.length > 8 ? userId.slice(-8) : userId.padStart(8, '0');
+        const shortTimestamp = timestamp.toString().slice(-8);
+        let receiptId = `sub_${shortUserId}_${shortTimestamp}`;
+        
+        // Ensure it's exactly 40 chars or less
+        if (receiptId.length > 40) {
+            receiptId = receiptId.slice(0, 40);
+        }
 
         // Create order in Razorpay
         const order = await razorpay.orders.create({
@@ -69,7 +99,7 @@ export async function POST(request: NextRequest) {
                 type: 'subscription',
                 plan: 'premium'
             },
-            payment_capture: 1 // Auto capture payment
+            payment_capture: true // Auto capture payment
         });
 
         // Store order details in database
@@ -96,12 +126,26 @@ export async function POST(request: NextRequest) {
         });
     } catch (error: any) {
         console.error('Error creating subscription order:', error);
+        
+        // Provide more specific error messages
+        let errorMessage = 'Failed to create subscription order';
+        let statusCode = 500;
+        
+        if (error.statusCode === 401) {
+            errorMessage = 'Razorpay authentication failed. Please check your API keys. Make sure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET match (test keys with test keys, live keys with live keys).';
+            statusCode = 401;
+        } else if (error.statusCode === 400) {
+            errorMessage = error.error?.description || error.message || 'Invalid request to Razorpay';
+            statusCode = 400;
+        }
+        
         return NextResponse.json(
             { 
-                error: 'Failed to create subscription order',
-                details: error.message
+                error: errorMessage,
+                details: error.error?.description || error.message,
+                statusCode: error.statusCode
             },
-            { status: 500 }
+            { status: statusCode }
         );
     }
 }

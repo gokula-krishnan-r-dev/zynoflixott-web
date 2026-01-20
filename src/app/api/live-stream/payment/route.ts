@@ -6,7 +6,7 @@ import LiveStream from "@/models/LiveStream";
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_N9cN73EC0erg5Y",
+    key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_HJG5Rtuy8Xh2NB",
     key_secret: process.env.RAZORPAY_KEY_SECRET || "TnaYiO5l4LOVv3Y1hu72kg84",
 });
 
@@ -16,7 +16,7 @@ const connectMongoDB = async () => {
         if (mongoose.connection.readyState === 1) {
             return mongoose.connection;
         }
-        const uri = process.env.MONGODB_URI || "mongodb+srv://admin:zyn0f1ix@cluster0.fjf3fcj.mongodb.net/zynoflix";
+        const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/ott";
         await mongoose.connect(uri);
         return mongoose.connection;
     } catch (error) {

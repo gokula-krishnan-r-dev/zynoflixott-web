@@ -2,7 +2,7 @@ import Razorpay from "razorpay";
 import { NextRequest, NextResponse } from "next/server";
 
 const razorpay = new Razorpay({
-  key_id: "rzp_live_N9cN73EC0erg5Y",
+  key_id: "rzp_test_HJG5Rtuy8Xh2NB",
   key_secret: "TnaYiO5l4LOVv3Y1hu72kg84",
 });
 
