@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { connectDB } from '@/lib/mongo';
+import { ObjectId } from 'mongodb';
 import connectToDatabase from '@/lib/mongodb';
 import mongoose from 'mongoose';
 
+/**
+ * Cancel subscription API
+ * Updates user_profiles collection and subscriptions collection
+ * Uses MongoDB native driver for better performance
+ */
 export async function POST(request: NextRequest) {
     try {
         // Verify user authentication
@@ -13,12 +20,24 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Connect to database
-        await connectToDatabase();
+        // Connect to databases
+        const { db } = await connectDB(); // MongoDB native driver for user_profiles
+        await connectToDatabase(); // Mongoose for User model (backward compatibility)
 
-        // Get user subscription status
-        const User = mongoose.models.User || (await import('@/models/User')).default;
-        const user = await User.findById(userId);
+        // Convert userId to ObjectId
+        let userObjectId: ObjectId;
+        try {
+            userObjectId = new ObjectId(userId);
+        } catch (error) {
+            return NextResponse.json(
+                { error: 'Invalid user ID format' },
+                { status: 400 }
+            );
+        }
+
+        // Get user from user_profiles collection (primary source)
+        const userProfilesCollection = db.collection('user_profiles');
+        const user = await userProfilesCollection.findOne({ _id: userObjectId });
 
         if (!user) {
             return NextResponse.json(
@@ -27,8 +46,22 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check if user has an active subscription
-        if (!user.subscription || user.subscription.status !== 'active') {
+        // Check if user has an active subscription in user_profiles
+        const userSubscription = user.subscription as {
+            status?: string;
+            plan?: string;
+            startDate?: Date;
+            startMonth?: string;
+            startTime?: string;
+            endDate?: Date;
+            paymentId?: string;
+            orderId?: string;
+            amount?: number;
+        } | undefined;
+
+        const hasActiveSubscription = userSubscription?.status === 'active' || user.isPremium || user.isMembership;
+
+        if (!hasActiveSubscription) {
             return NextResponse.json(
                 { 
                     error: 'No active subscription found',
@@ -38,32 +71,66 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Update subscription status to canceled
-        await User.findByIdAndUpdate(
-            userId,
+        // Update user_profiles collection (primary source)
+        const cancelDate = new Date();
+        const updateResult = await userProfilesCollection.updateOne(
+            { _id: userObjectId },
             {
                 $set: {
                     isPremium: false,
+                    isMembership: false,
                     'subscription.status': 'canceled',
-                    'subscription.endDate': new Date() // Set end date to now
+                    'subscription.endDate': cancelDate
                 }
             }
         );
 
-        // Update subscription record in database
-        await mongoose.connection.collection('subscriptions').updateOne(
+        console.log('✅ user_profiles collection updated - subscription canceled:', {
+            userId,
+            matchedCount: updateResult.matchedCount,
+            modifiedCount: updateResult.modifiedCount
+        });
+
+        // Update subscriptions collection
+        const subscriptionsCollection = db.collection('subscriptions');
+        const subscriptionUpdateResult = await subscriptionsCollection.updateOne(
             { 
-                userId: new mongoose.Types.ObjectId(userId),
+                userId: userObjectId,
                 status: 'active'
             },
             {
                 $set: {
                     status: 'canceled',
-                    canceledAt: new Date(),
-                    updatedAt: new Date()
+                    canceledAt: cancelDate,
+                    endDate: cancelDate,
+                    updatedAt: cancelDate
                 }
             }
         );
+
+        console.log('✅ subscriptions collection updated:', {
+            matchedCount: subscriptionUpdateResult.matchedCount,
+            modifiedCount: subscriptionUpdateResult.modifiedCount
+        });
+
+        // Also update User model (Mongoose) for backward compatibility
+        try {
+            const User = mongoose.models.User || (await import('@/models/User')).default;
+            await User.findByIdAndUpdate(
+                userId,
+                {
+                    $set: {
+                        isPremium: false,
+                        'subscription.status': 'canceled',
+                        'subscription.endDate': cancelDate
+                    }
+                }
+            );
+            console.log('✅ User model (Mongoose) updated for backward compatibility');
+        } catch (mongooseError) {
+            console.warn('⚠️ Could not update User model (Mongoose):', mongooseError);
+            // Continue even if Mongoose update fails - user_profiles is primary
+        }
 
         // Return success response
         return NextResponse.json({
@@ -71,7 +138,8 @@ export async function POST(request: NextRequest) {
             message: 'Subscription canceled successfully',
             subscription: {
                 status: 'canceled',
-                canceledAt: new Date()
+                canceledAt: cancelDate,
+                endDate: cancelDate
             }
         });
     } catch (error: any) {
