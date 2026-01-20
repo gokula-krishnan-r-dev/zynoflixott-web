@@ -71,7 +71,7 @@ export default function GiftButton({
             setSelectedAmount(amount);
 
             // Create order on server
-            const response = await axios.post('http://localhost:3000/api/payment/create-order', {
+            const response = await axios.post('/api/payment/create-order', {
                 amount: amount * 100, // Convert to smallest currency unit (cents)
                 videoId,
                 creatorId,

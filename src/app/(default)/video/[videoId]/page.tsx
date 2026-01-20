@@ -149,7 +149,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
   const { data: subscriptionStatus, refetch: refetchSubscription } = useQuery(
     ["subscription-status", userId],
     async () => {
-      const response = await axios.get('http://localhost:3000/api/subscription/check', {
+      const response = await axios.get('/api/subscription/check', {
         headers: {
           userId: userId || ''
         }

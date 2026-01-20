@@ -77,7 +77,7 @@ server {
 
     # Handle API requests with increased timeout and body size
     location /api/upload/media {
-        proxy_pass http://localhost:3000;
+        proxy_pass ;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -94,7 +94,7 @@ server {
 
     # Handle all other requests
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass ;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

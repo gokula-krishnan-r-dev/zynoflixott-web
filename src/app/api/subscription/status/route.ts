@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import mongoose from 'mongoose';
 import { isSubscriptionActive } from '@/lib/subscription';
+import type { IUser } from '@/models/User';
 
 /**
  * Comprehensive subscription status check API
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
 
         // Get user from User model
         const User = (await import('@/models/User')).default;
-        const user = await User.findById(userId).lean();
+        const user = await User.findById(userId).lean() as IUser | null;
 
         if (!user) {
             return NextResponse.json(
@@ -41,8 +42,8 @@ export async function GET(request: NextRequest) {
         }
 
         // Check subscription in User model
-        const userSubscriptionActive = isSubscriptionActive(user.subscription);
-        const userIsPremium = user.isPremium || false;
+        const userSubscriptionActive = isSubscriptionActive(user?.subscription);
+        const userIsPremium = user?.isPremium || false;
 
         // Check subscription in subscriptions collection (more reliable)
         let dbSubscription = null;
@@ -80,10 +81,10 @@ export async function GET(request: NextRequest) {
         const hasActiveSubscription = dbSubscriptionActive || userSubscriptionActive || userIsPremium;
         
         // Use DB subscription if available, otherwise use User model subscription
-        const finalSubscription = dbSubscription || user.subscription || null;
+        const finalSubscription = dbSubscription || user?.subscription || null;
 
         // Update User model if DB has active subscription but User model doesn't
-        if (dbSubscriptionActive && (!userSubscriptionActive || !userIsPremium)) {
+        if (dbSubscriptionActive && dbSubscription && (!userSubscriptionActive || !userIsPremium)) {
             try {
                 await User.findByIdAndUpdate(
                     userId,

@@ -171,7 +171,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     
     try {
       // Use fetch for Next.js API routes (not the backend API)
-      const response = await fetch('http://localhost:3000/api/subscription/check', {
+      const response = await fetch('/api/subscription/check', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
