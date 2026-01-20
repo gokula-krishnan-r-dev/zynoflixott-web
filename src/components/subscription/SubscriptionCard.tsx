@@ -44,7 +44,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ user, onUpdate }) =
       setError(null);
 
       const response = await axios.post(
-        '/api/subscription/cancel',
+        'https://zynoflixott.com/api/subscription/cancel',
         {},
         {
           headers: {

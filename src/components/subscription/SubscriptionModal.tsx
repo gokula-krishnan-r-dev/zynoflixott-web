@@ -125,7 +125,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       // Create subscription order with better error handling
       let response;
       try {
-        response = await axios.post('/api/subscription/create-order', {
+        response = await axios.post('https://zynoflixott.com/api/subscription/create-order', {
           amount: subscriptionPrice,
           currency: 'INR'
         }, {
@@ -196,7 +196,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             setLoading(true);
 
             // Verify payment
-            const verifyResponse = await axios.post('/api/subscription/verify-payment', {
+            const verifyResponse = await axios.post('https://zynoflixott.com/api/subscription/verify-payment', {
               razorpayPaymentId: paymentResponse.razorpay_payment_id,
               razorpayOrderId: paymentResponse.razorpay_order_id,
               razorpaySignature: paymentResponse.razorpay_signature,
@@ -224,7 +224,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         setTimeout(async () => {
           try {
             // Trigger a manual refetch by calling the subscription status API
-            const statusResponse = await axios.get('/api/subscription/status', {
+            const statusResponse = await axios.get('https://zynoflixott.com/api/subscription/status', {
               headers: {
                 userId: authId
               }
