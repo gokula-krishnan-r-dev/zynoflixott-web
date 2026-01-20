@@ -50,10 +50,7 @@ export async function POST(request: NextRequest) {
         };
 
         const order = await razorpay.orders.create(orderOptions);
-
-
-
-
+        
         // Return the order details for frontend to open Razorpay checkout
         return NextResponse.json({
             orderId: order.id,

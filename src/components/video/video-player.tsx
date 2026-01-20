@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Ivideo } from "../types/video";
 import "./video-player.css";
+import SubscriptionModal from "../subscription/SubscriptionModal";
 
 // Icons for player controls
 import {
@@ -47,6 +48,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [isVideoUrlIssue, setIsVideoUrlIssue] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 2;
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   // Video source based on membership
   const videoLink = video ? (isMembership ? video?.original_video : video?.preview_video) : '';
@@ -103,6 +105,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Toggle play/pause
   const togglePlay = () => {
+    // Check if user has subscription before playing original video
+    if (video?.original_video) {
+      // Show subscription modal if trying to play original video without subscription
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
@@ -651,6 +660,82 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <FaPlay />
         </div>
       )}
+
+      {/* Subscription Lock Overlay - Shows when user doesn't have subscription and tries to play original video */}
+      {!isMembership && video?.original_video && !video?.preview_video && (
+        <div 
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 cursor-pointer"
+          onClick={() => setShowSubscriptionModal(true)}
+        >
+          <div className="text-center p-8">
+            <div className="mb-4">
+              <svg 
+                className="w-16 h-16 mx-auto text-purple-400" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" 
+                />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Premium Content</h3>
+            <p className="text-gray-300 mb-4">Subscribe to unlock full video access</p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSubscriptionModal(true);
+              }}
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all shadow-lg"
+            >
+              Subscribe Now - ₹500
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Premium Badge - Shows when preview is available but original requires subscription */}
+      {!isMembership && video?.original_video && video?.preview_video && showControls && (
+        <div className="absolute top-4 right-4 z-10">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowSubscriptionModal(true);
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg transition-all shadow-lg flex items-center gap-2"
+          >
+            <svg 
+              className="w-4 h-4" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" 
+              />
+            </svg>
+            Unlock Full Video
+          </button>
+        </div>
+      )}
+
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        onSuccess={() => {
+          setShowSubscriptionModal(false);
+          // Reload will happen automatically after subscription
+        }}
+        videoTitle={video?.title}
+      />
 
       {/* Video Title */}
       {showControls && (

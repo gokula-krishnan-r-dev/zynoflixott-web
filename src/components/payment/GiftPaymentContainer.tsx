@@ -35,15 +35,48 @@ export default function GiftPaymentContainer({
 
     // Load Razorpay script
     useEffect(() => {
+        // Check if Razorpay is already loaded
+        if (window.Razorpay) {
+            setHasRazorpay(true);
+            return;
+        }
+
+        // Check if script already exists
+        const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+        if (existingScript) {
+            // Script exists, wait for it to load
+            if ((existingScript as HTMLScriptElement).onload) {
+                setHasRazorpay(true);
+            } else {
+                (existingScript as HTMLScriptElement).onload = () => {
+                    setHasRazorpay(true);
+                };
+            }
+            return;
+        }
+
+        // Create script only if it doesn't exist
         const script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
         script.async = true;
         script.onload = () => setHasRazorpay(true);
-        document.body.appendChild(script);
-
-        return () => {
-            document.body.removeChild(script);
+        script.onerror = () => {
+            console.error('Failed to load Razorpay script');
         };
+        
+        // Add script to body safely
+        if (document.body) {
+            document.body.appendChild(script);
+        } else {
+            // Wait for body to be available
+            document.addEventListener('DOMContentLoaded', () => {
+                if (document.body) {
+                    document.body.appendChild(script);
+                }
+            });
+        }
+
+        // No cleanup needed - keep script loaded for future use
     }, []);
 
     const handlePayment = async (amount: number) => {

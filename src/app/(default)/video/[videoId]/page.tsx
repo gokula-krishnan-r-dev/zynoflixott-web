@@ -7,6 +7,7 @@ import {
   isMonthMembershipCompleted,
   secondsToMinutes,
 } from "@/lib/time";
+import { isSubscriptionActive } from "@/lib/subscription";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authId, isLogin, userId } from "@/lib/user";
@@ -135,16 +136,6 @@ export default function Page({ params }: { params: { videoId: string } }) {
     ["user", userId],
     async () => {
       const response = await axios.get(`/auth/user/${userId}`);
-      const isMembership = isMonthMembershipCompleted(
-        response.data.user.membershipId.createdAt
-      );
-
-      if (isMembership) {
-        toast.warning(
-          "You are watching a Promo video for watch full video subscription is required"
-        );
-      }
-
       return response.data.user;
     }
   );
@@ -156,9 +147,14 @@ export default function Page({ params }: { params: { videoId: string } }) {
     }
   );
 
-  const isMembership = isMonthMembershipCompleted(
+  // Check subscription status - prioritize new subscription system, fallback to old membership
+  const hasSubscription = user?.subscription 
+    ? isSubscriptionActive(user.subscription) 
+    : false;
+  const hasOldMembership = isMonthMembershipCompleted(
     user?.membershipId?.createdAt || new Date(-1)
   );
+  const isMembership = hasSubscription || hasOldMembership || user?.isPremium;
 
   const {
     data: like,
