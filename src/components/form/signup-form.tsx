@@ -301,8 +301,11 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
       localStorage.setItem("userId", user._id);
       localStorage.setItem(
         "userRole",
-        response.data.isProduction
+        response.data.isProduction || (user.userType === "student_ambassador" ? "user" : "user")
       );
+      if (user.userType) {
+        localStorage.setItem("userType", user.userType);
+      }
       localStorage.setItem("isLogin", "true");
 
       // Success notification

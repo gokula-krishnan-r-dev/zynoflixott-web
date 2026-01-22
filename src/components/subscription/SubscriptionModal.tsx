@@ -177,7 +177,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       });
 
       // Configure Razorpay options
-      const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_HJG5Rtuy8Xh2NB';
+      const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_S6AcB6I8TQuoVM';
       
       // Validate Razorpay key
       if (!razorpayKey || razorpayKey.length < 10) {

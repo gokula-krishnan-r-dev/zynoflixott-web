@@ -20,6 +20,12 @@ export interface IUser extends Document {
     role: string;
     isPremium?: boolean;
     subscription?: ISubscription;
+    userType?: string; // 'user', 'student_ambassador', etc.
+    college_name?: string; // For student ambassadors
+    age?: number; // For student ambassadors
+    registrationFeePaid?: boolean; // For student ambassadors
+    full_name?: string; // Full name field
+    profilePic?: string; // Profile picture
     createdAt: Date;
     updatedAt: Date;
 }

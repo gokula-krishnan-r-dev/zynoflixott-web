@@ -4,7 +4,7 @@ import connectToDatabase from '@/lib/mongodb';
 import mongoose from 'mongoose';
 
 // Get Razorpay credentials from environment
-const razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_HJG5Rtuy8Xh2NB';
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_S6AcB6I8TQuoVM';
 const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET || '';
 
 // Validate that key_secret is provided

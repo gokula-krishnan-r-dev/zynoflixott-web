@@ -57,6 +57,7 @@ const Page = () => {
   }, [isLogin]);
   if (isLoading)
     return <Loading className="h-screen flex items-center justify-center" />;
+
   const handletoLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
@@ -125,7 +126,7 @@ const Page = () => {
             <div className="w-full flex justify-center sm:justify-start sm:pl-6 md:pl-8 lg:pl-12">
               <div className="relative">
                 <img
-                  src={user.profilePic}
+                  src={user?.profilePic || "https://i.sstatic.net/l60Hf.png"}
                   alt="User Profile"
                   className="rounded-full object-cover 
                   w-24 h-24 
@@ -172,14 +173,67 @@ const Page = () => {
 
               {/* FullName */}
               <h1 className="text-center sm:text-left text-white font-bold text-2xl sm:text-3xl md:text-4xl">
-                {user.full_name}
+                {user?.full_name || "User"}
               </h1>
 
               {/* Email */}
               <div className="flex flex-col items-center sm:items-start mt-2">
                 <h3 className="text-lg sm:text-xl font-bold text-white">Email</h3>
-                <span className="text-gray-300 text-sm sm:text-base break-all">{user.email}</span>
+                <span className="text-gray-300 text-sm sm:text-base break-all">{user?.email || "No email"}</span>
               </div>
+
+              {/* User Type Badge */}
+              {user?.userType && (
+                <div className="flex flex-col items-center sm:items-start mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg sm:text-xl font-bold text-white">User Type:</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      user.userType === "student_ambassador" 
+                        ? "bg-green-500 text-white" 
+                        : "bg-blue-500 text-white"
+                    }`}>
+                      {user.userType === "student_ambassador" 
+                        ? "Student Brand Ambassador" 
+                        : "Regular User"}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Student Ambassador Details */}
+              {user?.userType === "student_ambassador" && (
+                <div className="flex flex-col items-center sm:items-start mt-4 gap-3">
+                  <div className="bg-gray-800 p-4 rounded-lg w-full">
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-3">Student Ambassador Details</h3>
+                    <div className="space-y-2">
+                      {user?.college_name && (
+                        <div>
+                          <span className="text-gray-400 text-sm">College Name:</span>
+                          <p className="text-white font-medium">{user.college_name}</p>
+                        </div>
+                      )}
+                      {user?.age && (
+                        <div>
+                          <span className="text-gray-400 text-sm">Age:</span>
+                          <p className="text-white font-medium">{user.age} years</p>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-gray-400 text-sm">Registration Status:</span>
+                        <p className={`font-medium ${
+                          user?.registrationFeePaid 
+                            ? "text-green-400" 
+                            : "text-yellow-400"
+                        }`}>
+                          {user?.registrationFeePaid 
+                            ? "✓ Registration Fee Paid" 
+                            : "⚠ Registration Fee Pending"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="py-6 px-4 sm:px-6 md:px-8 lg:px-12">

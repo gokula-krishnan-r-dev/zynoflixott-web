@@ -128,7 +128,7 @@ export default function GiftPaymentContainer({
 
             // Configure Razorpay options
             const options = {
-                key: process.env.RAZORPAY_KEY_ID || 'rzp_test_HJG5Rtuy8Xh2NB',
+                key: process.env.RAZORPAY_KEY_ID || 'rzp_test_S6AcB6I8TQuoVM',
                 amount: amount * 100, // Convert to smallest currency unit (cents)
                 currency: 'USD',
                 name: 'Zynoflix',

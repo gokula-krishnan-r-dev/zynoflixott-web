@@ -75,6 +75,12 @@ const page = () => {
                   >
                     <span className="ml-4">Director Signup</span>
                   </Link>
+                  <Link
+                    href={"/signup/student-ambassador"}
+                    className="w-full mt-4 max-w-xs font-bold shadow-sm rounded-lg py-3 bg-green-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+                  >
+                    <span className="ml-4">Student Brand Ambassador Registration</span>
+                  </Link>
                 </div>
                 <div className="my-12 text-gray-100 text-center">
                   <div className="leading-none px-2 inline-block text-sm text-gray-100 tracking-wide font-medium  transform translate-y-1/2">
