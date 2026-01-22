@@ -852,7 +852,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       )}
 
       {/* Subscription Lock Overlay - Shows when user doesn't have subscription and video has original_video */}
-      {!!isMembership && video?.original_video && !subscriptionJustActivated && (
+      {!isMembership && video?.original_video && !subscriptionJustActivated && (
         <div 
           className="absolute inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-30 cursor-pointer"
           onClick={(e) => {
