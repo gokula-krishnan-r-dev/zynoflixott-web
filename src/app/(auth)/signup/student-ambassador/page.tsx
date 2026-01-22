@@ -29,7 +29,7 @@ const page = () => {
         ) : (
           <div className=""></div>
         )}
-        <div className="max-w-screen-xl z-30 m-0 sm:m-10 flex justify-center flex-1">
+        <div className="max-w-screen-xl lg:pt-6 pt-14 z-30 m-0 sm:m-10 flex justify-center flex-1">
           
           <div className="w-full lg:w-11/12 xl:w-10/12 text-white rounded-3xl p-6 sm:p-12">
               {/* Registration Form */}

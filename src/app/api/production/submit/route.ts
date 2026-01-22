@@ -12,12 +12,32 @@ const azureConfig = {
     },
 };
 
+// Validate Azure Storage connection string
+const validateAzureConfig = () => {
+    if (!azureConfig.connectionString) {
+        throw new Error("Azure Storage connection string is not configured. Please set AZURE_STORAGE_CONNECTION_STRING environment variable.");
+    }
+    
+    // Basic validation of connection string format
+    if (!azureConfig.connectionString.includes("AccountName=") || 
+        !azureConfig.connectionString.includes("AccountKey=")) {
+        throw new Error("Azure Storage connection string appears to be invalid. Please check your AZURE_STORAGE_CONNECTION_STRING environment variable.");
+    }
+};
+
 // Get container client
 const getContainerClient = (containerName: string) => {
-    const blobServiceClient = BlobServiceClient.fromConnectionString(
-        azureConfig.connectionString
-    );
-    return blobServiceClient.getContainerClient(containerName);
+    validateAzureConfig();
+    
+    try {
+        const blobServiceClient = BlobServiceClient.fromConnectionString(
+            azureConfig.connectionString
+        );
+        return blobServiceClient.getContainerClient(containerName);
+    } catch (error: any) {
+        console.error("Failed to create Azure Blob Storage client:", error);
+        throw new Error(`Failed to connect to Azure Storage: ${error.message || "Unknown error"}`);
+    }
 };
 
 // Generate a unique blob name
@@ -157,35 +177,57 @@ export async function POST(request: NextRequest) {
                 );
             }
 
-            // Get container client for posters
-            const containerClient = getContainerClient(azureConfig.containerNames.posters);
-            await containerClient.createIfNotExists({
-                access: "blob",
-            });
+            try {
+                // Get container client for posters
+                const containerClient = getContainerClient(azureConfig.containerNames.posters);
+                await containerClient.createIfNotExists({
+                    access: "blob",
+                });
 
-            // Generate unique blob name
-            const userId = uuidv4(); // Generate a unique ID for non-logged-in users
-            const blobName = generateUniqueBlobName(userId, poster.name);
+                // Generate unique blob name
+                const userId = uuidv4(); // Generate a unique ID for non-logged-in users
+                const blobName = generateUniqueBlobName(userId, poster.name);
 
-            // Get blob client
-            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+                // Get blob client
+                const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-            // Convert file to ArrayBuffer and then to Buffer
-            const fileBuffer = Buffer.from(await poster.arrayBuffer());
+                // Convert file to ArrayBuffer and then to Buffer
+                const fileBuffer = Buffer.from(await poster.arrayBuffer());
 
-            // Upload to Azure Blob Storage
-            await blockBlobClient.uploadData(fileBuffer, {
-                blobHTTPHeaders: {
-                    blobContentType: poster.type,
-                },
-            });
+                // Upload to Azure Blob Storage
+                await blockBlobClient.uploadData(fileBuffer, {
+                    blobHTTPHeaders: {
+                        blobContentType: poster.type,
+                    },
+                });
 
-            // Get the direct URL
-            const posterUrl = blockBlobClient.url;
+                // Get the direct URL
+                const posterUrl = blockBlobClient.url;
 
-            // Update production data with poster info
-            productionData.posterUrl = posterUrl;
-            productionData.originalFileName = poster.name;
+                // Update production data with poster info
+                productionData.posterUrl = posterUrl;
+                productionData.originalFileName = poster.name;
+            } catch (uploadError: any) {
+                console.error("Azure Blob Storage upload error:", uploadError);
+                
+                // Check for specific error types
+                if (uploadError.code === "ENOTFOUND") {
+                    return NextResponse.json(
+                        { 
+                            error: "Cannot connect to Azure Storage. Please verify:",
+                            details: [
+                                "1. The Azure Storage account name is correct",
+                                "2. The storage account exists and is accessible",
+                                "3. Your network connection is working",
+                                "4. The connection string in .env.local is correct"
+                            ]
+                        },
+                        { status: 500 }
+                    );
+                }
+                
+                throw uploadError; // Re-throw to be caught by outer catch
+            }
         }
 
         // Connect to database
@@ -198,10 +240,34 @@ export async function POST(request: NextRequest) {
             success: true,
             productionId: production._id,
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error in production submission:", error);
+        
+        // Provide more specific error messages
+        let errorMessage = "Failed to submit production form";
+        let errorDetails: string[] = [];
+        
+        if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        if (error.code === "ENOTFOUND") {
+            errorMessage = "Cannot connect to Azure Storage";
+            errorDetails = [
+                "The Azure Storage account might not exist or the hostname cannot be resolved.",
+                "Please verify:",
+                "- The storage account name 'zynoflixott' is correct",
+                "- The storage account exists in your Azure subscription",
+                "- Your network connection is working",
+                "- The AZURE_STORAGE_CONNECTION_STRING in .env.local is correct"
+            ];
+        }
+        
         return NextResponse.json(
-            { error: "Failed to submit production form" },
+            { 
+                error: errorMessage,
+                ...(errorDetails.length > 0 && { details: errorDetails })
+            },
             { status: 500 }
         );
     }

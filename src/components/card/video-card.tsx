@@ -139,9 +139,9 @@ const VideoCard = ({ video, index, hiddenNew, isLarge = false }: any) => {
             </div>
 
             {/* Title at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-2 text-white">
+            {/*  <div className="absolute bottom-0 left-0 right-0 p-2 text-white">
               <h3 className="font-bold text-xs line-clamp-1">{video.title}</h3>
-            </div>
+            </div>*/}
           </div>
         </Link>
       </div>

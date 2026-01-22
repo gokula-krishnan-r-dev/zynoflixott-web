@@ -36,3 +36,7 @@ next-env.d.ts
 
 # ingore lib/axios.ts
 ./src/lib/axios.ts
+
+# environment variables
+.env.local
+.env
