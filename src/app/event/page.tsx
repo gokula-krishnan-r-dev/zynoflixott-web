@@ -210,7 +210,7 @@ const EventPage = () => {
                     <div className="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-xl p-8 max-w-md text-center animate-fade-in shadow-2xl">
                         <FaCheckCircle className="mx-auto text-green-400 text-5xl mb-4" />
                         <h2 className="text-2xl font-bold mb-3">Registration Successful!</h2>
-                        <p className="mb-4">Thank you for registering your film for the Zynoflix OTT Online Short Film Festival 2025.</p>
+                        <p className="mb-4">Thank you for registering your film for the Zynoflix OTT Online Short Film Festival 2026.</p>
                         <p className="mb-6">We've sent a confirmation email with further details. Our team will review your submission and get back to you soon.</p>
                         <button
                             className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-full transition duration-300 shadow-lg"
@@ -238,11 +238,11 @@ const EventPage = () => {
                         </div>
                         <h1 className="text-4xl md:text-6xl font-bold mb-6">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Zynoflix OTT</span>
-                            <br />Online Short Film Festival 2025
+                            <br />Online Short Film Festival 2026
                         </h1>
                         <div className="flex items-center justify-center space-x-2 mb-10 bg-indigo-900 bg-opacity-50 px-6 py-3 rounded-full">
                             <FaCalendarAlt className="text-indigo-300" />
-                            <span className="text-xl">20th July 2025</span>
+                            <span className="text-xl">01/03/2026</span>
                         </div>
                         <button
                             className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-full transform transition duration-300 hover:scale-105 shadow-lg flex items-center space-x-2"
@@ -380,10 +380,10 @@ const EventPage = () => {
                         {/* Timeline Items - Mobile */}
                         <div className="space-y-12 pl-12 relative">
                             {[
-                                { title: "Submissions Open", date: "01/06/2025", icon: "📝", color: "from-green-500 to-emerald-700" },
-                                { title: "Submission Deadline", date: "06/08/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700" },
-                                { title: "Finalists Announcement", date: "27/07/2025", icon: "🏆", color: "from-blue-500 to-indigo-700" },
-                                { title: "Festival & Awards", date: "01/08/2025", icon: "🎬", color: "from-purple-500 to-pink-700" }
+                                { title: "Submissions Open", date: "23/01/2026", icon: "📝", color: "from-green-500 to-emerald-700" },
+                                { title: "Submission Deadline", date: "24/02/2026", icon: "⏱️", color: "from-yellow-500 to-amber-700" },
+                                { title: "Finalists Announcement", date: "28/02/2026", icon: "🏆", color: "from-blue-500 to-indigo-700" },
+                                { title: "Festival & Awards", date: "01/03/2026", icon: "🎬", color: "from-purple-500 to-pink-700" }
                             ].map((item, index) => (
                                 <div key={index} className="relative group">
                                     <div className="absolute -left-12 top-0 bg-indigo-600 border-4 border-indigo-900 rounded-full h-8 w-8 flex items-center justify-center z-10 group-hover:scale-110 transition-transform duration-300" style={shadowGlowStyle}>
@@ -406,10 +406,10 @@ const EventPage = () => {
                         {/* Timeline Items - Desktop */}
                         <div>
                             {[
-                                { title: "Submissions Open", date: "01/06/2025", icon: "📝", color: "from-green-500 to-emerald-700", position: "left" },
-                                { title: "Submission Deadline", date: "06/08/2025", icon: "⏱️", color: "from-yellow-500 to-amber-700", position: "right" },
-                                { title: "Finalists Announcement", date: "27/07/2025", icon: "🏆", color: "from-blue-500 to-indigo-700", position: "left" },
-                                { title: "Festival & Awards", date: "01/08/2025", icon: "🎬", color: "from-purple-500 to-pink-700", position: "right" }
+                                { title: "Submissions Open", date: "23/01/2026", icon: "📝", color: "from-green-500 to-emerald-700", position: "left" },
+                                { title: "Submission Deadline", date: "24/02/2026", icon: "⏱️", color: "from-yellow-500 to-amber-700", position: "right" },
+                                { title: "Finalists Announcement", date: "28/02/2026", icon: "🏆", color: "from-blue-500 to-indigo-700", position: "left" },
+                                { title: "Festival & Awards", date: "01/03/2026", icon: "🎬", color: "from-purple-500 to-pink-700", position: "right" }
                             ].map((item, index) => (
                                 <div key={index} className={`flex items-center justify-center mb-16 ${item.position === 'left' ? 'md:justify-start' : 'md:justify-end'}`}>
                                     <div className={`relative flex ${item.position === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center w-full mx-auto`}>

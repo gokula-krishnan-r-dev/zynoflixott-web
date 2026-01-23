@@ -195,6 +195,14 @@ export default function Home() {
                 <span className="text-white font-medium text-sm">Live Streaming</span>
               </button>
 
+              {/* Student Ambassador */}
+              <button onClick={() => window.location.href = '/student-ambassador'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-lg hover:shadow-lg transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span className="text-white font-medium text-sm">Student Ambassador</span>
+              </button>
+
               {/* Advertisement */}
               <button onClick={() => window.location.href = '/advertisement'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-yellow-500 to-amber-500 rounded-lg hover:shadow-lg transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

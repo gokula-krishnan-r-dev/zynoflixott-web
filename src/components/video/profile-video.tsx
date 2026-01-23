@@ -1,7 +1,7 @@
 "use client"
 import axios from "@/lib/axios";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Ivideo } from "../types/video";
 import { cn } from "@/lib/utils";
@@ -39,6 +39,32 @@ const StarRatingWrapper = (props: any) => {
     </div>
   );
 };
+
+const FOLLOWER_COUNT_MIN = 100_000;
+const FOLLOWER_COUNT_MAX = 1_000_000;
+
+function hashStringToUint32(input: string) {
+  // FNV-1a 32-bit
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
+}
+
+function stableRandomIntInRange(seed: string, min: number, max: number) {
+  const h = hashStringToUint32(seed || "default");
+  const range = max - min + 1;
+  return min + (h % range);
+}
+
+function formatCompactCount(n: number) {
+  if (!Number.isFinite(n) || n <= 0) return "0";
+  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)}M`;
+  if (n >= 1_000) return `${Math.round(n / 1_000)}K`;
+  return String(Math.round(n));
+}
 
 const ProfileVideo = ({
   videoId,
@@ -103,8 +129,8 @@ const ProfileVideo = ({
       toast.success("Followed");
 
       const response = await axios.post("/notification", {
-        title: follower?.[0]?.user_id.includes(userId) ? "follow" : "unfollow",
-        message: follower?.[0]?.user_id.includes(userId)
+        title: follower?.[0]?.user_id?.includes(userId) ? "follow" : "unfollow",
+        message: follower?.[0]?.user_id?.includes(userId)
           ? "you are followed"
           : "you are unfollowed",
         receiver: video.created_by_id,
@@ -146,6 +172,17 @@ const ProfileVideo = ({
   const isLike = like?.[0]?.user_id?.includes(authId);
   const likeCount = like?.[0]?.user_id?.length;
 
+  const realFollowerCount = follower?.[0]?.user_id?.length ?? 0;
+  const displayFollowerCount = useMemo(() => {
+    // Show real count only if it's already large enough; otherwise show a stable "random" count.
+    if (realFollowerCount >= FOLLOWER_COUNT_MIN) return realFollowerCount;
+    return stableRandomIntInRange(
+      `${userId ?? ""}:${videoId ?? ""}`,
+      FOLLOWER_COUNT_MIN,
+      FOLLOWER_COUNT_MAX
+    );
+  }, [realFollowerCount, userId, videoId]);
+
   return (
     <div>
       <div className="">
@@ -165,20 +202,27 @@ const ProfileVideo = ({
               <div className="font-medium dark:text-white">
                 <div>{user?.full_name}</div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {follower?.[0]?.user_id.length} Followers
+                  {formatCompactCount(displayFollowerCount)} Followers
                 </div>
               </div>
             </Link>
+            <div
+              className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold text-sm min-w-[56px] text-center"
+              aria-label="Follower count"
+              title={`${displayFollowerCount} followers`}
+            >
+              {formatCompactCount(displayFollowerCount)}
+            </div>
             <button
               onClick={handletoFollow}
               className={cn(
                 "border-2 border-green-500 flex-shrink-0  lg:flex duration-300 justify-center gap-2 py-2 px-4 text-xs lg:text-base items-center rounded-full lg:rounded-xl  z-50 relative  font-semibold capitalize",
-                follower?.[0]?.user_id.includes(authId)
+                follower?.[0]?.user_id?.includes(authId)
                   ? " bg-green-500 text-white"
                   : "bg-transparent "
               )}
             >
-              {follower?.[0]?.user_id.includes(authId) ? "Following" : "Follow"}
+              {follower?.[0]?.user_id?.includes(authId) ? "Following" : "Follow"}
             </button>
           </div>
           <RatingCompo videoId={videoId} />

@@ -425,46 +425,47 @@ export default function Page({ params }: { params: { videoId: string } }) {
               </div>
 
               {/* Video Stats - Mobile Professional UI */}
-              <div className="flex flex-wrap gap-2 mt-3">
-                <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                  <div className="bg-blue-500/20 p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-blue-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <div className="mt-3 -mx-5 px-5 md:mx-0 md:px-0 flex flex-nowrap md:flex-wrap gap-1.5 md:gap-2 overflow-x-auto md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
+                  <div className="bg-blue-500/20 p-0.5 md:p-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-blue-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                   </div>
                   <span className="font-medium">{video?.category?.[0]?.split(",")[0] || "Action"}</span>
                 </div>
 
-                <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                  <div className="bg-indigo-500/20 p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-indigo-400"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
+                  <div className="bg-indigo-500/20 p-0.5 md:p-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-indigo-400"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                   </div>
                   <span className="font-medium">{displayDuration || "2:30 Hour"}</span>
                 </div>
 
-                <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                  <div className="bg-yellow-500/20 p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-yellow-400"><path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" /></svg>
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
+                  <div className="bg-yellow-500/20 p-0.5 md:p-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-400"><path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" /></svg>
                   </div>
                   <span className="font-medium">{displayRating}</span>
                 </div>
 
-                <div className="stats-badge bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-                  <div className="bg-purple-500/20 p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-purple-400"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
+                  <div className="bg-purple-500/20 p-0.5 md:p-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-purple-400"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   </div>
                   <span className="font-medium">{formatViewCount(video.views)}</span>
                 </div>
-                <div className="flex items-center gap-2 w-full">
+              </div>
+                <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0 whitespace-nowrap">
 
                   <button
                     onClick={() => router.push('/monetization')}
-                    className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-3 py-2.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs hover:brightness-110"
+                    className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-2 md:px-3 py-1.5 md:py-2.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs hover:brightness-110 flex-shrink-0"
                   >
-                    <div className="bg-white/20 p-1 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-white"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <div className="bg-white/20 p-0.5 md:p-1 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-white"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                     </div>
                     <span className="font-medium">Monetize</span>
                   </button>
-                  <div className="w-full">
+                  <div className="flex-shrink-0">
 
                     <GiftPaymentContainer
                       videoId={video._id}
@@ -475,7 +476,6 @@ export default function Page({ params }: { params: { videoId: string } }) {
                     />
                   </div>
                 </div>
-              </div>
 
 
 
@@ -489,13 +489,14 @@ export default function Page({ params }: { params: { videoId: string } }) {
                     width={36}
                     height={36}
                     className="w-9 h-9 rounded-full object-cover"
-                    src={userprofile?.profilePic}
-                    alt=""
+                    src={userprofile?.profilePic || "/images/default-company-logo.svg"}
+                    alt={userprofile?.full_name || "ASR MOVIES"}
                   />
                   <div className="flex flex-col">
-                    <div className="text-sm font-medium">{userprofile?.full_name}</div>
+                    <div className="text-sm font-medium">{userprofile?.full_name || "ASR MOVIES"}</div>
                     <div className="text-xs text-gray-400">
-                      {formatNumber(userprofile?.followingId?.length || 0, true)}
+                      {/* {formatNumber(userprofile?.followingId?.length || 0, true)} */}
+                      134K
                     </div>
                   </div>
                 </Link>
@@ -503,12 +504,12 @@ export default function Page({ params }: { params: { videoId: string } }) {
                   onClick={handletoFollow}
                   className={cn(
                     "border-2 border-green-500 text-xs px-3 py-1.5 rounded-full duration-200 font-medium capitalize",
-                    follower?.[0]?.user_id.includes(authId)
+                    follower?.[0]?.user_id?.includes(authId)
                       ? "bg-green-500 text-white"
                       : "bg-transparent text-green-500"
                   )}
                 >
-                  {follower?.[0]?.user_id.includes(authId) ? "Following" : "Follow"}
+                  {follower?.[0]?.user_id?.includes(authId) ? "Following" : "Follow"}
                 </button>
               </div>
 

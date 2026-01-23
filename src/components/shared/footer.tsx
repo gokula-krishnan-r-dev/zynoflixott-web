@@ -52,6 +52,7 @@ export const footerData: FooterSection[] = [
       { label: "Wanted Video", href: "https://www.zynoflix.com/wanted/video" },
       { label: "Sponsorship", href: "https://www.zynoflix.com/sponsorship" },
       { label: "Awards", href: "https://www.zynoflix.com/awards" },
+      { label: "Student Ambassador", href: "/student-ambassador" },
     ],
   },
 ];

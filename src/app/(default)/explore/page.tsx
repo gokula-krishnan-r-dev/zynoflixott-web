@@ -125,7 +125,7 @@ const VideoCard = ({ video }: { video: Ivideo }) => {
                     </div>
 
                     {/* Title and info at bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-10 transform transition-transform duration-300 group-hover:translate-y-0">
+                    {/* <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-10 transform transition-transform duration-300 group-hover:translate-y-0">
                         <h3 className="text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow-md">
                             {video.title}
                         </h3>
@@ -136,7 +136,7 @@ const VideoCard = ({ video }: { video: Ivideo }) => {
                                 {(Math.random() * 2 + 7).toFixed(1)}
                             </span>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Play button overlay - smaller on mobile */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
