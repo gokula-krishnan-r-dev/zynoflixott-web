@@ -153,7 +153,7 @@ export function SheetMobile() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: menuItems.length * 0.05 }}
                     >
-                      <Link href="/student-ambassador" className="flex items-center px-4 py-3 text-white rounded-lg hover:bg-[#292c41]/50 transition-colors">
+                      <Link href="/signup/student-ambassador" className="flex items-center px-4 py-3 text-white rounded-lg hover:bg-[#292c41]/50 transition-colors">
                         <span className="mr-3 text-[#7b61ff]"><User className="w-5 h-5" /></span>
                         <span>Student Ambassador</span>
                       </Link>
