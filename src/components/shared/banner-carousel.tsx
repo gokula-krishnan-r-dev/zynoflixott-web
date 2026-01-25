@@ -16,31 +16,166 @@ import { Suspense, useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { ZYNOPROD } from "@/lib/config";
 
+// Language to flag emoji mapping
+const LANGUAGE_TO_FLAG: Record<string, string> = {
+  // English variants
+  english: "🇬🇧",
+  en: "🇬🇧",
+  // Hindi
+  hindi: "🇮🇳",
+  hi: "🇮🇳",
+  // Tamil
+  tamil: "🇮🇳",
+  ta: "🇮🇳",
+  // Telugu
+  telugu: "🇮🇳",
+  te: "🇮🇳",
+  // Malayalam
+  malayalam: "🇮🇳",
+  ml: "🇮🇳",
+  // Kannada
+  kannada: "🇮🇳",
+  kn: "🇮🇳",
+  // Spanish
+  spanish: "🇪🇸",
+  es: "🇪🇸",
+  // Chinese
+  chinese: "🇨🇳",
+  zh: "🇨🇳",
+  // Arabic
+  arabic: "🇸🇦",
+  ar: "🇸🇦",
+  // French
+  french: "🇫🇷",
+  fr: "🇫🇷",
+  // Russian
+  russian: "🇷🇺",
+  ru: "🇷🇺",
+  // Portuguese
+  portuguese: "🇵🇹",
+  pt: "🇵🇹",
+  // German
+  german: "🇩🇪",
+  de: "🇩🇪",
+  // Japanese
+  japanese: "🇯🇵",
+  ja: "🇯🇵",
+  // Korean
+  korean: "🇰🇷",
+  ko: "🇰🇷",
+  // Italian
+  italian: "🇮🇹",
+  it: "🇮🇹",
+  // Bengali
+  bengali: "🇧🇩",
+  bn: "🇧🇩",
+  // Punjabi
+  punjabi: "🇮🇳",
+  pa: "🇮🇳",
+  // Urdu
+  urdu: "🇵🇰",
+  ur: "🇵🇰",
+  // Vietnamese
+  vietnamese: "🇻🇳",
+  vi: "🇻🇳",
+  // Indonesian
+  indonesian: "🇮🇩",
+  id: "🇮🇩",
+  // Turkish
+  turkish: "🇹🇷",
+  tr: "🇹🇷",
+  // Persian/Farsi
+  persian: "🇮🇷",
+  farsi: "🇮🇷",
+  fa: "🇮🇷",
+};
+
+/**
+ * Get flag emoji for a given language
+ * @param language - Language name or code (case-insensitive)
+ * @returns Flag emoji string or default globe emoji
+ */
+const getFlagForLanguage = (language: string | number | undefined | null | any): string => {
+  // Handle null, undefined, or falsy values
+  if (!language) return "🌍";
+  
+  // Convert to string safely - handle numbers, objects, etc.
+  let languageStr: string;
+  
+  if (typeof language === 'string') {
+    languageStr = language;
+  } else if (typeof language === 'number') {
+    languageStr = String(language);
+  } else if (typeof language === 'object' && language !== null) {
+    // If it's an object, try to get a string representation
+    languageStr = String(language);
+  } else {
+    languageStr = String(language);
+  }
+  
+  // Normalize the language string
+  const normalizedLang = languageStr.toLowerCase().trim();
+  
+  // Return early if empty after normalization
+  if (!normalizedLang) return "🌍";
+  
+  // Direct match
+  if (LANGUAGE_TO_FLAG[normalizedLang]) {
+    return LANGUAGE_TO_FLAG[normalizedLang];
+  }
+  
+  // Partial match (e.g., "English" contains "english")
+  const match = Object.keys(LANGUAGE_TO_FLAG).find(
+    (key) => normalizedLang.includes(key) || key.includes(normalizedLang)
+  );
+  
+  return match ? LANGUAGE_TO_FLAG[match] : "🌍";
+};
+
+/**
+ * Flag Icon Component - Displays country flag based on language
+ */
+const FlagIcon = ({ language }: { language: string | number | undefined | null | any }) => {
+  const flagEmoji = getFlagForLanguage(language);
+  
+  // Safely convert language to string for display
+  const languageDisplay = language 
+    ? (typeof language === 'string' ? language : String(language))
+    : "Unknown";
+  
+  return (
+    <span 
+      className="text-base lg:text-lg leading-none" 
+      role="img" 
+      aria-label={`${languageDisplay} language flag`}
+      title={languageDisplay}
+    >
+      {flagEmoji}
+    </span>
+  );
+};
+
 // Trending Section Component
 function TrendingSection({ activeTab, setActiveTab, refetch }: { activeTab: string, setActiveTab: (tab: string) => void, refetch: () => void }) {
-  const tabs = ["Popular", "Action", "Love", "Drama"];
+  const tabs = ["Trending", "Action", "Love", "Drama"];
 
   return (
-    <div className="px-4 lg:px-12 lg:hidden block pt-4 lg:pt-8">
-      <div className="text-[#cccdd2] px-3 py-2 bg-main rounded-full w-max text-sm lg:text-base"><Link href="/explore">Lets Explore</Link></div>
-      <div className="flex justify-between items-center mt-1 mb-3">
+    <div className="px-4 lg:px-12 lg:hidden block pt-4 lg:pt-8 w-full max-w-full overflow-hidden">
+      <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
-          <h2 className="text-white text-xl lg:text-3xl font-bold uppercase tracking-wide">Trending</h2>
-          <svg className="ml-2 w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14 5L21 12M21 12L14 19M21 12H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <h2 className="text-white text-xl lg:text-3xl font-bold uppercase tracking-wide">TRENDING</h2>
+          <svg className="ml-2 w-6 h-6 text-white flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        {/* <Link href="/trending" className="text-[#cccdd2] text-sm lg:text-base hover:text-white transition">
-          See All
-        </Link> */}
       </div>
-      <div className="flex space-x-4 duration-200 overflow-x-auto pb-2 no-scrollbar">
+      <div className="flex space-x-3 duration-200 overflow-x-auto pb-2 no-scrollbar max-w-full">
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 rounded-full duration-200 text-sm lg:text-base font-medium whitespace-nowrap transition-all ${activeTab === tab
-              ? " text-white"
-              : " text-[#cccdd2] hover:bg-[rgba(25,28,51,0.8)]"
+            className={`px-3 py-1 lg:px-4 rounded-full duration-200 text-xs lg:text-base font-medium whitespace-nowrap transition-all flex items-center flex-shrink-0 ${activeTab === tab
+              ? "bg-[#411567]  text-white"
+              : "text-white hover:opacity-80"
               }`}
             onClick={() => {
               setActiveTab(tab);
@@ -48,7 +183,7 @@ function TrendingSection({ activeTab, setActiveTab, refetch }: { activeTab: stri
             }}
           >
             {activeTab === tab && (
-              <span className="inline-block duration-200 w-2 h-2 bg-[#ff4d6d] rounded-full mr-2"></span>
+              <span className="w-2 h-2 bg-[#ff4d6d] rounded-full mr-2 inline-block"></span>
             )}
             {tab}
           </button>
@@ -132,7 +267,7 @@ function OptimizedBannerVideo({ video }: { video: Ivideo }) {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full lg:mt-0 mt-0 lg:h-[650px] h-[280px] overflow-hidden">
+    <div ref={containerRef} className="relative w-full lg:mt-0 mt-0 lg:h-[650px] h-[280px] overflow-hidden max-w-full">
       {/* Hidden poster preloader */}
       <Image
         src={ZYNOPROD + video.processedImages.medium.path}
@@ -185,7 +320,7 @@ function OptimizedBannerVideo({ video }: { video: Ivideo }) {
 }
 
 function BannerCarousel() {
-  const [activeTab, setActiveTab] = useState("Popular");
+  const [activeTab, setActiveTab] = useState("Trending");
   const { data, error, refetch, isLoading } = useQuery("banner", fetchBannerVideo);
 
   // Filter and randomize videos
@@ -194,7 +329,7 @@ function BannerCarousel() {
 
     // Filter videos based on active tab
     let filtered = data.video;
-    if (activeTab !== "Popular") {
+    if (activeTab !== "Trending") {
       filtered = data.video.filter((video: Ivideo) => {
         // Check if video categories include the active tab
         return video.category.some((cat: string) =>
@@ -223,62 +358,49 @@ function BannerCarousel() {
   return (
     <>
       <TrendingSection refetch={refetch} activeTab={activeTab} setActiveTab={setActiveTab} />
-      <Carousel className="lg:h-[650px] lg:mt-0 mt-0 h-[280px] w-full">
-        <CarouselContent>
-          {filteredVideos.map((video: Ivideo, index: number) => (
-            <CarouselItem key={index} className="">
-              <div className="relative">
-                <OptimizedBannerVideo video={video} />
-                <div className="video-overlay"></div>
-                <div className="absolute top-[60%] lg:top-[60%] left-3 lg:left-12 right-0 z-10">
-                  <div className="">
-                    <div className="lg:w-1/2 w-[80%]">
-                      <div className="text-white">
-                        <div className="flex items-center justify-between">
-                          <h2 className="lg:text-4xl text-base title line-clamp-1 lg:line-clamp-1 font-bold">
+      <div className="relative w-full overflow-hidden">
+        <Carousel className="w-full lg:h-[650px] h-[280px]">
+          <CarouselContent className="-ml-0">
+            {filteredVideos.map((video: Ivideo, index: number) => (
+              <CarouselItem key={index} className="pl-0 basis-full">
+                <div className="relative w-full">
+                  <OptimizedBannerVideo video={video} />
+                  <div className="video-overlay"></div>
+                  <div className="absolute bottom-4 lg:bottom-12 left-3 lg:left-12 right-3 lg:right-12 z-10">
+                    <div className="flex items-end justify-between gap-2 lg:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white mb-2 lg:mb-4">
+                          <h2 className="lg:text-5xl text-xl font-bold mb-2 lg:mb-4 line-clamp-2">
                             {video.title}
                           </h2>
-                          <button className="lg:hidden block p-2 rounded-full hover:bg-white/10 transition-colors">
-                            <HeartSVG />
-                          </button>
-                        </div>
-
-                        <div className="gap-2 capitalize text-base text-black flex items-center py-4">
-                          <div className="border-cut bg-main px-4 py-4 text-white  w-max rounded-t-xl">
-                            <span className="font-extrabold text-xs lg:text-xl">
-                              {video.certification}
-                            </span>
+                          
+                          <div className="flex items-center gap-2">
+                            <div className="bg-black/60 backdrop-blur-sm px-2.5 py-1 lg:px-4 lg:py-2 rounded-full flex items-center gap-1.5 lg:gap-2">
+                              <FlagIcon language={video.language} />
+                              <span className="text-white capitalize text-[10px] lg:text-sm font-medium whitespace-nowrap">
+                                {typeof video.language === 'string' 
+                                  ? video.language 
+                                  : video.language 
+                                    ? String(video.language) 
+                                    : 'Unknown'} | {video.category?.[0]?.split(",")[0] || "General"}
+                              </span>
+                            </div>
                           </div>
-                          <span className="pl-2 text-white lg:text-base text-sm">
-                            {video.language}
-                          </span>
-                          <span>|</span>
-                          <span className="lg:text-base text-white text-sm">
-                            {video.category[0].split(",")[0]}
-                          </span>
                         </div>
-                        {/* <p className="text-base text-white">
-                          {video.description}
-                        </p> */}
-
-                        <Link
-                          href={`/video/${video._id}`}
-                          className="bg-main w-max lg:flex hidden font-bold text-white  items-center gap-2 rounded-xl lg:px-6 px-4 py-2 lg:py-3 mt-6"
-                        >
-                          <PlaySVG />
-                          PLAY
-                        </Link>
                       </div>
+                      <button className="p-1.5 lg:p-3 rounded-full hover:bg-white/10 transition-colors flex-shrink-0">
+                        <HeartSVG />
+                      </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="ml-16 text-black" />
-        <CarouselNext className="mr-16 text-black" />
-      </Carousel>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-2 lg:left-4 bg-white/90 hover:bg-white border-2 border-gray-800 text-gray-800 w-8 h-8 lg:w-12 lg:h-12 z-20 hidden sm:flex" />
+          <CarouselNext className="right-2 lg:right-4 bg-white/90 hover:bg-white border-2 border-gray-800 text-gray-800 w-8 h-8 lg:w-12 lg:h-12 z-20 hidden sm:flex" />
+        </Carousel>
+      </div>
     </>
   );
 }
@@ -311,19 +433,20 @@ export function PlaySVG() {
 export function HeartSVG() {
   return (
     <svg
-      width={18}
-      height={18}
+      width={20}
+      height={20}
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="text-white"
     >
       <path
         d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-        fill="none"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        fill="none"
       />
     </svg>
   );

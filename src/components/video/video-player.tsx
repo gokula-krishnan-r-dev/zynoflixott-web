@@ -877,7 +877,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2">Premium Content</h3>
+            <h3 className="text-base font-bold text-white mb-2">Unlock Full Award-Winning Short Film</h3>
             <p className="text-gray-300 mb-6">Subscribe to unlock full video access</p>
             <button
               onClick={(e) => {
@@ -887,7 +887,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               }}
               className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all shadow-lg text-lg transform hover:scale-105"
             >
-              Subscribe Now - ₹49
+              Subscribe Now - ₹49 for 1 month
             </button>
             <p className="text-gray-400 text-sm mt-4">Click anywhere to subscribe</p>
           </div>

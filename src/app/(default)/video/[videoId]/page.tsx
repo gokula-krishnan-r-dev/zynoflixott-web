@@ -22,6 +22,7 @@ import CategoryList from "@/components/shared/category-list";
 import DescriptionCard from "@/components/ui/description-card";
 import { motion } from "framer-motion";
 import GiftPaymentContainer from "@/components/payment/GiftPaymentContainer";
+import SubscriptionModal from "@/components/subscription/SubscriptionModal";
 
 // Format view count to K, M, B format
 const formatViewCount = (count: number): string => {
@@ -84,7 +85,7 @@ const ShareVideoButton = ({ videoId, title }: { videoId: string, title: string }
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsShareMenuOpen(!isShareMenuOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium text-sm shadow-md"
+        className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-[#6C00F6] to-[#B100FF] text-white font-medium text-sm shadow-md"
       >
         <Share2 className="h-4 w-4" />
         <span className="hidden sm:inline">Share</span>
@@ -94,23 +95,23 @@ const ShareVideoButton = ({ videoId, title }: { videoId: string, title: string }
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="absolute z-50 top-full right-0 mt-2 w-48 bg-gradient-to-br from-[#232543] to-[#191c33] rounded-xl overflow-hidden shadow-xl border border-purple-900/40"
+          className="absolute z-50 top-full right-0 mt-2 w-48 bg-[#131321] rounded-xl overflow-hidden shadow-xl border border-[#9A9AB3]/20"
         >
-          <div className="px-3 py-2 border-b border-purple-900/40">
-            <h4 className="text-sm font-medium text-gray-200">Share via</h4>
+          <div className="px-3 py-2 border-b border-[#9A9AB3]/20">
+            <h4 className="text-sm font-medium text-white">Share via</h4>
           </div>
           <div className="p-2">
             {shareOptions.map((option, index) => (
               <motion.button
                 key={index}
-                whileHover={{ backgroundColor: 'rgba(123, 97, 255, 0.2)' }}
+                whileHover={{ backgroundColor: 'rgba(108, 0, 246, 0.2)' }}
                 onClick={() => {
                   option.action();
                   setIsShareMenuOpen(false);
                 }}
-                className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-300 hover:text-white rounded-lg transition-colors"
+                className="flex items-center gap-3 w-full px-3 py-2 text-sm text-[#9A9AB3] hover:text-white rounded-lg transition-colors"
               >
-                <span className="text-purple-400">{option.icon}</span>
+                <span className="text-[#6C00F6]">{option.icon}</span>
                 <span>{option.name}</span>
               </motion.button>
             ))}
@@ -293,6 +294,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   // Fetch the rating data
   const { data: ratings } = useQuery<any>(
@@ -372,11 +374,30 @@ export default function Page({ params }: { params: { videoId: string } }) {
 
   const displayDuration = secondsToMinutes(video.duration);
 
+  // Mock awards data - replace with actual video.awards if available
+  const awards = [
+    "Best Director",
+    "Best Child Actress",
+    "Award-Winning Social Short Film"
+  ];
+
+  // Handle monetization button clicks
+  const handleMonetizationClick = (type: 'gift' | 'support' | 'premium') => {
+    if (isLogin) {
+      toast.warning("Please login to use this feature");
+      router.push("/login");
+      return;
+    }
+    // For now, show a toast - can be integrated with payment system later
+    const amounts = { gift: 99, support: 499, premium: 999 };
+    toast.info(`${type.charAt(0).toUpperCase() + type.slice(1)} feature - ₹${amounts[type]}`);
+  };
+
   return (
-    <main className="lg:pt-1 pt-20 pb-10">
+    <main className="lg:pt-1 pt-20 pb-10 bg-[#0E0E17] min-h-screen">
       {/* Mobile design - Movie Card UI */}
       <div className="lg:hidden mx-auto px-0 max-w-2xl">
-        <div className="relative">
+        <div className="relative bg-[#0E0E17]">
           <VideoPlayer 
             isMembership={isMembership} 
             video={video}
@@ -390,7 +411,9 @@ export default function Page({ params }: { params: { videoId: string } }) {
               console.log('✅ Subscription status refreshed (mobile)');
             }}
           />
-          <div className="h-[60vh] overflow-y-auto">
+          
+
+          <div className="h-[60vh] overflow-y-auto bg-[#0E0E17]">
             {/* Fullscreen rotate button */}
             <Button
               onClick={() => {
@@ -409,108 +432,177 @@ export default function Page({ params }: { params: { videoId: string } }) {
               </svg>
             </Button>
 
-            {/* Title and heart icon */}
-            <div className="p-5 space-y-4">
-              <div className="flex justify-between items-start">
-                <h1 className="lg:text-2xl text-sm font-bold text-white">{video.title}</h1>
-                <div className="flex items-center gap-2">
-                  <button
+            {/* Content Section */}
+            <div className="p-5 space-y-4 bg-[#0E0E17]">
+              {/* Title and action icons */}
+              <div className="flex justify-between items-start gap-3">
+                <h1 className="text-base font-bold text-white flex-1 leading-tight">{video.title}</h1>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => setIsFavorite(!isFavorite)}
-                    className="text-white p-1"
+                    className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                      isFavorite 
+                        ? "bg-[#131321] text-white" 
+                        : "bg-[#131321] text-[#9A9AB3] border border-[#9A9AB3]/20"
+                    )}
                   >
-                    <Heart className={cn("h-6 w-6", isFavorite ? "fill-white" : "")} />
-                  </button>
-                  <ShareVideoButton videoId={videoId} title={video.title} />
+                    <Heart className={cn("h-5 w-5", isFavorite ? "fill-white" : "")} />
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(`https://zynoflixott.com/video/${videoId}`).then(() => {
+                        toast.success('Link copied to clipboard');
+                      });
+                    }}
+                    className="w-10 h-10 rounded-full bg-[#131321] border border-[#9A9AB3]/20 flex items-center justify-center"
+                  >
+                    <Share2 className="h-5 w-5 text-[#9A9AB3]" />
+                  </motion.button>
                 </div>
               </div>
 
-              {/* Video Stats - Mobile Professional UI */}
-              <div className="mt-3 -mx-5 px-5 md:mx-0 md:px-0 flex flex-nowrap md:flex-wrap gap-1.5 md:gap-2 overflow-x-auto md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
-                  <div className="bg-blue-500/20 p-0.5 md:p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-blue-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              {/* Video Stats Badges */}
+              <div className="flex flex-nowrap gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-2">
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-[#131321] text-white border border-[#9A9AB3]/10 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
+                  <div className="bg-blue-500/20 p-1 rounded-full">
+                    <Star className="w-3 h-3 text-white" />
                   </div>
-                  <span className="font-medium">{video?.category?.[0]?.split(",")[0] || "Action"}</span>
+                  <span className="font-medium">{video?.category?.[0]?.split(",")[0] || "general"}</span>
                 </div>
 
-                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
-                  <div className="bg-indigo-500/20 p-0.5 md:p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-indigo-400"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-[#131321] text-white border border-[#9A9AB3]/10 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
+                  <div className="bg-indigo-500/20 p-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-white"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                   </div>
-                  <span className="font-medium">{displayDuration || "2:30 Hour"}</span>
+                  <span className="font-medium">{displayDuration || "20 mins 38 secs"}</span>
                 </div>
 
-                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
-                  <div className="bg-yellow-500/20 p-0.5 md:p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-400"><path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" /></svg>
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-[#131321] text-white border border-[#9A9AB3]/10 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
+                  <div className="bg-yellow-500/20 p-1 rounded-full">
+                    <Star className="w-3 h-3 text-white fill-white" />
                   </div>
-                  <span className="font-medium">{displayRating}</span>
+                  <span className="font-medium">{displayRating || "0"}</span>
                 </div>
 
-                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 text-white border border-gray-700/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs">
-                  <div className="bg-purple-500/20 p-0.5 md:p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-purple-400"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <div className="stats-badge whitespace-nowrap flex-shrink-0 bg-[#131321] text-white border border-[#9A9AB3]/10 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
+                  <div className="bg-purple-500/20 p-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-white"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   </div>
                   <span className="font-medium">{formatViewCount(video.views)}</span>
                 </div>
               </div>
-                <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0 whitespace-nowrap">
 
-                  <button
-                    onClick={() => router.push('/monetization')}
-                    className="stats-badge bg-gradient-to-br from-emerald-600 to-green-500 text-white px-2 md:px-3 py-1.5 md:py-2.5 rounded-full shadow-sm flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs hover:brightness-110 flex-shrink-0"
-                  >
-                    <div className="bg-white/20 p-0.5 md:p-1 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 md:w-3 md:h-3 text-white"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                    </div>
-                    <span className="font-medium">Monetize</span>
-                  </button>
-                  <div className="flex-shrink-0">
-
-                    <GiftPaymentContainer
-                      videoId={video._id}
-                      creatorId={video.created_by_id}
-                      creatorName={userprofile?.full_name}
-                      variant="mobile"
-                      className=""
-                    />
-                  </div>
-                </div>
-
-
-
-              {/* Profile with follow button - Mobile */}
-              <div className="flex items-center justify-between bg-purple-900 bg-opacity-30 rounded-xl p-3">
+              {/* Creator Profile Section */}
+              <div className="flex items-center justify-between bg-[#131321] rounded-xl p-3">
                 <Link
                   href={`/profile/${video?.user}`}
-                  className="flex items-center gap-2 flex-1"
+                  className="flex items-center gap-3 flex-1"
                 >
-                  <Image
+                  <div className="w-10 h-10 flex items-center justify-center text-white font-semibold text-sm">
+                    {/* {userprofile?.full_name?.charAt(0) || "A"} */}
+                    <Image
                     width={36}
                     height={36}
                     className="w-9 h-9 rounded-full object-cover"
                     src={userprofile?.profilePic || "/images/default-company-logo.svg"}
                     alt={userprofile?.full_name || "ASR MOVIES"}
                   />
+                  </div>
                   <div className="flex flex-col">
-                    <div className="text-sm font-medium">{userprofile?.full_name || "ASR MOVIES"}</div>
-                    <div className="text-xs text-gray-400">
-                      {/* {formatNumber(userprofile?.followingId?.length || 0, true)} */}
-                      134K
+                    <div className="text-sm font-semibold text-white">{userprofile?.full_name || "ASR MOVIES"}</div>
+                    <div className="text-xs text-[#9A9AB3]">
+                      {formatNumber(userprofile?.followingId?.length || 134000, true)} followers
                     </div>
                   </div>
                 </Link>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handletoFollow}
                   className={cn(
-                    "border-2 border-green-500 text-xs px-3 py-1.5 rounded-full duration-200 font-medium capitalize",
+                    "px-4 py-2 rounded-full text-xs font-semibold transition-all",
                     follower?.[0]?.user_id?.includes(authId)
-                      ? "bg-green-500 text-white"
-                      : "bg-transparent text-green-500"
+                      ? "bg-[#6C00F6] text-white"
+                      : "bg-[#6C00F6] text-white"
                   )}
                 >
                   {follower?.[0]?.user_id?.includes(authId) ? "Following" : "Follow"}
-                </button>
+                </motion.button>
+              </div>
+
+              {/* Awards Section */}
+              <div className="bg-[#131321] rounded-xl p-4 space-y-2">
+                {awards.map((award, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    {index < 2 ? (
+                      // Trophy icon for first two awards (gold)
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-yellow-400">
+                        <path d="M7 4V2C7 1.44772 7.44772 1 8 1H16C16.5523 1 17 1.44772 17 2V4H20C20.5523 4 21 4.44772 21 5C21 5.55228 20.5523 6 20 6H19V7C19 9.76142 16.7614 12 14 12H13V16H17C17.5523 16 18 16.4477 18 17C18 17.5523 17.5523 18 17 18H7C6.44772 18 6 17.5523 6 17C6 16.4477 6.44772 16 7 16H11V12H10C7.23858 12 5 9.76142 5 7V6H4C3.44772 6 3 5.55228 3 5C3 4.44772 3.44772 4 4 4H7ZM9 3V4H15V3H9ZM7 6V7C7 8.65685 8.34315 10 10 10H14C15.6569 10 17 8.65685 17 7V6H7Z"/>
+                      </svg>
+                    ) : (
+                      // Clapboard icon for third award (grey)
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-[#9A9AB3]">
+                        <path d="M4 3h16v18H4z"/>
+                        <path d="M4 3l12 12"/>
+                        <path d="M16 3L4 15"/>
+                        <path d="M8 3v12"/>
+                        <path d="M16 15v6"/>
+                      </svg>
+                    )}
+                    <span className="text-sm text-white">{award}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Monetization Buttons */}
+              <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleMonetizationClick('gift')}
+                  className="flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0"
+                >
+                  {/* Gift Box Icon */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                    <path d="M20 7h-4a2 2 0 0 1-2-2 2 2 0 0 1-2-2H8a2 2 0 0 1-2 2 2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/>
+                    <path d="M12 7v13"/>
+                    <path d="M12 7l-4-4"/>
+                    <path d="M12 7l4-4"/>
+                  </svg>
+                  <span>Gift ₹99</span>
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleMonetizationClick('support')}
+                  className="flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0"
+                >
+                  {/* Dollar Sign in Yellow Circle */}
+                  <div className="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 text-[#6C00F6]">
+                      <line x1="12" x2="12" y1="2" y2="22"/>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                  </div>
+                  <span>Support ₹499</span>
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleMonetizationClick('premium')}
+                  className="flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0"
+                >
+                  {/* Filled Gold Star */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-yellow-400">
+                    <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd"/>
+                  </svg>
+                  <span>Premium ₹999</span>
+                </motion.button>
               </div>
 
               {/* Description */}
@@ -520,14 +612,20 @@ export default function Page({ params }: { params: { videoId: string } }) {
                 className="my-4"
               />
             </div>
-            <CategoryList langage={video.language || "Tamil"}
-              title={"Suggested for you"}
-              desc={"POPULAR FILMS"}
-            />
 
+            {/* Suggested Content Section */}
+            <div className="px-5 pb-5">
+              <h3 className="text-white text-lg font-semibold mb-1">Suggested for you</h3>
+              <p className="text-[#9A9AB3] text-sm mb-4">Because you like award-winning short films</p>
+              <CategoryList 
+                langage={video.language || "Tamil"}
+                title={""}
+                desc={""}
+              />
+            </div>
 
             {/* Additional sections for mobile */}
-            <div className="mt-0">
+            <div className="mt-0 px-5 pb-5">
               <HeartPoll
                 rating={rating}
                 handleRatingChange={handleRatingChange}
@@ -538,13 +636,26 @@ export default function Page({ params }: { params: { videoId: string } }) {
               <div className="mt-6">
                 <VideoComment videoId={video._id} />
               </div>
-
-
             </div>
-
           </div>
         </div>
       </div>
+
+      {/* Subscription Modal */}
+      {showSubscriptionModal && (
+        <SubscriptionModal
+          isOpen={showSubscriptionModal}
+          onClose={() => setShowSubscriptionModal(false)}
+          onSuccess={async () => {
+            await Promise.all([
+              refetchUser(),
+              refetchSubscription()
+            ]);
+            setShowSubscriptionModal(false);
+          }}
+          videoTitle={video.title}
+        />
+      )}
 
       {/* Desktop design - keep existing layout */}
       <div className="hidden lg:block">
@@ -901,27 +1012,27 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-5xl space-y-4 rounded-xl bg-gradient-to-br from-[rgba(25,28,51,0.7)] to-[rgba(41,44,71,0.5)] backdrop-blur-sm border border-[#292c41]/50 p-0 sm:p-6 shadow-lg overflow-hidden"
+      className="w-full max-w-5xl space-y-4 rounded-xl bg-[#131321] backdrop-blur-sm border border-[#9A9AB3]/10 p-0 sm:p-6 shadow-lg overflow-hidden"
     >
       {/* Header with tabs */}
       <div className="flex items-center justify-between">
-        <div className="flex bg-[#1E2033]/70 backdrop-blur-sm rounded-lg p-1">
+        <div className="flex bg-[#1A1A2E] backdrop-blur-sm rounded-lg p-1">
           <motion.button
-            whileHover={{ backgroundColor: 'rgba(123,97,255,0.2)' }}
+            whileHover={{ backgroundColor: 'rgba(108, 0, 246, 0.2)' }}
             onClick={() => setActiveTab('rate')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${activeTab === 'rate'
-              ? 'bg-gradient-to-r from-[rgba(123,97,255,0.3)] to-[rgba(123,97,255,0.2)] text-white shadow-inner'
-              : 'text-gray-400 hover:text-white'
+              ? 'bg-gradient-to-r from-[#6C00F6] to-[#B100FF] text-white shadow-inner'
+              : 'text-[#9A9AB3] hover:text-white'
               }`}
           >
             Rate
           </motion.button>
           <motion.button
-            whileHover={{ backgroundColor: 'rgba(123,97,255,0.2)' }}
+            whileHover={{ backgroundColor: 'rgba(108, 0, 246, 0.2)' }}
             onClick={() => setActiveTab('stats')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${activeTab === 'stats'
-              ? 'bg-gradient-to-r from-[rgba(123,97,255,0.3)] to-[rgba(123,97,255,0.2)] text-white shadow-inner'
-              : 'text-gray-400 hover:text-white'
+              ? 'bg-gradient-to-r from-[#6C00F6] to-[#B100FF] text-white shadow-inner'
+              : 'text-[#9A9AB3] hover:text-white'
               }`}
           >
             Stats
@@ -931,10 +1042,10 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
         <div className="flex items-center">
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex items-center gap-2 bg-gradient-to-r from-[#1a0733] to-[#2c1157] px-4 py-2 rounded-xl shadow-md border border-purple-900/30"
+            className="flex items-center gap-2 bg-[#1A1A2E] px-4 py-2 rounded-xl shadow-md border border-[#9A9AB3]/20"
           >
             <span className="text-white font-bold">{formattedVotes}</span>
-            <span className="text-gray-300 text-xs">HEARTS</span>
+            <span className="text-[#9A9AB3] text-xs">HEARTS</span>
           </motion.div>
         </div>
       </div>
@@ -947,7 +1058,7 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
           transition={{ duration: 0.3 }}
           className="flex flex-col items-center justify-center py-1"
         >
-          <h3 className="text-white font-medium text-center mb-4">How would you rate this video?</h3>
+          <h3 className="text-white font-medium text-center mb-4 text-base">How would you rate this video?</h3>
 
           <div className="flex items-center justify-center gap-4 sm:gap-6 mb-3">
             {HEART_RATINGS.map((heartValue) => (
@@ -991,7 +1102,7 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
                 )}
 
                 {/* Number below each heart */}
-                <span className="absolute -bottom-6 text-xs font-medium text-gray-400">{heartValue}</span>
+                <span className="absolute -bottom-6 text-xs font-medium text-[#9A9AB3]">{heartValue}</span>
               </motion.button>
             ))}
           </div>
@@ -1002,13 +1113,13 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
               <motion.p
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-sm font-medium text-gray-300"
+                className="text-sm font-medium text-white"
               >
                 {ratingDescriptions[isHovering - 1]}
               </motion.p>
             )}
             {!isHovering && selectedRating && (
-              <p className="text-sm font-medium text-gray-300">
+              <p className="text-sm font-medium text-white">
                 {ratingDescriptions[selectedRating - 1]}
               </p>
             )}
@@ -1026,12 +1137,12 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
         >
           <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-6 mb-4">
             <div className="flex flex-col items-center sm:items-start">
-              <span className="text-sm text-gray-400">Your Rating</span>
+              <span className="text-sm text-[#9A9AB3]">Your Rating</span>
               <div className="flex items-center gap-2 mt-1">
                 {selectedRating ? Array.from({ length: selectedRating }).map((_, i) => (
                   <Heart key={i} className="h-5 w-5 fill-red-500 text-red-500" />
                 )) : (
-                  <span className="text-gray-500 italic text-sm">Not rated yet</span>
+                  <span className="text-[#9A9AB3] italic text-sm">Not rated yet</span>
                 )}
               </div>
             </div>
@@ -1043,26 +1154,26 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
                   animate={{ scale: 1 }}
                   className="flex flex-col items-center"
                 >
-                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-[#7b61ff] to-[#5549c2] flex items-center justify-center ring-2 ring-[#7b61ff]/30 shadow-lg">
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-[#6C00F6] to-[#B100FF] flex items-center justify-center ring-2 ring-[#6C00F6]/30 shadow-lg">
                     <span className="text-2xl font-bold text-white">{selectedRating}</span>
                   </div>
-                  <span className="text-xs text-gray-400 mt-1">Your Score</span>
+                  <span className="text-xs text-[#9A9AB3] mt-1">Your Score</span>
                 </motion.div>
               )}
 
               <div className="flex flex-col items-center">
                 <div className="w-full flex items-center gap-2">
-                  <div className="h-4 w-full max-w-[120px] bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-4 w-full max-w-[120px] bg-[#1A1A2E] rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${percentRating}%` }}
                       transition={{ duration: 1, delay: 0.2 }}
-                      className="h-full bg-gradient-to-r from-red-500 to-red-400"
+                      className="h-full bg-gradient-to-r from-[#6C00F6] to-[#B100FF]"
                     />
                   </div>
-                  <span className="text-xs text-gray-300">{percentRating}%</span>
+                  <span className="text-xs text-white">{percentRating}%</span>
                 </div>
-                <span className="text-xs text-gray-400 mt-1">Satisfaction</span>
+                <span className="text-xs text-[#9A9AB3] mt-1">Satisfaction</span>
               </div>
             </div>
           </div>
@@ -1073,7 +1184,7 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab('rate')}
-              className="text-sm text-[#7b61ff] hover:text-[#9f8aff] transition-colors duration-200 mt-2"
+              className="text-sm text-[#6C00F6] hover:text-[#B100FF] transition-colors duration-200 mt-2"
             >
               Change your rating
             </motion.button>
@@ -1087,18 +1198,18 @@ function HeartPoll({ numberOfStars, handleRatingChange, rating, videoTitle }: He
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="pt-3 border-t border-[#292c41]/50 mt-3"
+          className="pt-3 border-t border-[#9A9AB3]/20 mt-3"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.4 }}
-            className="bg-gradient-to-r from-purple-900/30 to-purple-800/20 rounded-lg p-3 text-center"
+            className="bg-[#1A1A2E] rounded-lg p-3 text-center"
           >
-            <p className="text-center text-gray-200 text-sm">
+            <p className="text-center text-white text-sm">
               Thanks for rating {videoTitle && <span className="font-medium">"{videoTitle}"</span>} with {selectedRating} {selectedRating === 1 ? 'heart' : 'hearts'}!
               <br />
-              <span className="text-xs text-gray-400">Your feedback helps creators improve their content.</span>
+              <span className="text-xs text-[#9A9AB3]">Your feedback helps creators improve their content.</span>
             </p>
           </motion.div>
         </motion.div>

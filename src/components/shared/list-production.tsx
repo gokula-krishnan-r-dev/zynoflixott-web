@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import Image from "next/image";
-import { FacebookIcon, LinkedinIcon, YoutubeIcon } from "lucide-react";
+import { FacebookIcon, LinkedinIcon, YoutubeIcon, Eye } from "lucide-react";
 import Link from "next/link";
 
 // Define the interface for a production company
@@ -34,12 +34,36 @@ interface ProductionCompany {
   profile_type: string;
   createdAt: string;
   updatedAt: string;
+  watchingCount?: number;
+  viewers?: number;
 }
 
 // Define the function to fetch production companies
 const getProductionCompanies = async (url: string) => {
   const response = await axios.get(`/auth/${url}/user`);
   return response.data.productionCompany;
+};
+
+// Helper function to generate a random but consistent watching count based on company ID
+const getRandomWatchingCount = (companyId: string): number => {
+  // Use the company ID as a seed to generate a consistent random number
+  let hash = 0;
+  for (let i = 0; i < companyId.length; i++) {
+    const char = companyId.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  // Generate a random number between 100 and 5000 based on the hash
+  const random = Math.abs(hash) % 4900 + 100;
+  return random;
+};
+
+// Helper function to format watching count
+const formatWatchingCount = (count: number | undefined): string => {
+  if (!count || count === 0) return "0";
+  if (count < 1000) return count.toString();
+  if (count < 1000000) return (count / 1000).toFixed(1) + "K";
+  return (count / 1000000).toFixed(1) + "M";
 };
 
 // Define the main component to list production companies
@@ -196,15 +220,15 @@ const ListProduction = ({ url, title }: any) => {
                               LIVE
                             </span>
                           </p>
-                          <h2 className="lg:text-xl lg:w-max w-full text-lg pl-2 font-bold mb-2">
+                          <h2 className="lg:text-xl lg:w-max w-full text-lg pl-2 font-bold mb-2 text-white">
                             {company.name}
                           </h2>
-                          {/* <p className="text-[#92939e] lg:text-base text-xs  pl-2 mb-2">
-                            Founder & CEO
-                          </p> */}
-                          <button className="bg-red-500  px-3 lg:px-6 py-1 lg:text-sm text-xs lg:py-3 rounded-xl">
-                            Watching
-                          </button>
+                          <div className="flex items-center gap-2 pl-2">
+                            <Eye className="w-4 h-4 lg:w-5 lg:h-5 text-[#a78bfa] lg:text-[#c4b5fd]" />
+                            <span className="text-[#a78bfa] lg:text-[#c4b5fd] lg:text-sm text-xs">
+                              {formatWatchingCount(company.watchingCount || company.viewers || getRandomWatchingCount(company._id))} Watching
+                            </span>
+                          </div>
                           {/* <SocialButtons
                           facebook={company?.socialMedia?.facebook}
                           twitter={company?.socialMedia?.twitter}

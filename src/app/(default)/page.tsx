@@ -154,61 +154,67 @@ export default function Home() {
             </Suspense>
 
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 p-2">
-              {/* Events */}
-              <button onClick={() => window.location.href = '/event'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-lg hover:shadow-lg transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+              {/* Sell Short Film */}
+              <button onClick={() => window.location.href = '/sell-shortfilm-contact'} className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 min-h-[100px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18 4h-2v2h-4V4H8v2H6V4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h14v10zm-5-8l-5 3 5 3v-6z" opacity="0.9"/>
+                  <rect x="4" y="4" width="14" height="2" fill="currentColor"/>
                 </svg>
-                <span className="text-white font-medium text-sm">Events</span>
-              </button>
-
-              {/* Film Call */}
-              <button onClick={() => window.location.href = '/sell-shortfilm-contact'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-pink-600 to-red-600 rounded-lg hover:shadow-lg transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <span className="text-white font-medium text-sm">Sell Short Film</span>
+                <span className="text-white font-semibold text-sm text-center">Sell Short Film</span>
               </button>
 
               {/* Monetization */}
-              <button onClick={() => window.location.href = '/monetization'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg hover:shadow-lg transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <button onClick={() => window.location.href = '/monetization'} className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 min-h-[040px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-3" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" />
+                  <text x="12" y="17" textAnchor="middle" fontSize="14" fontWeight="bold" fill="currentColor" fontFamily="Arial, sans-serif">₹</text>
                 </svg>
-                <span className="text-white font-medium text-sm">Monetization</span>
-              </button>
-
-              {/* Explore */}
-              <button onClick={() => window.location.href = '/production'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg hover:shadow-lg transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span className="text-white font-medium text-sm">Film Production</span>
+                <span className="text-white font-semibold text-sm text-center">Monetization</span>
               </button>
 
               {/* Live Streaming */}
-              <button onClick={() => window.location.href = '/live-streams'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg hover:shadow-lg transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <button onClick={() => window.location.href = '/live-streams'} className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-purple-600 to-cyan-600 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 min-h-[100px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                  <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                  <path strokeLinecap="round" d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
                 </svg>
-                <span className="text-white font-medium text-sm">Live Streaming</span>
+                <span className="text-white font-semibold text-sm text-center">Live Streaming</span>
               </button>
 
               {/* Student Ambassador */}
-              <button onClick={() => window.location.href = '/signup/student-ambassador'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-lg hover:shadow-lg transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <button onClick={() => window.location.href = '/signup/student-ambassador'} className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-red-600 to-orange-500 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 min-h-[100px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  <circle cx="18" cy="8" r="2.5" fill="currentColor"/>
+                  <path d="M17 7h2v2h-2V7zm0 0h2v2h-2V7z" fill="white" opacity="0.9"/>
                 </svg>
-                <span className="text-white font-medium text-sm">Student Ambassador</span>
+                <span className="text-white font-semibold text-sm text-center">Student Ambassador</span>
+              </button>
+
+              {/* Events */}
+              <button onClick={() => window.location.href = '/event'} className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 min-h-[100px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="text-white font-semibold text-sm text-center">Events</span>
+              </button>
+
+              {/* Film Production */}
+              <button onClick={() => window.location.href = '/production'} className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 min-h-[100px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="text-white font-semibold text-sm text-center">Film Production</span>
               </button>
 
               {/* Advertisement */}
-              <button onClick={() => window.location.href = '/advertisement'} className="flex flex-col items-center justify-center p-3 bg-gradient-to-br from-yellow-500 to-amber-500 rounded-lg hover:shadow-lg transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+              <button onClick={() => window.location.href = '/advertisement'} className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-yellow-500 to-amber-500 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 min-h-[100px]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
                 </svg>
-                <span className="text-white font-medium text-sm">Advertisement</span>
+                <span className="text-white font-semibold text-sm text-center">Advertisement</span>
               </button>
             </div>
 

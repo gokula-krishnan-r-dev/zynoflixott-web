@@ -84,16 +84,16 @@ const page = () => {
                     I agree to abide by templatanas
                     <a
                       href="#"
-                      className="border-b border-gray-500 border-dotted"
+                      className="border-b border-gray-500 text-indigo-400 border-dotted"
                     >
-                      Terms of Service
+                      Terms of Service 
                     </a>
                     and its
                     <a
                       href="#"
-                      className="border-b border-gray-500 border-dotted"
+                      className="border-b border-gray-500 text-indigo-400 border-dotted"
                     >
-                      Privacy Policy
+                      Privacy Policy 
                     </a>
                   </p>
                 </div>

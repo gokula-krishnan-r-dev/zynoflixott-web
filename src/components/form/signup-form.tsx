@@ -481,7 +481,7 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
           </>
         )}
         <button
-          className="mt-5 tracking-wide font-semibold bg-main text-black w-full py-4 rounded-lg transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+          className="mt-5 tracking-wide bg-main font-semibold bg-main text-black w-full py-4 rounded-lg transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
           type="submit"
           disabled={loading}
         >
@@ -521,7 +521,7 @@ const SignupForm: React.FC<Props> = ({ mode }) => {
                 <path d="M20 8v6M23 11h-6" />
               </svg>
               <span className="ml-3">
-                {mode === "login" ? "Login" : "Sign Up"}
+                {mode === "login" ? "Login to Zynoflixott" : "Sign Up"}
               </span>
             </>
           )}
