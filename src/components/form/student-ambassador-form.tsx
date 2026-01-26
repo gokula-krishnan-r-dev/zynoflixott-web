@@ -62,19 +62,25 @@ const StudentAmbassadorForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    let processedValue = value;
     
     if (name === "age") {
-      processedValue = value ? parseInt(value) : "";
+      setFormData({
+        ...formData,
+        [name]: value ? parseInt(value) : "",
+      });
     } else if (name === "contact_number") {
       // Only allow digits, remove any non-digit characters
-      processedValue = value.replace(/\D/g, '').slice(0, 10);
+      const processedValue = value.replace(/\D/g, '').slice(0, 10);
+      setFormData({
+        ...formData,
+        [name]: processedValue,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
-    
-    setFormData({
-      ...formData,
-      [name]: processedValue,
-    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
