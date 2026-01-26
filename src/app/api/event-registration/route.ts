@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
             filmTitle,
             filmDuration,
             filmGenre,
+            driverLink,
             agreeToTerms
         } = body;
 
@@ -63,6 +64,7 @@ export async function POST(request: NextRequest) {
             filmTitle,
             filmDuration: duration,
             filmGenre,
+            driverLink: driverLink || undefined,
             agreeToTerms
         });
 

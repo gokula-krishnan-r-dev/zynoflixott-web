@@ -193,6 +193,26 @@ body {
   }
 }
 
+/* Countdown tick animation - GPU-accelerated */
+@keyframes countdown-tick {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  40% {
+    transform: scale(1.06);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-countdown-tick {
+  animation: countdown-tick 0.4s ease-out forwards;
+}
+
 /* Apply animations to components */
 .animate-float {
   animation: float 6s ease-in-out infinite;

@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import OtpModal from "@/components/otp/OtpModal";
-import ProfileImageUpload from "@/components/ui/profile-image-upload";
 
 interface FormData {
   full_name?: string;
@@ -20,7 +19,6 @@ interface Props {
 }
 
 const SignupForm: React.FC<Props> = ({ mode }) => {
-  const navigate = useRouter();
   const initialFormData: FormData = {
     full_name: mode === "signup" ? "" : undefined,
     email: "",

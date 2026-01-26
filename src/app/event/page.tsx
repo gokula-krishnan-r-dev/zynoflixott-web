@@ -1,15 +1,169 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaCalendarAlt, FaTrophy, FaFilm, FaAward, FaCertificate, FaArrowRight, FaCheckCircle } from 'react-icons/fa';
+import {
+    FaCalendarAlt,
+    FaClock,
+    FaCheckCircle,
+    FaArrowRight,
+} from 'react-icons/fa';
+import { HiCalendar } from 'react-icons/hi2';
 
-// Define styles for the shadow-glow effect
-// This will be added to the existing element with className="shadow-glow"
-const shadowGlowStyle = {
-    boxShadow: '0 0 15px rgba(129, 140, 248, 0.5), 0 0 30px rgba(129, 140, 248, 0.3)'
+// Static data - Event dates (DD/MM/YYYY)
+const EVENT_DATES = {
+    submissionOpen: '23/01/2026',
+    submissionDeadline: '24/02/2026',
+    finalistAnnouncement: '28/02/2026',
+    festivalAndAwards: '01/03/2026',
 };
+
+// Countdown target: Festival and Awards (01/03/2026 10:00 AM IST)
+const COUNTDOWN_TARGET = new Date('2026-03-01T10:00:00+05:30');
+
+// Event schedule (static)
+const EVENT_SCHEDULE = [
+    {
+        name: 'Lola Singh',
+        role: 'Director',
+        time: '10:00 AM',
+        date: '01/03/2026',
+        avatar: '/images/photo.jpeg',
+    },
+    {
+        name: 'Laura Thomas',
+        role: 'Film Critic at FilmHub',
+        time: '11:00 AM',
+        date: '01/03/2026',
+        avatar: '/images/photo2.jpeg',
+    },
+    {
+        name: 'Break & Networking',
+        role: '12:00 PM',
+        time: '12:00 PM',
+        date: '01/03/2026',
+        avatar: '/images/photo3.jpeg',
+    },
+    {
+        name: 'Short Film Screenings',
+        role: '1:00 PM',
+        time: '1:00 PM',
+        date: '01/03/2026',
+        avatar: '/images/photo5.jpeg',
+    },
+];
+
+// Timeline (static)
+const TIMELINE_ITEMS = [
+    { title: 'Submission open', date: EVENT_DATES.submissionOpen, icon: '📝', color: 'from-green-500 to-emerald-700' },
+    { title: 'Submission deadline', date: EVENT_DATES.submissionDeadline, icon: '⏱️', color: 'from-yellow-500 to-amber-700' },
+    { title: 'Finalist Announcement', date: EVENT_DATES.finalistAnnouncement, icon: '🏆', color: 'from-blue-500 to-indigo-700' },
+    { title: 'Festival and Awards', date: EVENT_DATES.festivalAndAwards, icon: '🎬', color: 'from-purple-500 to-pink-700' },
+];
+
+const shadowGlowStyle = {
+    boxShadow: '0 0 15px rgba(129, 140, 248, 0.5), 0 0 30px rgba(129, 140, 248, 0.3)',
+};
+
+function useCountdown(target: Date) {
+    const [left, setLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+    useEffect(() => {
+        const tick = () => {
+            const now = Date.now();
+            const diff = target.getTime() - now;
+            if (diff <= 0) {
+                setLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                return;
+            }
+            setLeft({
+                days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((diff / 1000 / 60) % 60),
+                seconds: Math.floor((diff / 1000) % 60),
+            });
+        };
+        tick();
+        const id = setInterval(tick, 1000);
+        return () => clearInterval(id);
+    }, [target]);
+
+    return left;
+}
+
+const pad2 = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+
+/** Single countdown unit: big number with label upper-right (per design). Animates when value changes. */
+const CountdownUnit = memo(function CountdownUnit(
+    { value, label, pad }: { value: number; label: string; pad: boolean }
+) {
+    const display = pad ? pad2(value) : `${value}`;
+    return (
+        <div className="inline-flex flex-row items-baseline min-w-0">
+            <span
+                key={`${label}-${value}`}
+                className="animate-countdown-tick tabular-nums font-bold text-white drop-shadow-[0_0_20px_rgba(167,139,250,0.5)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none"
+                style={{ fontVariantNumeric: 'tabular-nums' }}
+            >
+                {display}
+            </span>
+            <span className="ml-1.5 -translate-y-0.5 text-xs sm:text-sm font-normal text-purple-300/70 lowercase tracking-wide">
+                {label}
+            </span>
+        </div>
+    );
+});
+
+/** Countdown + event details. Isolated so only this subtree re-renders every second. */
+const CountdownSection = memo(function CountdownSection() {
+    const countdown = useCountdown(COUNTDOWN_TARGET);
+    const units = useMemo(
+        () => [
+            { value: countdown.days, label: 'days', pad: false },
+            { value: countdown.hours, label: 'hrs', pad: true },
+            { value: countdown.minutes, label: 'min', pad: true },
+            { value: countdown.seconds, label: 'sec', pad: true },
+        ],
+        [countdown.days, countdown.hours, countdown.minutes, countdown.seconds]
+    );
+
+    return (
+        <section className="flex flex-col items-center justify-center w-full py-8 md:py-10">
+            <div
+                className="flex flex-wrap items-baseline justify-center gap-4 md:gap-8"
+                role="timer"
+                aria-live="polite"
+                aria-label={`Countdown: ${countdown.days} days, ${countdown.hours} hours, ${countdown.minutes} minutes, ${countdown.seconds} seconds`}
+            >
+                {units.map((u, i) => (
+                    <React.Fragment key={u.label}>
+                        {i > 0 && (
+                            <span
+                                className="inline text-gray-400/50 text-xl md:text-2xl font-light leading-none select-none mx-0.5"
+                                aria-hidden
+                            >
+                                ·
+                            </span>
+                        )}
+                        <CountdownUnit value={u.value} label={u.label} pad={u.pad} />
+                    </React.Fragment>
+                ))}
+            </div>
+            <div className="mt-6 w-full max-w-md h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-6 md:gap-10 text-lg text-white/85">
+                <span className="flex items-center gap-2">
+                    <FaCalendarAlt className="text-indigo-400 shrink-0" aria-hidden />
+                    <span>{EVENT_DATES.festivalAndAwards}</span>
+                </span>
+                <span className="flex items-center gap-2">
+                    <FaClock className="text-indigo-400 shrink-0" aria-hidden />
+                    <span>10:00 AM – 8:00 PM (IST)</span>
+                </span>
+            </div>
+        </section>
+    );
+});
 
 const EventPage = () => {
     const [showRegistrationModal, setShowRegistrationModal] = useState(false);
@@ -20,161 +174,87 @@ const EventPage = () => {
         filmTitle: '',
         filmDuration: '',
         filmGenre: '',
-        driverLink: "",
-        agreeToTerms: false
+        driverLink: '',
+        agreeToTerms: false,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
-    const [paymentProcessing, setPaymentProcessing] = useState(false);
-    const [formValidated, setFormValidated] = useState(false);
 
-    // Load Razorpay script
     useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.async = true;
-        document.body.appendChild(script);
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'conversion', { send_to: 'AW-17096022152/xRn6CKrZlucaEIixgtg_' });
+        }
+    }, []);
 
-        return () => {
-            document.body.removeChild(script);
-        };
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            (function (w: Window, d: Document, s: string, l: string, i: string) {
+                const wl = w as any;
+                wl[l] = wl[l] || [];
+                wl[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+                const f = d.getElementsByTagName(s)[0];
+                const j = d.createElement(s) as HTMLScriptElement;
+                const dl = l !== 'dataLayer' ? '&l=' + l : '';
+                j.async = true;
+                j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                f.parentNode?.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-P7RJCDB2');
+            if ((window as any).gtag) {
+                (window as any).gtag('event', 'conversion', { send_to: 'AW-17096022152/J8kWCP3PlucaEIixgtg_' });
+            }
+        }
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         if (type === 'checkbox') {
-            setFormData({
-                ...formData,
-                [name]: (e.target as HTMLInputElement).checked
-            });
+            setFormData({ ...formData, [name]: (e.target as HTMLInputElement).checked });
         } else {
-            setFormData({
-                ...formData,
-                [name]: value
-            });
+            setFormData({ ...formData, [name]: value });
         }
     };
 
-
-    useEffect(() => {
-        // Google Ads conversion tracking
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-            (window as any).gtag('event', 'conversion', {
-                'send_to': 'AW-17096022152/xRn6CKrZlucaEIixgtg_'
-            });
-        }
-    }, []);
-
-     // Google Analytics conversion tracking
-     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            // Google Tag Manager
-            (function(w: Window, d: Document, s: string, l: string, i: string) {
-                const wl = w as any;
-                wl[l] = wl[l] || [];
-                wl[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
-                const f = d.getElementsByTagName(s)[0];
-                const j = d.createElement(s) as HTMLScriptElement;
-                const dl = l !== 'dataLayer' ? '&l='+l : '';
-                j.async = true;
-                j.src = 'https://www.googletagmanager.com/gtm.js?id='+i+dl;
-                f.parentNode?.insertBefore(j,f);
-            })(window, document, 'script', 'dataLayer', 'GTM-P7RJCDB2');
-            
-            // Google Ads conversion tracking
-            if ((window as any).gtag) {
-                (window as any).gtag('event', 'conversion', {
-                    'send_to': 'AW-17096022152/J8kWCP3PlucaEIixgtg_'
-                });
-            }
-        }
-    }, []);
-
     const validateForm = () => {
-        if (!formData.name || !formData.email || !formData.phone ||
-            !formData.filmTitle || !formData.filmDuration ||
-            !formData.filmGenre || !formData.driverLink ||
-            !formData.agreeToTerms) {
-            return false;
-        }
-        return true;
+        return !!(
+            formData.name &&
+            formData.email &&
+            formData.phone &&
+            formData.filmTitle &&
+            formData.filmDuration &&
+            formData.filmGenre &&
+            formData.driverLink &&
+            formData.agreeToTerms
+        );
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         if (!validateForm()) {
-            setError("Please fill all required fields");
+            setError('Please fill all required fields');
             return;
         }
-
-        setFormValidated(true);
         setLoading(true);
         setError(null);
-
         try {
-            // Initialize Razorpay payment directly
-            const options = {
-                key: "rzp_test_S6AcB6I8TQuoVM", // Replace with your Razorpay test key
-                amount: 10000, // ₹100 in paise
-                currency: "INR",
-                name: "Zynoflix OTT",
-                description: "Short Film Festival Registration Fee",
-                image: "/logo_sm.png",
-                handler: function (response: any) {
-                    // Payment successful, submit the form
-                    submitFormData(response);
-                },
-                prefill: {
+            const res = await fetch('/api/event-registration', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
-                    contact: formData.phone
-                },
-                notes: {
+                    phone: formData.phone,
                     filmTitle: formData.filmTitle,
-                    filmGenre: formData.filmGenre
-                },
-                theme: {
-                    color: "#6366F1" // Indigo color
-                },
-                modal: {
-                    ondismiss: function () {
-                        setLoading(false);
-                        setPaymentProcessing(false);
-                    }
-                }
-            };
-
-            // Open Razorpay checkout
-            const razorpayInstance = new (window as any).Razorpay(options);
-            setPaymentProcessing(true);
-            razorpayInstance.open();
-
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-            setLoading(false);
-            setPaymentProcessing(false);
-        }
-    };
-
-    const submitFormData = async (paymentResponse: any) => {
-        try {
-            // Form submission after successful payment
-            const submissionData = {
-                ...formData,
-                payment: {
-                    id: paymentResponse.razorpay_payment_id,
-                    amount: 100, // ₹100
-                    currency: "INR",
-                    status: "completed"
-                }
-            };
-
-            // Store in localStorage as a fallback
-            localStorage.setItem('filmFestivalRegistration', JSON.stringify(submissionData));
-
-            // Registration submitted successfully
+                    filmDuration: Number(formData.filmDuration),
+                    filmGenre: formData.filmGenre,
+                    driverLink: formData.driverLink || undefined,
+                    agreeToTerms: formData.agreeToTerms,
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || 'Registration failed');
+            }
             setShowRegistrationModal(false);
             setSuccess(true);
             setFormData({
@@ -182,36 +262,31 @@ const EventPage = () => {
                 email: '',
                 phone: '',
                 filmTitle: '',
-                driverLink: "",
                 filmDuration: '',
                 filmGenre: '',
-                agreeToTerms: false
+                driverLink: '',
+                agreeToTerms: false,
             });
-
-            // Scroll to top to show success message
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unexpected error occurred during registration');
+            setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
-            setPaymentProcessing(false);
         }
     };
 
-    const openRegistrationModal = () => {
-        setShowRegistrationModal(true);
-    };
+    const openRegistrationModal = () => setShowRegistrationModal(true);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-            {/* Success Message */}
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white pt-16">
+            {/* Success overlay */}
             {success && (
-                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-xl p-8 max-w-md text-center animate-fade-in shadow-2xl">
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-2xl p-8 max-w-md text-center shadow-2xl">
                         <FaCheckCircle className="mx-auto text-green-400 text-5xl mb-4" />
                         <h2 className="text-2xl font-bold mb-3">Registration Successful!</h2>
-                        <p className="mb-4">Thank you for registering your film for the Zynoflix OTT Online Short Film Festival 2026.</p>
-                        <p className="mb-6">We've sent a confirmation email with further details. Our team will review your submission and get back to you soon.</p>
+                        <p className="mb-4">Thank you for registering for the ZynoFlix Short Film Festival 2026.</p>
+                        <p className="mb-6">We&apos;ll send a confirmation email with further details. Our team will review your submission and get back to you soon.</p>
                         <button
                             className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-full transition duration-300 shadow-lg"
                             onClick={() => setSuccess(false)}
@@ -222,252 +297,167 @@ const EventPage = () => {
                 </div>
             )}
 
-            {/* Hero Section */}
-            <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/hero-bg.jpg')] bg-cover bg-center opacity-20"></div>
-                <div className="container mx-auto px-4 py-12 md:py-24 relative z-10">
-                    <div className="flex flex-col items-center text-center">
-                        <div className="mb-6">
-                            <Image
-                                src="/logo_sm.png"
-                                alt="Zynoflix Logo"
-                                width={150}
-                                height={150}
-                                className="animate-pulse"
-                            />
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Zynoflix OTT</span>
-                            <br />Online Short Film Festival 2026
-                        </h1>
-                        <div className="flex items-center justify-center space-x-2 mb-10 bg-indigo-900 bg-opacity-50 px-6 py-3 rounded-full">
-                            <FaCalendarAlt className="text-indigo-300" />
-                            <span className="text-xl">01/03/2026</span>
-                        </div>
-                        <button
-                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-full transform transition duration-300 hover:scale-105 shadow-lg flex items-center space-x-2"
-                            onClick={openRegistrationModal}
-                        >
-                            <span>Register Now</span>
-                            <FaArrowRight className="animate-bounce" />
-                        </button>
+            {/* Hero */}
+            <section className="relative overflow-hidden rounded-b-3xl">
+                <div className="absolute inset-0 bg-[url('/film-background.jpg')] bg-cover bg-center" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/40" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 backdrop-blur flex items-center justify-center border-2 border-white/30">
+                        <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-white border-b-[12px] border-b-transparent ml-1" />
                     </div>
                 </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-12">
-                {/* Prize Section */}
-                <div className="mb-20">
-                    <div className="flex items-center justify-center mb-8">
-                        <FaTrophy className="text-yellow-400 text-3xl mr-3" />
-                        <h2 className="text-3xl md:text-4xl font-bold">Win Cash & Recognition</h2>
-                    </div>
-                    <p className="text-center text-2xl md:text-3xl font-bold mb-12 text-indigo-300">Total Prizes Over ₹25 Lakhs!</p>
-
-                    <div className="space-y-8 md:space-y-0 md:grid md:grid-cols-3 md:gap-6 mb-12">
-                        {/* First Prize */}
-                        <div className="bg-gradient-to-br from-yellow-600 to-yellow-800 rounded-xl p-6 transform hover:scale-105 transition duration-300 shadow-xl">
-                            <div className="flex items-center mb-4">
-                                <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 font-bold text-xl mr-4">1</div>
-                                <h3 className="text-3xl font-bold">$12,019.23 USD</h3>
-                            </div>
-                            <p className="text-yellow-100">+ Chance to Get Your Film Produced by Zynoflix</p>
-                        </div>
-
-                        {/* Second Prize */}
-                        <div className="bg-gradient-to-br from-gray-500 to-gray-700 rounded-xl p-6 transform hover:scale-105 transition duration-300 shadow-xl">
-                            <div className="flex items-center mb-4">
-                                <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-800 font-bold text-xl mr-4">2</div>
-                                <h3 className="text-3xl font-bold">$9,014.42 USD</h3>
-                            </div>
-                        </div>
-
-                        {/* Third Prize */}
-                        <div className="bg-gradient-to-br from-amber-700 to-amber-900 rounded-xl p-6 transform hover:scale-105 transition duration-300 shadow-xl">
-                            <div className="flex items-center mb-4">
-                                <div className="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center text-amber-900 font-bold text-xl mr-4">3</div>
-                                <h3 className="text-3xl font-bold">$6,009.62 USD</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Other Prizes */}
-                    <div className="bg-indigo-900 bg-opacity-30 rounded-xl p-6 md:p-8 mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-center text-indigo-300">Additional Prizes</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-indigo-300">4th Prize:</span>
-                                <span>$3,004.81 USD</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-indigo-300">5th Prize:</span>
-                                <span>$1,165.50 USD</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-indigo-300">6th Prize:</span>
-                                <span>$600 USD</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-indigo-300">7th Prize:</span>
-                                <span>$116.51 USD</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-indigo-300">8th Prize:</span>
-                                <span>Certificate + Trophy</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-indigo-300">9th & 10th:</span>
-                                <span>Certificates</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-center p-4 bg-indigo-900 bg-opacity-20 rounded-lg">
-                        <FaCertificate className="text-indigo-300 mr-2" />
-                        <p className="text-lg">All Participants Receive Official Certificates</p>
-                    </div>
+                <div className="relative z-10 px-4 py-12 md:py-20">
+                    <h1 className="text-3xl md:text-5xl lg:text-4xl font-bold mb-3">
+                        ZynoFlix Short Film Festival 2026
+                    </h1>
+                    <p className="text-white/90 text-base md:text-lg mb-2">
+                        {EVENT_DATES.festivalAndAwards} • Virtual Event
+                    </p>
+                    <p className="text-white/80 italic mb-6">&ldquo;Celebrating Indie Filmmakers&rdquo;</p>
+                    <button
+                        className="bg-gradient-to-r w-full from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-lg transition duration-300 hover:scale-105 shadow-lg flex items-center justify-center gap-2 mx-auto"
+                        onClick={openRegistrationModal}
+                    >
+                        <HiCalendar className="w-5 h-5" />
+                        Register for Free
+                    </button>
+                  
                 </div>
+            </section>
 
-                {/* Showcase Section */}
-                <div className="mb-20">
-                    <div className="flex items-center justify-center mb-8">
-                        <FaFilm className="text-indigo-400 text-3xl mr-3" />
-                        <h2 className="text-3xl md:text-4xl font-bold">Submit Your Film. Showcase Your Talent.</h2>
-                    </div>
+            {/* Main content */}
+            <div className="container mx-auto px-4 py-0">
+                <CountdownSection />
+                {/* About the Event */}
+                <section className="mb-16">
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                        <div className="bg-indigo-900 bg-opacity-20 p-6 rounded-xl border border-indigo-600 hover:border-indigo-400 transition duration-300">
-                            <h3 className="text-xl font-bold mb-3 text-indigo-300">Who Can Participate?</h3>
-                            <p>Open to filmmakers of all ages and backgrounds. Students, professionals, and independent creators are welcome.</p>
-                        </div>
-
-                        <div className="bg-indigo-900 bg-opacity-20 p-6 rounded-xl border border-indigo-600 hover:border-indigo-400 transition duration-300">
-                            <h3 className="text-xl font-bold mb-3 text-indigo-300">Film Requirements</h3>
-                            <p>Short films between 5-30 minutes. Any genre welcome. Films must be original and produced after January 2023.</p>
-                        </div>
-
-                        <div className="bg-indigo-900 bg-opacity-20 p-6 rounded-xl border border-indigo-600 hover:border-indigo-400 transition duration-300">
-                            <h3 className="text-xl font-bold mb-3 text-indigo-300">Selection Process</h3>
-                            <p>Films will be judged by an esteemed panel of industry professionals. Selection criteria include storytelling, direction, cinematography, and overall impact.</p>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-center">
-                        <button
-                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-full transform transition duration-300 hover:scale-105 shadow-lg flex items-center space-x-2"
-                            onClick={openRegistrationModal}
-                        >
-                            <span>Register Now</span>
-                            <FaArrowRight />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Timeline Section */}
-                <div className="mb-20">
-                    <div className="flex items-center justify-center mb-8">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Event Timeline</h2>
-                    </div>
-
-                    {/* Mobile Timeline */}
-                    <div className="md:hidden relative">
-                        <div className="absolute left-4 top-0 h-full w-1 bg-gradient-to-b from-indigo-600 via-purple-600 to-indigo-600 rounded-full"></div>
-
-                        {/* Timeline Items - Mobile */}
-                        <div className="space-y-12 pl-12 relative">
-                            {[
-                                { title: "Submissions Open", date: "23/01/2026", icon: "📝", color: "from-green-500 to-emerald-700" },
-                                { title: "Submission Deadline", date: "24/02/2026", icon: "⏱️", color: "from-yellow-500 to-amber-700" },
-                                { title: "Finalists Announcement", date: "28/02/2026", icon: "🏆", color: "from-blue-500 to-indigo-700" },
-                                { title: "Festival & Awards", date: "01/03/2026", icon: "🎬", color: "from-purple-500 to-pink-700" }
-                            ].map((item, index) => (
-                                <div key={index} className="relative group">
-                                    <div className="absolute -left-12 top-0 bg-indigo-600 border-4 border-indigo-900 rounded-full h-8 w-8 flex items-center justify-center z-10 group-hover:scale-110 transition-transform duration-300" style={shadowGlowStyle}>
-                                        <div className="bg-white h-2 w-2 rounded-full"></div>
-                                    </div>
-                                    <div className={`bg-gradient-to-br ${item.color} p-5 rounded-lg shadow-xl transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1`}>
-                                        <div className="text-2xl mb-2">{item.icon}</div>
-                                        <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
-                                        <p className="text-white text-opacity-80">{item.date}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Desktop Timeline */}
-                    <div className="hidden md:block relative mx-auto max-w-5xl">
-                        <div className="absolute left-1/2 transform -translate-x-1/2 top-0 h-full w-1 bg-gradient-to-b from-indigo-600 via-purple-600 to-indigo-600 rounded-full"></div>
-
-                        {/* Timeline Items - Desktop */}
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4">About the Event</h2>
+                    <p className="text-white/80 max-w-3xl mb-8">
+                        A virtual film festival featuring award-winning shorts, exclusive panels, live Q&A with directors, and networking sessions.
+                    </p>
+                    <div className="bg-gray rounded-2xl p-4 md:p-6 flex border border-gray-700 items-center justify-between gap-4">
                         <div>
-                            {[
-                                { title: "Submissions Open", date: "23/01/2026", icon: "📝", color: "from-green-500 to-emerald-700", position: "left" },
-                                { title: "Submission Deadline", date: "24/02/2026", icon: "⏱️", color: "from-yellow-500 to-amber-700", position: "right" },
-                                { title: "Finalists Announcement", date: "28/02/2026", icon: "🏆", color: "from-blue-500 to-indigo-700", position: "left" },
-                                { title: "Festival & Awards", date: "01/03/2026", icon: "🎬", color: "from-purple-500 to-pink-700", position: "right" }
-                            ].map((item, index) => (
-                                <div key={index} className={`flex items-center justify-center mb-16 ${item.position === 'left' ? 'md:justify-start' : 'md:justify-end'}`}>
-                                    <div className={`relative flex ${item.position === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center w-full mx-auto`}>
-                                        <div className="order-1 w-6/12"></div>
-
-                                        <div className="z-10 flex items-center order-1 bg-indigo-600 border-4 border-indigo-900 rounded-full w-10 h-10 md:absolute md:left-1/2 md:-ml-5" style={shadowGlowStyle}>
-                                            <div className="mx-auto bg-white h-3 w-3 rounded-full"></div>
-                                        </div>
-
-                                        <div className={`order-1 ${item.position === 'left' ? 'md:w-5/12 md:pr-10' : 'md:w-5/12 md:pl-10'}`}>
-                                            <div className={`p-6 bg-gradient-to-br ${item.color} rounded-lg shadow-xl transform transition-all duration-500 hover:scale-105 hover:-translate-y-1 group`}>
-                                                <div className="flex items-center mb-2">
-                                                    <span className="text-2xl mr-2">{item.icon}</span>
-                                                    <h3 className="text-xl font-bold text-white">{item.title}</h3>
-                                                </div>
-                                                <p className="text-white text-opacity-80">{item.date}</p>
-                                                <div className="absolute inset-0 rounded-lg bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                            <h3 className="text-lg font-bold mb-1">ZynoFlix Studios</h3>
+                            <p className="text-white/70 text-sm">Leading OTT platform for indie films</p>
                         </div>
-                    </div>
-
-                    {/* Call to Action */}
-                    <div className="mt-16 text-center">
-                        <p className="text-xl text-indigo-300 mb-6 animate-pulse">Mark your calendars for this exciting event!</p>
-                        <button
-                            onClick={openRegistrationModal}
-                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-full transform transition duration-300 hover:scale-105 shadow-xl flex items-center mx-auto"
-                        >
-                            <span>Register Now</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
+                        <button className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 shrink-0">
+                            + Follow <FaArrowRight className="w-4 h-4" />
                         </button>
                     </div>
-                </div>
+                </section>
+
+                {/* Event Schedule */}
+                <section className="mb-16">
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                        <h2 className="text-2xl md:text-3xl font-bold">Event Schedule</h2>
+                        <Link href="#" className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
+                            View all <FaArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                    <div className="space-y-4">
+                        {EVENT_SCHEDULE.map((item, i) => (
+                            <div
+                                key={i}
+                                className="bg-gray-800/60 rounded-2xl p-4 flex items-center gap-4 hover:bg-gray-800/80 transition"
+                            >
+                                <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 bg-gray-700">
+                                    <Image
+                                        src={item.avatar}
+                                        alt={item.name}
+                                        fill
+                                        className="object-cover"
+                                        sizes="48px"
+                                    />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="font-bold truncate">{item.name}</p>
+                                    <p className="text-white/70 text-sm truncate">{item.role}</p>
+                                </div>
+                                <div className="text-right shrink-0">
+                                    <p className="font-medium">{item.time}</p>
+                                    <p className="text-white/70 text-sm">{item.date}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Event Timeline */}
+                <section className="mb-16">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+                        Event Timeline
+                    </h2>
+                    <div className="md:hidden space-y-6 pl-8 relative">
+                        <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-600 via-purple-600 to-indigo-600 rounded-full" />
+                        {TIMELINE_ITEMS.map((item, i) => (
+                            <div key={i} className="relative">
+                                <div
+                                    className="absolute -left-8 top-0 w-6 h-6 rounded-full bg-indigo-600 border-2 border-indigo-900 flex items-center justify-center z-10"
+                                    style={shadowGlowStyle}
+                                >
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                                </div>
+                                <div className={`bg-gradient-to-br ${item.color} p-4 rounded-xl`}>
+                                    <span className="text-xl mr-2">{item.icon}</span>
+                                    <span className="font-bold">{item.title}</span>
+                                    <p className="text-white/90 mt-1">{item.date}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="hidden md:block relative max-w-4xl mx-auto">
+                        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 bg-gradient-to-b from-indigo-600 via-purple-600 to-indigo-600 rounded-full" />
+                        {TIMELINE_ITEMS.map((item, i) => (
+                            <div
+                                key={i}
+                                className={`flex items-center gap-8 mb-12 last:mb-0 ${i % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
+                            >
+                                <div className={`flex-1 ${i % 2 === 1 ? 'md:text-right' : ''}`} />
+                                <div
+                                    className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-900 flex items-center justify-center shrink-0 z-10"
+                                    style={shadowGlowStyle}
+                                >
+                                    <div className="w-3 h-3 rounded-full bg-white" />
+                                </div>
+                                <div className={`flex-1 ${i % 2 === 1 ? 'md:text-left' : 'md:text-right'}`}>
+                                    <div className={`inline-block p-4 rounded-xl bg-gradient-to-br ${item.color}`}>
+                                        <span className="text-xl mr-2">{item.icon}</span>
+                                        <span className="font-bold">{item.title}</span>
+                                        <p className="text-white/90 mt-1">{item.date}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-12 text-center">
+                        <p className="text-indigo-300 mb-6">Mark your calendars for this exciting event!</p>
+                        <button
+                            onClick={openRegistrationModal}
+                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-full transition hover:scale-105 shadow-xl inline-flex items-center gap-2"
+                        >
+                            Register for Free <FaArrowRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </section>
             </div>
 
             {/* Registration Modal */}
             {showRegistrationModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md max-h-screen overflow-y-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold">Register for Film Festival</h2>
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="bg-gray-900 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold">Register for Film Festival</h2>
                             <button
-                                className="text-gray-400 hover:text-white text-2xl"
+                                className="text-gray-400 hover:text-white text-2xl leading-none"
                                 onClick={() => setShowRegistrationModal(false)}
                             >
                                 ×
                             </button>
                         </div>
-                        <p className="mb-6 text-gray-300">Fill out the form below to register your short film for the festival.</p>
+                        <p className="mb-6 text-gray-400 text-sm">Fill out the form below to register your short film for the festival. Registration is free.</p>
 
                         {error && (
-                            <div className="bg-red-900 bg-opacity-50 border border-red-500 text-red-100 px-4 py-3 rounded mb-6">
+                            <div className="bg-red-900/50 border border-red-500 text-red-100 px-4 py-3 rounded-lg mb-6 text-sm">
                                 {error}
                             </div>
                         )}
@@ -486,7 +476,6 @@ const EventPage = () => {
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 />
                             </div>
-
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
                                 <input
@@ -500,7 +489,6 @@ const EventPage = () => {
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 />
                             </div>
-
                             <div>
                                 <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
                                 <input
@@ -514,7 +502,6 @@ const EventPage = () => {
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 />
                             </div>
-
                             <div>
                                 <label htmlFor="filmTitle" className="block text-sm font-medium text-gray-300 mb-1">Film Title</label>
                                 <input
@@ -528,16 +515,15 @@ const EventPage = () => {
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 />
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="filmDuration" className="block text-sm font-medium text-gray-300 mb-1">Duration (minutes)</label>
                                     <input
                                         type="number"
                                         id="filmDuration"
                                         name="filmDuration"
-                                        min="5"
-                                        max="30"
+                                        min={5}
+                                        max={30}
                                         value={formData.filmDuration}
                                         onChange={handleChange}
                                         required
@@ -545,7 +531,6 @@ const EventPage = () => {
                                         className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     />
                                 </div>
-
                                 <div>
                                     <label htmlFor="filmGenre" className="block text-sm font-medium text-gray-300 mb-1">Category</label>
                                     <select
@@ -568,87 +553,48 @@ const EventPage = () => {
                                     </select>
                                 </div>
                             </div>
-
-                            {/* //google link */}
-
-                            <div className=" grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div>
-                                    <label htmlFor="driverLink" className="block text-sm font-medium text-gray-300 mb-1">Google Driver Link</label>
-                                    <input
-                                        type="text"
-                                        id="driverLink"
-                                        name="driverLink"
-                                        value={formData.driverLink}
-                                        onChange={handleChange}
-                                        required
-                                        disabled={loading}
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    />
-                                </div>
-
-
+                            <div>
+                                <label htmlFor="driverLink" className="block text-sm font-medium text-gray-300 mb-1">Google Drive Link</label>
+                                <input
+                                    type="url"
+                                    id="driverLink"
+                                    name="driverLink"
+                                    value={formData.driverLink}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={loading}
+                                    placeholder="https://drive.google.com/..."
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                />
                             </div>
-
-                            <div className="flex items-start mt-4">
-                                <div className="flex items-center h-5">
-                                    <input
-                                        type="checkbox"
-                                        id="agreeToTerms"
-                                        name="agreeToTerms"
-                                        checked={formData.agreeToTerms}
-                                        onChange={handleChange}
-                                        required
-                                        disabled={loading}
-                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-500 rounded"
-                                    />
-                                </div>
-                                <div className="ml-3 text-sm">
-                                    <label htmlFor="agreeToTerms" className="text-gray-300">
-                                        I agree to the terms and conditions of the festival
-                                    </label>
-                                </div>
+                            <div className="flex items-start gap-3">
+                                <input
+                                    type="checkbox"
+                                    id="agreeToTerms"
+                                    name="agreeToTerms"
+                                    checked={formData.agreeToTerms}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={loading}
+                                    className="mt-1 h-4 w-4 rounded border-gray-500 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <label htmlFor="agreeToTerms" className="text-sm text-gray-400">
+                                    I agree to the terms and conditions of the festival
+                                </label>
                             </div>
-
-                            <div className="mt-6 bg-indigo-900 bg-opacity-30 rounded-lg p-4">
-                                <div className="flex items-center mb-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span className="text-indigo-300 font-medium">Registration Fee</span>
-                                </div>
-                                <p className="text-gray-300 text-sm">A one-time registration fee of <span className="font-bold text-white">$1.3</span> is required to submit your film.</p>
-                            </div>
-
                             <button
                                 type="submit"
-                                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mt-6 flex items-center justify-center"
                                 disabled={loading}
+                                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg transition flex items-center justify-center gap-2"
                             >
-                                {loading ? 'Processing...' : paymentProcessing ? 'Processing Payment...' : 'Pay $1.3 & Submit Registration'}
-                                {!loading && !paymentProcessing && (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                                    </svg>
-                                )}
+                                {loading ? 'Submitting...' : 'Register for Free'}
+                                {!loading && <FaArrowRight className="w-4 h-4" />}
                             </button>
                         </form>
-                    </div >
-                </div >
-            )}
-
-            {/* Footer */}
-            <div className="bg-gray-900 py-8">
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <p className="text-gray-400 mb-4 md:mb-0">© 2024 Zynoflix OTT. All rights reserved.</p>
-                        <div className="flex space-x-6">
-                            <Link href="/terms" className="text-indigo-400 hover:text-indigo-300 transition">Terms & Conditions</Link>
-                            <Link href="/contact" className="text-indigo-400 hover:text-indigo-300 transition">Contact Us</Link>
-                        </div>
                     </div>
                 </div>
-            </div>
-        </div >
+            )}
+        </div>
     );
 };
 
