@@ -864,7 +864,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <div className="text-center p-8 max-w-md">
             <div className="mb-4 animate-pulse">
               <svg 
-                className="w-20 h-20 mx-auto text-purple-400" 
+                className="w-14 h-14 mx-auto text-purple-400" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -885,11 +885,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 console.log('🔓 Button clicked - opening subscription modal');
                 setShowSubscriptionModal(true);
               }}
-              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all shadow-lg text-lg transform hover:scale-105"
+              className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl text-sm transform hover:scale-105"
             >
               Subscribe Now - ₹49 for 1 month
             </button>
-            <p className="text-gray-400 text-sm mt-4">Click anywhere to subscribe</p>
           </div>
         </div>
       )}

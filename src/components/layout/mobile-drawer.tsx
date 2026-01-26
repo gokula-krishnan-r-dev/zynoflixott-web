@@ -1,5 +1,5 @@
 "use client";
-import { isLogin } from "@/lib/user";
+import { authId, isLogin } from "@/lib/user";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X, Home, Compass, Upload, User, LogIn, Film, DollarSign, LogOut, Megaphone, Video, Settings, Power, LucideIcon } from "lucide-react";
@@ -24,7 +24,6 @@ const menuItems: MenuItem[] = [
   { label: "Live Streams", href: "/live-streams", icon: Video },
   { label: "Film Production", href: "/production", icon: Video },
   { label: "Student Ambassador", href: "/signup/student-ambassador", icon: User },
-  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function SheetMobile() {
@@ -61,7 +60,7 @@ export function SheetMobile() {
   }, [open]);
 
   useEffect(() => {
-    setLoggedIn(isLogin);
+    setLoggedIn(!authId);
   }, []);
 
   if (loggedIn === null) {

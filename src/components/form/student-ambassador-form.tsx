@@ -18,6 +18,7 @@ interface StudentAmbassadorFormData {
   password: string;
   college_name: string;
   age: number | string;
+  contact_number: string;
   profilePic?: File | string;
 }
 
@@ -29,6 +30,7 @@ const StudentAmbassadorForm: React.FC = () => {
     password: "",
     college_name: "",
     age: "",
+    contact_number: "",
     profilePic: undefined,
   });
 
@@ -60,9 +62,18 @@ const StudentAmbassadorForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    let processedValue = value;
+    
+    if (name === "age") {
+      processedValue = value ? parseInt(value) : "";
+    } else if (name === "contact_number") {
+      // Only allow digits, remove any non-digit characters
+      processedValue = value.replace(/\D/g, '').slice(0, 10);
+    }
+    
     setFormData({
       ...formData,
-      [name]: name === "age" ? (value ? parseInt(value) : "") : value,
+      [name]: processedValue,
     });
   };
 
@@ -89,6 +100,9 @@ const StudentAmbassadorForm: React.FC = () => {
     if (!formData.age) newErrors.age = "Age is required";
     else if (isNaN(Number(formData.age)) || Number(formData.age) < 1)
       newErrors.age = "Please enter a valid age";
+    if (!formData.contact_number?.trim()) newErrors.contact_number = "Contact number is required";
+    else if (!/^[6-9]\d{9}$/.test(formData.contact_number.replace(/\s+/g, '')))
+      newErrors.contact_number = "Please enter a valid 10-digit mobile number";
     if (!formData.profilePic) newErrors.profilePic = "Profile photo is required";
 
     return newErrors;
@@ -110,6 +124,7 @@ const StudentAmbassadorForm: React.FC = () => {
     submissionData.append("password", formData.password);
     submissionData.append("college_name", formData.college_name);
     submissionData.append("age", formData.age.toString());
+    submissionData.append("contact_number", formData.contact_number);
     submissionData.append("userType", "student_ambassador");
     if (formData.profilePic instanceof File) {
       submissionData.append("profilePic", formData.profilePic);
@@ -445,6 +460,25 @@ const StudentAmbassadorForm: React.FC = () => {
         />
         {errors.age && (
           <p className="text-red-500 text-sm mt-1">{errors.age}</p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="contact_number" className="block mb-2 font-bold text-white">
+          Contact Number <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="tel"
+          id="contact_number"
+          placeholder="Enter your 10-digit mobile number"
+          name="contact_number"
+          value={formData.contact_number}
+          onChange={handleChange}
+          maxLength={10}
+          className="w-full px-3 py-2 border border-gray-300 rounded-xl bg-transparent text-white focus:outline-none focus:border-blue-500"
+        />
+        {errors.contact_number && (
+          <p className="text-red-500 text-sm mt-1">{errors.contact_number}</p>
         )}
       </div>
 

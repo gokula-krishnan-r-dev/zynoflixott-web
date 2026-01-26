@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { cn, formatNumber } from "@/lib/utils";
 import VideoPlayer from "@/components/video/video-player";
-import { ChevronDown, Copy, Heart, Lock, Play, PlayCircle, Share2, Star } from "lucide-react";
+import { ChevronDown, Copy, Heart, Lock, Play, PlayCircle, Share2, Star, Loader2, Gift, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VideoComment from "@/components/shared/video-comment";
 import CategoryList from "@/components/shared/category-list";
@@ -23,6 +23,13 @@ import DescriptionCard from "@/components/ui/description-card";
 import { motion } from "framer-motion";
 import GiftPaymentContainer from "@/components/payment/GiftPaymentContainer";
 import SubscriptionModal from "@/components/subscription/SubscriptionModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Format view count to K, M, B format
 const formatViewCount = (count: number): string => {
@@ -295,6 +302,10 @@ export default function Page({ params }: { params: { videoId: string } }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
+  const [paymentType, setPaymentType] = useState<'gift' | 'support' | 'premium' | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Fetch the rating data
   const { data: ratings } = useQuery<any>(
@@ -362,6 +373,42 @@ export default function Page({ params }: { params: { videoId: string } }) {
     mutate(newRating); // Post the new rating
   };
 
+  // Load Razorpay script - MUST be before any early returns
+  useEffect(() => {
+    // Check if Razorpay is already loaded
+    if ((window as any).Razorpay) {
+      setRazorpayLoaded(true);
+      return;
+    }
+
+    // Check if script already exists
+    const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existingScript) {
+      setRazorpayLoaded(true);
+      return;
+    }
+
+    // Create and load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => setRazorpayLoaded(true);
+    script.onerror = () => {
+      console.error('Failed to load Razorpay script');
+      toast.error('Failed to load payment gateway. Please refresh the page.');
+    };
+    
+    if (document.body) {
+      document.body.appendChild(script);
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        if (document.body) {
+          document.body.appendChild(script);
+        }
+      });
+    }
+  }, []);
+
   if (isLoading) {
     return <Loading className="h-screen flex items-center justify-center" />;
   }
@@ -382,15 +429,76 @@ export default function Page({ params }: { params: { videoId: string } }) {
   ];
 
   // Handle monetization button clicks
-  const handleMonetizationClick = (type: 'gift' | 'support' | 'premium') => {
+  const handleMonetizationClick = async (type: 'gift' | 'support' | 'premium') => {
+    // Fix: Check if user is NOT logged in
     if (isLogin) {
       toast.warning("Please login to use this feature");
       router.push("/login");
       return;
     }
-    // For now, show a toast - can be integrated with payment system later
+
     const amounts = { gift: 99, support: 499, premium: 999 };
-    toast.info(`${type.charAt(0).toUpperCase() + type.slice(1)} feature - ₹${amounts[type]}`);
+    const amount = amounts[type];
+
+    // Check if Razorpay is loaded
+    if (!razorpayLoaded || !(window as any).Razorpay) {
+      toast.error('Payment gateway is loading. Please wait a moment and try again.');
+      return;
+    }
+
+    try {
+      setIsProcessingPayment(true);
+      setPaymentType(type);
+
+      // Get Razorpay key
+      const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_S6OhJZYer8Fo43';
+
+      // Configure Razorpay options
+      const options = {
+        key: razorpayKey,
+        amount: amount * 100, // Amount in paise
+        currency: 'INR',
+        name: 'ZynoFlix OTT',
+        description: `${type.charAt(0).toUpperCase() + type.slice(1)} Support - ₹${amount}`,
+        order_id: "GIFT_" + Math.random().toString(36).substring(2, 15),
+        handler: function (response: any) {
+          // Payment successful
+          console.log('Payment successful:', response);
+          setIsProcessingPayment(false);
+          setShowThankYouModal(true);
+          toast.success(`Thank you for your ${type} support!`);
+        },
+        prefill: {
+          name: user?.full_name || '',
+          email: user?.email || '',
+          contact: user?.phone || ''
+        },
+        theme: {
+          color: '#6C00F6'
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessingPayment(false);
+            toast.info('Payment cancelled');
+          }
+        }
+      };
+
+      // Open Razorpay checkout
+      const razorpay = new (window as any).Razorpay(options);
+      
+      razorpay.on('payment.failed', function (response: any) {
+        console.error('Payment failed:', response);
+        setIsProcessingPayment(false);
+        toast.error('Payment failed. Please try again.');
+      });
+
+      razorpay.open();
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      setIsProcessingPayment(false);
+      toast.error(error?.response?.data?.error || 'Failed to process payment. Please try again.');
+    }
   };
 
   return (
@@ -562,45 +670,66 @@ export default function Page({ params }: { params: { videoId: string } }) {
               {/* Monetization Buttons */}
               <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-2">
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={!isProcessingPayment ? { scale: 1.02 } : {}}
+                  whileTap={!isProcessingPayment ? { scale: 0.98 } : {}}
                   onClick={() => handleMonetizationClick('gift')}
-                  className="flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0"
+                  disabled={isProcessingPayment}
+                  className={cn(
+                    "flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0",
+                    isProcessingPayment && "opacity-50 cursor-not-allowed"
+                  )}
                 >
-                  {/* Gift Box Icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                    <path d="M20 7h-4a2 2 0 0 1-2-2 2 2 0 0 1-2-2H8a2 2 0 0 1-2 2 2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/>
-                    <path d="M12 7v13"/>
-                    <path d="M12 7l-4-4"/>
-                    <path d="M12 7l4-4"/>
-                  </svg>
+                  {isProcessingPayment ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <path d="M20 7h-4a2 2 0 0 1-2-2 2 2 0 0 1-2-2H8a2 2 0 0 1-2 2 2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/>
+                      <path d="M12 7v13"/>
+                      <path d="M12 7l-4-4"/>
+                      <path d="M12 7l4-4"/>
+                    </svg>
+                  )}
                   <span>Gift ₹99</span>
                 </motion.button>
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={!isProcessingPayment ? { scale: 1.02 } : {}}
+                  whileTap={!isProcessingPayment ? { scale: 0.98 } : {}}
                   onClick={() => handleMonetizationClick('support')}
-                  className="flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0"
+                  disabled={isProcessingPayment}
+                  className={cn(
+                    "flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0",
+                    isProcessingPayment && "opacity-50 cursor-not-allowed"
+                  )}
                 >
-                  {/* Dollar Sign in Yellow Circle */}
-                  <div className="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 text-[#6C00F6]">
-                      <line x1="12" x2="12" y1="2" y2="22"/>
-                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                    </svg>
-                  </div>
+                  {isProcessingPayment ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <div className="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5 text-[#6C00F6]">
+                        <line x1="12" x2="12" y1="2" y2="22"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                      </svg>
+                    </div>
+                  )}
                   <span>Support ₹499</span>
                 </motion.button>
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={!isProcessingPayment ? { scale: 1.02 } : {}}
+                  whileTap={!isProcessingPayment ? { scale: 0.98 } : {}}
                   onClick={() => handleMonetizationClick('premium')}
-                  className="flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0"
+                  disabled={isProcessingPayment}
+                  className={cn(
+                    "flex items-center gap-2 border border-[#9A9AB3]/20 text-white px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowwrap bg-[#131321] flex-shrink-0",
+                    isProcessingPayment && "opacity-50 cursor-not-allowed"
+                  )}
                 >
-                  {/* Filled Gold Star */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-yellow-400">
-                    <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd"/>
-                  </svg>
+                  {isProcessingPayment ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-yellow-400">
+                      <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd"/>
+                    </svg>
+                  )}
                   <span>Premium ₹999</span>
                 </motion.button>
               </div>
@@ -656,6 +785,63 @@ export default function Page({ params }: { params: { videoId: string } }) {
           videoTitle={video.title}
         />
       )}
+
+      {/* Thank You Modal */}
+      <Dialog open={showThankYouModal} onOpenChange={setShowThankYouModal}>
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#1a0733] to-[#2c1157] border-[#6C00F6]/30">
+          <DialogHeader>
+            <div className="flex flex-col items-center justify-center py-4">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", duration: 0.5 }}
+                className="rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 p-6 mb-4"
+              >
+                {paymentType === 'gift' && (
+                  <Gift className="h-12 w-12 text-green-400" />
+                )}
+                {paymentType === 'support' && (
+                  <HeartHandshake className="h-12 w-12 text-green-400" />
+                )}
+                {paymentType === 'premium' && (
+                  <Star className="h-12 w-12 text-green-400" />
+                )}
+              </motion.div>
+              <DialogTitle className="text-2xl font-bold text-white text-center">
+                Thank You!
+              </DialogTitle>
+              <DialogDescription className="text-center text-gray-300 mt-2">
+                {paymentType === 'gift' && (
+                  <>
+                    Thank you for your generous gift of ₹99! Your support helps creators continue making amazing content.
+                  </>
+                )}
+                {paymentType === 'support' && (
+                  <>
+                    Thank you for your support of ₹499! Your contribution means the world to us.
+                  </>
+                )}
+                {paymentType === 'premium' && (
+                  <>
+                    Thank you for your premium support of ₹999! You're helping us create exceptional content.
+                  </>
+                )}
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={() => {
+                setShowThankYouModal(false);
+                setPaymentType(null);
+              }}
+              className="bg-gradient-to-r from-[#6C00F6] to-[#B100FF] hover:from-[#5a00d4] hover:to-[#9a00e6] text-white"
+            >
+              Continue Watching
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Desktop design - keep existing layout */}
       <div className="hidden lg:block">

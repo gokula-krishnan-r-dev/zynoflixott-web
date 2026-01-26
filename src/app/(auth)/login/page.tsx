@@ -81,19 +81,19 @@ const page = () => {
                   <SignupForm mode="login" />
 
                   <p className="mt-6 text-xs text-gray-100 text-center">
-                    I agree to abide by templatanas
+                    By continuing, I agree to ZynoFlix OTT's{" "}
                     <a
-                      href="#"
-                      className="border-b border-gray-500 text-indigo-400 border-dotted"
+                      href="/terms-condition"
+                      className="border-b border-gray-500 text-indigo-400 border-dotted hover:text-indigo-300"
                     >
-                      Terms of Service 
+                      Terms of Service
                     </a>
-                    and its
+                    {" "}and{" "}
                     <a
-                      href="#"
-                      className="border-b border-gray-500 text-indigo-400 border-dotted"
+                      href="/privacy-policy"
+                      className="border-b border-gray-500 text-indigo-400 border-dotted hover:text-indigo-300"
                     >
-                      Privacy Policy 
+                      Privacy Policy
                     </a>
                   </p>
                 </div>
