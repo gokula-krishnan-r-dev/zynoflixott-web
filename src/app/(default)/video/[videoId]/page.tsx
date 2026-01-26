@@ -224,7 +224,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
   console.log(follower?.[0]?.user_id, "follower");
   const router = useRouter();
   const handletoFollow = async () => {
-    if (isLogin) {
+    if (!authId) {
       toast.warning(
         "You need to login to add comment. Please login to add comment"
       );
