@@ -1,6 +1,14 @@
 "use client";
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import axios from "axios";
+
+// Declare Tawk.to types
+declare global {
+  interface Window {
+    Tawk_API?: any;
+    Tawk_LoadStart?: Date;
+  }
+}
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +21,28 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Load Tawk.to script for this page
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const win = window as any;
+      if (!win.Tawk_API) {
+        win.Tawk_API = win.Tawk_API || {};
+        win.Tawk_LoadStart = new Date();
+        
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = "https://embed.tawk.to/6940ec6a144809197182b559/default";
+        script.charset = "UTF-8";
+        script.setAttribute("crossorigin", "*");
+        
+        const firstScript = document.getElementsByTagName("script")[0];
+        if (firstScript && firstScript.parentNode) {
+          firstScript.parentNode.insertBefore(script, firstScript);
+        }
+      }
+    }
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

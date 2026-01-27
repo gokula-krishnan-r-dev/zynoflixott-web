@@ -1,7 +1,7 @@
 "use client";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import ProfileImageUpload from "@/components/ui/profile-image-upload";
 
@@ -22,6 +22,13 @@ interface StudentAmbassadorFormData {
   profilePic?: File | string;
 }
 
+const checkAlreadyRegistered = (): boolean => {
+  if (typeof window === "undefined") return false;
+  const uid = localStorage.getItem("userId");
+  const userType = localStorage.getItem("userType");
+  return !!(uid && userType === "student_ambassador");
+};
+
 const StudentAmbassadorForm: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<StudentAmbassadorFormData>({
@@ -39,6 +46,16 @@ const StudentAmbassadorForm: React.FC = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+  const [modalDismissed, setModalDismissed] = useState(false);
+
+  const goToProfile = useCallback(() => {
+    router.push("/profile");
+  }, [router]);
+
+  useEffect(() => {
+    if (checkAlreadyRegistered()) setAlreadyRegistered(true);
+  }, []);
 
   // Load Razorpay script
   useEffect(() => {
@@ -156,9 +173,14 @@ const StudentAmbassadorForm: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Error creating profile:", error);
-      toast.error(
-        `Error creating profile. ${error.response?.data?.error || error.message}`
-      );
+      const code = error.response?.data?.code;
+      const msg = error.response?.data?.error || "";
+      if (code === "USER_EXISTS" || /already exists|already registered/i.test(msg)) {
+        setAlreadyRegistered(true);
+        setModalDismissed(false);
+        return;
+      }
+      toast.error(`Error creating profile. ${msg || error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -292,6 +314,85 @@ const StudentAmbassadorForm: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (!alreadyRegistered || modalDismissed) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setModalDismissed(true);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [alreadyRegistered, modalDismissed]);
+
+  if (alreadyRegistered) {
+    if (!modalDismissed) {
+      return (
+        <>
+          <div
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            aria-hidden="true"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="already-registered-title"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            <div className="relative w-full max-w-md rounded-2xl border border-gray-600 bg-gray-800 p-6 shadow-xl">
+              <div className="mb-5 flex justify-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20">
+                  <svg className="h-7 w-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <h2 id="already-registered-title" className="mb-2 text-center text-xl font-bold text-white">
+                Already registered
+              </h2>
+              <p className="mb-6 text-center text-gray-300">
+                You&apos;re already registered as a Student Brand Ambassador. Go to your Profile?
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <button
+                  type="button"
+                  onClick={goToProfile}
+                  className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-500 active:scale-[0.98]"
+                >
+                  Go to Profile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalDismissed(true)}
+                  className="rounded-xl border border-gray-500 bg-gray-700 px-5 py-3 font-medium text-white transition hover:bg-gray-600 active:scale-[0.98]"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+    return (
+      <div className="mx-auto max-w-xl rounded-xl border border-gray-600 bg-gray-800/80 p-4 text-center">
+        <p className="text-gray-300">
+          You&apos;re already registered as a Student Brand Ambassador.{" "}
+          <button
+            type="button"
+            onClick={goToProfile}
+            className="font-semibold text-emerald-400 underline hover:text-emerald-300"
+          >
+            Go to Profile
+          </button>
+        </p>
+      </div>
+    );
+  }
 
   if (showPayment) {
     return (

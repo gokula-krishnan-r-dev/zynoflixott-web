@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState } from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 
@@ -45,6 +45,8 @@ const ListProduction = dynamic(
 );
 
 export default function Home() {
+  const [showMoreServices, setShowMoreServices] = useState(false);
+
   return (
     <main className="min-h-screen bg-body">
       <Head>
@@ -236,17 +238,40 @@ export default function Home() {
                 <span className="text-white text-[11px] sm:text-xs font-medium text-center leading-tight">Film Production</span>
               </button>
 
-              {/* Advertisement */}
-              <button 
-                onClick={() => window.location.href = '/advertisement'} 
-                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-yellow-500/90 to-amber-500/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-yellow-500/20 hover:border-amber-400/40 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+              {/* Advertisement - unlocked via See more */}
+              {showMoreServices && (
+                <button
+                  onClick={() => window.location.href = "/advertisement"}
+                  className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-yellow-500/90 to-amber-500/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-yellow-500/20 hover:border-amber-400/40 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                >
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                    </svg>
+                  </div>
+                  <span className="text-white text-[11px] sm:text-xs font-medium text-center leading-tight">Advertisement</span>
+                </button>
+              )}
+
+              {/* See more / See less */}
+              <button
+                onClick={() => setShowMoreServices((prev) => !prev)}
+                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-slate-600/90 to-slate-700/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-slate-500/30 hover:border-slate-400/50 hover:shadow-lg hover:shadow-slate-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                  </svg>
+                  {showMoreServices ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
                 </div>
-                <span className="text-white text-[11px] sm:text-xs font-medium text-center leading-tight">Advertisement</span>
+                <span className="text-white text-[11px] sm:text-xs font-medium text-center leading-tight">
+                  {showMoreServices ? "See less" : "See more"}
+                </span>
               </button>
             </div>
 

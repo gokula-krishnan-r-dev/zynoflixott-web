@@ -430,12 +430,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
 
   // Handle monetization button clicks
   const handleMonetizationClick = async (type: 'gift' | 'support' | 'premium') => {
-    // Fix: Check if user is NOT logged in
-    if (isLogin) {
-      toast.warning("Please login to use this feature");
-      router.push("/login");
-      return;
-    }
+   
 
     const amounts = { gift: 99, support: 499, premium: 999 };
     const amount = amounts[type];
@@ -450,6 +445,7 @@ export default function Page({ params }: { params: { videoId: string } }) {
       setIsProcessingPayment(true);
       setPaymentType(type);
 
+     
       // Get Razorpay key
       const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_S6OhJZYer8Fo43';
 
@@ -460,7 +456,6 @@ export default function Page({ params }: { params: { videoId: string } }) {
         currency: 'INR',
         name: 'ZynoFlix OTT',
         description: `${type.charAt(0).toUpperCase() + type.slice(1)} Support - ₹${amount}`,
-        order_id: "GIFT_" + Math.random().toString(36).substring(2, 15),
         handler: function (response: any) {
           // Payment successful
           console.log('Payment successful:', response);
@@ -490,14 +485,14 @@ export default function Page({ params }: { params: { videoId: string } }) {
       razorpay.on('payment.failed', function (response: any) {
         console.error('Payment failed:', response);
         setIsProcessingPayment(false);
-        toast.error('Payment failed. Please try again.');
+        toast.error(response.error?.description || 'Payment failed. Please try again.');
       });
 
       razorpay.open();
     } catch (error: any) {
       console.error('Payment error:', error);
       setIsProcessingPayment(false);
-      toast.error(error?.response?.data?.error || 'Failed to process payment. Please try again.');
+      toast.error(error?.response?.data?.error || error?.message || 'Failed to process payment. Please try again.');
     }
   };
 

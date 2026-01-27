@@ -45,7 +45,7 @@ const Page = () => {
   });
   const router = useRouter();
   useEffect(() => {
-    if (!isLogin) {
+    if (isLogin) {
       toast.warning(
         "You need to login to add comment. Please login to add comment"
       );
