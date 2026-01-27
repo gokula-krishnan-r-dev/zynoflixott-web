@@ -254,27 +254,19 @@ export default function Home() {
               )}
 
               {/* See more / See less */}
+            </div>
+            <div className="flex items-center justify-center py-2">
+
               <button
                 onClick={() => setShowMoreServices((prev) => !prev)}
-                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-slate-600/90 to-slate-700/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-slate-500/30 hover:border-slate-400/50 hover:shadow-lg hover:shadow-slate-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
-                  {showMoreServices ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  )}
-                </div>
+                className="flex items-center justify-center text-white text-[11px] sm:text-xs font-medium text-center leading-tight bg-main rounded-lg sm:rounded-xl border border-slate-500/30 hover:border-slate-400/50 hover:shadow-lg hover:shadow-slate-500/20 active:scale-95 transition-all duration-200 px-2 py-1"
+                >
                 <span className="text-white text-[11px] sm:text-xs font-medium text-center leading-tight">
                   {showMoreServices ? "See less" : "See more"}
                 </span>
               </button>
-            </div>
 
+                </div>
 
             <Suspense fallback={<CategorySkeleton />}>
               <CategoryList langage={"Tamil"}
