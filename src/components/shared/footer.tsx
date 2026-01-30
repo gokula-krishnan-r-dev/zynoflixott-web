@@ -156,6 +156,14 @@ const Footer: React.FC = () => {
                     Legal policy
                   </a>
                 </li>
+                <li>
+                  <a
+                    className="hover:underline"
+                    href="/brand-ambassador-terms"
+                  >
+                    Brand Ambassador Terms, Refund & Benefits
+                  </a>
+                </li>
 
               </ul>
             </div>
