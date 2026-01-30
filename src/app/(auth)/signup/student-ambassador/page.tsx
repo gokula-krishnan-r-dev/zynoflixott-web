@@ -1,4 +1,5 @@
 import StudentAmbassadorForm from "@/components/form/student-ambassador-form";
+import { RegisteredAmbassadorsList } from "@/components/ambassador/RegisteredAmbassadorsList";
 import React from "react";
 import Link from "next/link";
 
@@ -37,6 +38,10 @@ const page = () => {
               <h1 className="text-2xl xl:text-3xl font-extrabold text-white mb-8 text-center">
                 Student Brand Ambassador Registration
               </h1>
+
+              <div className="w-full mt-6 mb-8 mx-auto max-w-xl">
+                <RegisteredAmbassadorsList />
+              </div>
 
               <div className="w-full mt-8">
                 <div className="mx-auto max-w-xl">
