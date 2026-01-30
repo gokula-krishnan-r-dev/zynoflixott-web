@@ -319,7 +319,7 @@ const EventPage = () => {
                         onClick={openRegistrationModal}
                     >
                         <HiCalendar className="w-5 h-5" />
-                        Register for Free
+                        Register
                     </button>
                   
                 </div>
@@ -346,41 +346,7 @@ const EventPage = () => {
                     </div>
                 </section>
 
-                {/* Event Schedule */}
-                <section className="mb-16">
-                    <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                        <h2 className="text-2xl md:text-3xl font-bold">Event Schedule</h2>
-                        <Link href="#" className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
-                            View all <FaArrowRight className="w-4 h-4" />
-                        </Link>
-                    </div>
-                    <div className="space-y-4">
-                        {EVENT_SCHEDULE.map((item, i) => (
-                            <div
-                                key={i}
-                                className="bg-gray-800/60 rounded-2xl p-4 flex items-center gap-4 hover:bg-gray-800/80 transition"
-                            >
-                                <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 bg-gray-700">
-                                    <Image
-                                        src={item.avatar}
-                                        alt={item.name}
-                                        fill
-                                        className="object-cover"
-                                        sizes="48px"
-                                    />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="font-bold truncate">{item.name}</p>
-                                    <p className="text-white/70 text-sm truncate">{item.role}</p>
-                                </div>
-                                <div className="text-right shrink-0">
-                                    <p className="font-medium">{item.time}</p>
-                                    <p className="text-white/70 text-sm">{item.date}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
+
 
                 {/* Event Timeline */}
                 <section className="mb-16">
@@ -435,7 +401,7 @@ const EventPage = () => {
                             onClick={openRegistrationModal}
                             className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-full transition hover:scale-105 shadow-xl inline-flex items-center gap-2"
                         >
-                            Register for Free <FaArrowRight className="w-5 h-5" />
+                            Register <FaArrowRight className="w-5 h-5" />
                         </button>
                     </div>
                 </section>

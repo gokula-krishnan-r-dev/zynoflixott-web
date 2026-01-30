@@ -233,6 +233,41 @@ const Page = () => {
                       </div>
                     </div>
                   </div>
+                  {/* Benefits & Incentives for Brand Ambassadors */}
+                  <div className="mt-4 p-4 rounded-lg bg-gray-800/80 border border-gray-700/50 w-full">
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-3">Your Benefits & Incentives</h3>
+                    <p className="text-gray-400 text-xs mb-3">Note: Brand Ambassador program is for current college students only.</p>
+                    <ul className="space-y-2 text-sm text-gray-200">
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#7b61ff] shrink-0">1.</span>
+                        <span>Free ZynoFlix OTT subscription for 3 months</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#7b61ff] shrink-0">2.</span>
+                        <span>Official Brand Ambassador of ZynoFlix OTT tag & ID card</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#7b61ff] shrink-0">3.</span>
+                        <span>Certificate delivered to your college</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#7b61ff] shrink-0">4.</span>
+                        <span>Eligibility for job offer from ZynoFlix OTT</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#7b61ff] shrink-0">5.</span>
+                        <span>Monthly earning from subscription referral count (earn ₹5,000 – ₹50,000 per month, subject to verification)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#7b61ff] shrink-0">6.</span>
+                        <span>Event Head opportunity to conduct short film festival with 50% revenue share (as per agreed terms)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#7b61ff] shrink-0">7.</span>
+                        <span>Higher education–related offers and support (subject to availability)</span>
+                      </li>
+                    </ul>
+                  </div>
                   {/* Terms and Conditions applied - Brand Ambassador */}
                   <div className="mt-3 p-3 rounded-lg bg-gray-800/60 border border-gray-700/50">
                     <p className="text-gray-400 text-xs sm:text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
