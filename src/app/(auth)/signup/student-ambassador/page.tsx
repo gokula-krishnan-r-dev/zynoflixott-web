@@ -1,5 +1,6 @@
 import StudentAmbassadorForm from "@/components/form/student-ambassador-form";
 import React from "react";
+import Link from "next/link";
 
 const page = () => {
   const isIOS = () => {
@@ -42,19 +43,29 @@ const page = () => {
                   <StudentAmbassadorForm />
                   <p className="mt-6 text-xs text-gray-400 text-center">
                     I agree to abide by ZynoFlix OTT
-                    <a
-                      href="#"
-                      className="border-b border-gray-500 border-dotted ml-1"
+                    <Link
+                      href="/terms-condition"
+                      className="border-b border-gray-500 border-dotted ml-1 hover:text-gray-300"
                     >
                       Terms of Service
-                    </a>
+                    </Link>
                     and its
-                    <a
-                      href="#"
-                      className="border-b border-gray-500 border-dotted ml-1"
+                    <Link
+                      href="/privacy-policy"
+                      className="border-b border-gray-500 border-dotted ml-1 hover:text-gray-300"
                     >
                       Privacy Policy
-                    </a>
+                    </Link>
+                    .
+                  </p>
+                  <p className="mt-2 text-xs text-gray-400 text-center">
+                    Terms and Conditions applied*.
+                    <Link
+                      href="/brand-ambassador-terms"
+                      className="border-b border-gray-500 border-dotted ml-1 text-[#7b61ff] hover:text-[#a78bfa]"
+                    >
+                      Brand Ambassador Terms, Refund & Benefits
+                    </Link>
                   </p>
 
                   <div className="flex mt-3 text-sm justify-center text-gray-400 text-center items-center">

@@ -43,6 +43,7 @@ export const footerData: FooterSection[] = [
         label: "Legal Policy",
         href: "/legal-policy",
       },
+      { label: "Brand Ambassador Terms, Refund & Benefits", href: "/brand-ambassador-terms" },
     ],
   },
   {

@@ -5,7 +5,8 @@ import { UpdateImg } from "@/components/profile/update-img";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
 import { isLogin, isProduction, userId } from "@/lib/user";
-import { Edit, Edit2, LogOut, Trash2, VideoIcon } from "lucide-react";
+import { Edit, Edit2, LogOut, Trash2, VideoIcon, FileText } from "lucide-react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -231,6 +232,21 @@ const Page = () => {
                         </p>
                       </div>
                     </div>
+                  </div>
+                  {/* Terms and Conditions applied - Brand Ambassador */}
+                  <div className="mt-3 p-3 rounded-lg bg-gray-800/60 border border-gray-700/50">
+                    <p className="text-gray-400 text-xs sm:text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <FileText className="w-3.5 h-3.5 shrink-0" />
+                      <span>Terms and Conditions applied*.</span>
+                      <span className="text-gray-500">|</span>
+                      <Link href="/brand-ambassador-terms" className="text-[#7b61ff] hover:text-[#a78bfa] underline">
+                        Brand Ambassador Terms
+                      </Link>
+                      <span className="text-gray-500">|</span>
+                      <Link href="/refund-policy" className="text-[#7b61ff] hover:text-[#a78bfa] underline">
+                        Refund Policy
+                      </Link>
+                    </p>
                   </div>
                 </div>
               )}

@@ -256,7 +256,6 @@ export default function Home() {
               {/* See more / See less */}
             </div>
             <div className="flex items-center justify-center py-2">
-
               <button
                 onClick={() => setShowMoreServices((prev) => !prev)}
                 className="flex items-center justify-center text-white text-[11px] sm:text-xs font-medium text-center leading-tight bg-main rounded-lg sm:rounded-xl border border-slate-500/30 hover:border-slate-400/50 hover:shadow-lg hover:shadow-slate-500/20 active:scale-95 transition-all duration-200 px-2 py-1"
@@ -265,8 +264,7 @@ export default function Home() {
                   {showMoreServices ? "See less" : "See more"}
                 </span>
               </button>
-
-                </div>
+            </div>
 
             <Suspense fallback={<CategorySkeleton />}>
               <CategoryList langage={"Tamil"}
