@@ -60,8 +60,9 @@ export function SheetMobile() {
   }, [open]);
 
   useEffect(() => {
-    setLoggedIn(!authId);
-  }, []);
+
+    setLoggedIn(isLogin);
+  }, [isLogin]);
 
   if (loggedIn === null) {
     return null; // This will be handled by the parent component
