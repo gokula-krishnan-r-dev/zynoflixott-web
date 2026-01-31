@@ -145,7 +145,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ user, onUpdate }) =
           </div>
         </div>
         <button
-          onClick={() => router.push('/video/694109553221a4dd908cecda')}
+          onClick={() => router.push('/video/697c890f006a91300abc58c8')}
           className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all"
         >
           View Subscription Plans
