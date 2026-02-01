@@ -138,7 +138,25 @@ sudo systemctl reload nginx
 
 After making these changes, try uploading a large file to test if the issue is resolved.
 
-## 4. Troubleshooting
+## 4. API server (api.zynoflixott.com) – fix 413 for user image uploads
+
+If your API is behind Nginx at **api.zynoflixott.com** and you get **413 Request Entity Too Large** on `PUT /api/auth/user/:user_id` (profile/background images over ~1MB), Nginx is limiting the request body. Use a dedicated config for the API:
+
+1. Copy or use the project file `api.zynoflix-site.conf` (in the repo root).
+2. On the API server:
+   ```bash
+   sudo nano /etc/nginx/sites-available/api.zynoflix-site.conf
+   ```
+   Set `client_max_body_size 25M;` in the `server` block (and in `http` if you use a shared nginx.conf). The file in the repo uses 25MB so uploads of 10MB+ work.
+3. Enable and reload:
+   ```bash
+   sudo ln -sf /etc/nginx/sites-available/api.zynoflix-site.conf /etc/nginx/sites-enabled/
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
+If the API is on a different host, ensure that host’s Nginx has **client_max_body_size 25M;** (or 50M) for the server/location that proxies to the Node API.
+
+## 5. Troubleshooting
 
 If you still encounter issues, check the Nginx error logs:
 
@@ -164,4 +182,10 @@ Save and reload systemd:
 
 ```bash
 sudo systemctl daemon-reload
-``` 
+```
+
+### 413 on API (api.zynoflixott.com)
+
+- **Symptom:** `PUT https://api.zynoflixott.com/api/auth/user/:id` returns **413 Request Entity Too Large** when uploading profile/background images (e.g. &gt; 10MB).
+- **Cause:** Nginx (or another reverse proxy) in front of the API has a default `client_max_body_size` of 1MB.
+- **Fix:** In the Nginx config for **api.zynoflixott.com**, set `client_max_body_size 25M;` (or 50M) in the `server` block, then reload Nginx. Use `api.zynoflix-site.conf` from the repo as reference. 

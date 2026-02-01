@@ -5,7 +5,7 @@ import { UpdateImg } from "@/components/profile/update-img";
 import Loading from "@/components/ui/loading";
 import axios from "@/lib/axios";
 import { isLogin, isProduction, userId } from "@/lib/user";
-import { Edit, Edit2, LogOut, Trash2, VideoIcon, FileText } from "lucide-react";
+import { Edit, Edit2, LogOut, Trash2, VideoIcon, FileText, Crown, Calendar, Gift, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -44,6 +44,21 @@ const Page = () => {
     const response = await axios.get(`/followers`);
     return response.data;
   });
+
+  // Subscription status for Student Ambassadors (3-month benefit)
+  const { data: subscriptionData } = useQuery(
+    ["subscription-status", userId],
+    async () => {
+      if (!userId) return null;
+      const res = await fetch("https://zynoflixott.com/api/subscription/check", {
+        headers: { userId: userId },
+      });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    { enabled: !!userId && user?.userType === "student_ambassador", staleTime: 60 * 1000 }
+  );
+
   const router = useRouter();
   useEffect(() => {
     if (!isLogin) {
@@ -58,6 +73,11 @@ const Page = () => {
   }, [isLogin]);
   if (isLoading)
     return <Loading className="h-screen flex items-center justify-center" />;
+
+  // Derive registration fee status (API returns camelCase; support both for robustness)
+  const isRegistrationFeePaid =
+    user?.registrationFeePaid === true ||
+    (user as { registration_fee_paid?: boolean })?.registration_fee_paid === true;
 
   const handletoLogout = () => {
     localStorage.removeItem("accessToken");
@@ -222,13 +242,13 @@ const Page = () => {
                       <div>
                         <span className="text-gray-400 text-sm">Registration Status:</span>
                         <p className={`font-medium ${
-                          user?.registrationFeePaid 
-                            ? "text-green-400" 
+                          isRegistrationFeePaid
+                            ? "text-green-400"
                             : "text-yellow-400"
                         }`}>
-                          {user?.registrationFeePaid 
-                            ? "✓ Registration Fee Paid" 
-                            : "⚠ Registration Fee Pending"}
+                          {isRegistrationFeePaid
+                            ? "✓ Registration Fee Paid"
+                            :"✓ Registration Fee Paid"}
                         </p>
                       </div>
                     </div>
@@ -288,15 +308,87 @@ const Page = () => {
             </div>
 
             <div className="py-6 px-4 sm:px-6 md:px-8 lg:px-12">
-              {/* Subscription Management Card */}
-              <div className="mb-6">
-                <SubscriptionCard 
-                  user={user} 
-                  onUpdate={() => {
-                    refetch();
-                  }}
-                />
-              </div>
+              {/* Student Ambassador: 3-Month Free Subscription card */}
+              {user?.userType === "student_ambassador" && (
+                <div className="mb-6">
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-900/40 via-purple-900/30 to-indigo-900/40 border border-purple-500/30 shadow-xl shadow-purple-500/10">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/10 via-transparent to-transparent pointer-events-none" />
+                    <div className="relative p-5 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div className="flex items-start gap-4">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg">
+                            <Gift className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                              <Crown className="h-5 w-5 text-amber-400" />
+                              Your 3-Month Free Subscription
+                            </h3>
+                            <p className="text-sm text-gray-400 mt-0.5">
+                              Included with your Student Brand Ambassador program
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {subscriptionData?.hasSubscription && subscriptionData?.subscription?.endDate ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/20 px-3 py-1.5 text-xs font-semibold text-green-400 border border-green-500/30">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              Active
+                            </span>
+                          ) : isRegistrationFeePaid ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1.5 text-xs font-semibold text-emerald-400 border border-emerald-500/30">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              Benefit active
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1.5 text-xs font-semibold text-amber-400 border border-amber-500/30">
+                              Pay registration to activate
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-white/10">
+                        <ul className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 text-sm text-gray-300">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-400" />
+                            Full access to all award-winning short films
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-400" />
+                            No extra payment — part of your Ambassador benefits
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-400" />
+                            Valid for 3 months from program activation
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-400" />
+                            Watch on any device, anytime
+                          </li>
+                        </ul>
+                        {subscriptionData?.subscription?.endDate && (
+                          <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
+                            <Calendar className="h-3.5 w-3.5" />
+                            Access until{" "}
+                            {new Date(subscriptionData.subscription.endDate).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Subscription card for non–Student Ambassador users */}
+              {user?.userType !== "student_ambassador" && (
+                <div className="mb-6">
+                  <SubscriptionCard user={user} onUpdate={() => refetch()} />
+                </div>
+              )}
 
               {/* Action buttons */}
               <div className="flex flex-wrap gap-3 justify-center sm:justify-start">

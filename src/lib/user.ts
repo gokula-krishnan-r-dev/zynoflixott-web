@@ -14,6 +14,9 @@ export const isProduction =
 
 export const isLogin = typeof window !== "undefined" ? localStorage.getItem("isLogin") === "true" : false;
 
+/** True if the current user is a Student Brand Ambassador (gets full video access without subscription). */
+export const isStudentAmbassador =
+  typeof window !== "undefined" ? localStorage.getItem("userType") === "student_ambassador" : false;
 
 export const authId =
   typeof window !== "undefined" ? localStorage.getItem("userId") : null;

@@ -127,32 +127,32 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ user, onUpdate }) =
     );
   }
 
-  // No active subscription
-  if (!hasActiveSubscription) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 rounded-2xl p-6 shadow-xl border border-gray-700/50"
-      >
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center">
-            <Crown className="w-6 h-6 text-gray-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">No Active Subscription</h3>
-            <p className="text-sm text-gray-400">Subscribe to unlock premium features</p>
-          </div>
-        </div>
-        <button
-          onClick={() => router.push('/video/697c890f006a91300abc58c8')}
-          className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all"
-        >
-          View Subscription Plans
-        </button>
-      </motion.div>
-    );
-  }
+  // // No active subscription
+  // if (!hasActiveSubscription) {
+  //   return (
+  //     <motion.div
+  //       initial={{ opacity: 0, y: 20 }}
+  //       animate={{ opacity: 1, y: 0 }}
+  //       className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 rounded-2xl p-6 shadow-xl border border-gray-700/50"
+  //     >
+  //       <div className="flex items-center gap-4 mb-4">
+  //         <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center">
+  //           <Crown className="w-6 h-6 text-gray-400" />
+  //         </div>
+  //         <div>
+  //           <h3 className="text-lg font-semibold text-white">No Active Subscription</h3>
+  //           <p className="text-sm text-gray-400">Subscribe to unlock premium features</p>
+  //         </div>
+  //       </div>
+  //       <button
+  //         onClick={() => router.push('/video/697c890f006a91300abc58c8')}
+  //         className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-lg transition-all"
+  //       >
+  //         View Subscription Plans
+  //       </button>
+  //     </motion.div>
+  //   );
+  // }
 
   // Get subscription details from API data or user prop
   const endDate = subscription?.endDate 
