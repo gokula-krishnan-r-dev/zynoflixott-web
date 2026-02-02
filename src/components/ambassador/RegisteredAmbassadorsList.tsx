@@ -9,6 +9,13 @@ import { Users } from "lucide-react";
 const DEFAULT_AVATAR = "https://i.sstatic.net/l60Hf.png";
 const LIST_QUERY_KEY = "student-ambassadors-list";
 
+/** Strip query string (e.g. Azure SAS token) so img src is a clean URL. */
+function imageUrlWithoutQuery(url: string | undefined): string {
+  if (!url || typeof url !== "string") return "";
+  const i = url.indexOf("?");
+  return i === -1 ? url : url.slice(0, i);
+}
+
 export interface AmbassadorListItem {
   _id: string;
   full_name: string;
@@ -32,7 +39,7 @@ function AmbassadorRow({
   return (
     <div className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-white/5 transition-colors shrink-0">
       <img
-        src={profilePic || DEFAULT_AVATAR}
+        src={imageUrlWithoutQuery(profilePic) || DEFAULT_AVATAR}
         alt=""
         className="w-9 h-9 rounded-full object-cover border border-white/10 shrink-0"
       />

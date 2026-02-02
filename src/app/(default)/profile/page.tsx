@@ -188,7 +188,7 @@ const Page = () => {
               {/* Follower count */}
               <div className="flex justify-center sm:justify-start">
                 <div className="text-xl sm:text-2xl md:text-3xl text-gray-100 dark:text-gray-400">
-                  {follower?.count || 0} Followers
+                  {0} Followers
                 </div>
               </div>
 

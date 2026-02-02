@@ -44,18 +44,15 @@ const getProductionCompanies = async (url: string) => {
   return response.data.productionCompany;
 };
 
-// Helper function to generate a random but consistent watching count based on company ID
+// Helper function to generate a random but consistent watching count based on company ID (capped at 300)
 const getRandomWatchingCount = (companyId: string): number => {
-  // Use the company ID as a seed to generate a consistent random number
   let hash = 0;
   for (let i = 0; i < companyId.length; i++) {
     const char = companyId.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
+    hash = hash & hash;
   }
-  // Generate a random number between 100 and 5000 based on the hash
-  const random = Math.abs(hash) % 4900 + 100;
-  return random;
+  return Math.abs(hash) % 300 + 1; // 1–300
 };
 
 // Helper function to format watching count
@@ -226,15 +223,9 @@ const ListProduction = ({ url, title }: any) => {
                           <div className="flex items-center gap-2 pl-2">
                             <Eye className="w-4 h-4 lg:w-5 lg:h-5 text-[#a78bfa] lg:text-[#c4b5fd]" />
                             <span className="text-[#a78bfa] lg:text-[#c4b5fd] lg:text-sm text-xs">
-                              {formatWatchingCount(company.watchingCount || company.viewers || getRandomWatchingCount(company._id))} Watching
+                              {formatWatchingCount(Math.min(300, company.watchingCount ?? company.viewers ?? getRandomWatchingCount(company._id)))} Watching
                             </span>
                           </div>
-                          {/* <SocialButtons
-                          facebook={company?.socialMedia?.facebook}
-                          twitter={company?.socialMedia?.twitter}
-                          instagram={company?.socialMedia?.instagram}
-                          youtube={company?.socialMedia?.youtube}
-                        /> */}
                         </div>
                       </div>
                     </Link>

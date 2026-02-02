@@ -9,12 +9,14 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Video element */
+/* Video element — brighter, clearer color */
 .video-element {
   width: 100%;
   height: 100%;
   object-fit: contain;
   background-color: #000;
+  filter: brightness(1.18) contrast(1.05) saturate(1.06);
+  transition: filter 0.25s ease;
 }
 
 /* Loading spinner */

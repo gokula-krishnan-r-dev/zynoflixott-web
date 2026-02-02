@@ -82,6 +82,7 @@ const page = () => {
                 </div>
               </div>
             <div className="pt-12 flex flex-col items-center">
+
             
               {/* Content Section */}
               <div className="w-full max-w-4xl mb-8 space-y-8">
@@ -133,6 +134,9 @@ const page = () => {
                   </div>
                 </div>
 
+                <div className="pt-4">
+                <img src="/images/id.jpeg" alt="id" className="w-full h-full object-cover" />
+              </div>
                 {/* What Does an Ambassador Do */}
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8">
                   <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">

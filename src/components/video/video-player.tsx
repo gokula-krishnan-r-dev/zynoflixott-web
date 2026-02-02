@@ -708,6 +708,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         />
       </video>
 
+      {/* Color gradient overlay — improves perceived contrast and depth (non-blocking) */}
+      <div
+        className="absolute inset-0 pointer-events-none z-[1] rounded-lg overflow-hidden"
+        aria-hidden
+      >
+        <div
+          className="absolute inset-0 opacity-[0.35]"
+          style={{
+            background: [
+              'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 18%, transparent 82%, rgba(0,0,0,0.4) 100%)',
+              'linear-gradient(to right, rgba(0,0,0,0.12) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.12) 100%)',
+            ].join(', '),
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            background: 'radial-gradient(ellipse 80% 70% at 50% 50%, transparent 40%, rgba(20,10,40,0.4) 100%)',
+          }}
+        />
+      </div>
+
       {/* Loading Spinner with Enhanced Animation */}
       {isBuffering && (
         <div className="buffering-overlay">

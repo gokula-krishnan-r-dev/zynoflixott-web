@@ -162,7 +162,7 @@ export default function VideoScroll({ data, title = '', sectionType = '' }: { da
       {/* Mobile view */}
       <div className="sm:hidden">
         <div className="mobile-section-title">
-          <h2>{title || 'Recommended'}</h2>
+          <h4 className="!text-base font-bold lg:text-xl">{title || 'Recommended'}</h4>
           <Link href="/explore" className="text-sm text-purple-400">Let's Explore</Link>
         </div>
 

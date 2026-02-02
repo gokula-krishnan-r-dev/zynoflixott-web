@@ -538,7 +538,7 @@ export default function ProductionPage() {
             </div>
 
             {/* //LAST DATE ( JUNE 30 ) ( live timer ) */}
-
+{/* 
             <div className="w-full py-8 flex flex-col items-center justify-center">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -554,7 +554,7 @@ export default function ProductionPage() {
                     </p>
                     <CountdownTimer targetDate="June 30, 2025" />
                 </motion.div>
-            </div>
+            </div> */}
 
             {/* Production Process Timeline */}
             <div className="max-w-6xl mx-auto px-4 py-16">
