@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, lazy, useState } from "react";
+import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 
@@ -48,7 +48,7 @@ export default function Home() {
   const [showMoreServices, setShowMoreServices] = useState(false);
 
   return (
-    <main className="min-h-screen bg-body">
+    <main className="min-h-screen bg-body-landing">
       <Head>
         <title>ZynoflixOTT - Premier Platform for Short Films & Independent Filmmakers</title>
         <meta
@@ -84,7 +84,7 @@ export default function Home() {
         </Suspense>
 
         {/* Main categories for mobile view */}
-        <div className="sm:hidden mt-3 mb-3">
+        <div className="sm:hidden mt-4 mb-4 px-1">
           <Suspense fallback={<CategorySkeleton />}>
             <CategoryList
               title={"TRENDING"}
@@ -122,9 +122,9 @@ export default function Home() {
           </Suspense>
         </div>
 
-        <section className="lg:px-8 px-0 space-y-6 pt-0 lg:pt-12 py-2">
+        <section className="lg:px-8 px-0 space-y-8 lg:space-y-10 pt-0 lg:pt-14 py-4">
           {/* Desktop view sections */}
-          <div className="px-4 space-y-4">
+          <div className="px-4 sm:px-6 space-y-6">
             <Suspense fallback={<ProductionSkeleton />}>
               <ListProduction url={"director"} title={"DIRECTORS LIVE"} />
             </Suspense>
@@ -145,9 +145,7 @@ export default function Home() {
           </Suspense>
 
           {/* Indian Languages */}
-          <div className="">
-            {/* <h2 className="text-2xl font-bold mb-8">INDIAN LANGUAGE SHORT FILMS</h2> */}
-
+          <div className="space-y-6">
             <Suspense fallback={<CategorySkeleton />}>
               <CategoryList langage={"Hindi"}
                 title={"HINDI SHORT FILMS"}
@@ -155,13 +153,18 @@ export default function Home() {
               />
             </Suspense>
 
-
-            {/* Services Grid - Minimal Mobile Design */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-3 px-3 sm:px-4 py-3">
+            {/* Services - polished card container */}
+            <div className="px-3 sm:px-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-8 w-1 rounded-full bg-gradient-to-b from-primary-400 to-primary-600" />
+                <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">Services</h2>
+              </div>
+              <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 sm:p-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Sell Short Film */}
               <button 
                 onClick={() => window.location.href = '/sell-shortfilm-contact'} 
-                className="group flex flex-col items-center justify-center px-4 py-3 bg-gradient-to-br from-purple-600/90 to-indigo-700/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-purple-500/20 hover:border-purple-400/40 hover:shadow-lg hover:shadow-purple-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                className="group flex flex-col items-center justify-center px-4 py-3 bg-gradient-to-br from-purple-600/90 to-indigo-700/90 backdrop-blur-sm rounded-xl border border-purple-500/25 hover:border-purple-400/50 hover:shadow-lg hover:shadow-purple-500/25 active:scale-[0.98] transition-all duration-200 min-h-[88px] sm:min-h-[100px]"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
@@ -174,7 +177,7 @@ export default function Home() {
               {/* Monetization */}
               <button 
                 onClick={() => window.location.href = '/monetization'} 
-                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-blue-600/90 to-indigo-700/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-blue-500/20 hover:border-blue-400/40 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-blue-600/90 to-indigo-700/90 backdrop-blur-sm rounded-xl border border-blue-500/25 hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98] transition-all duration-200 min-h-[88px] sm:min-h-[100px]"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -188,7 +191,7 @@ export default function Home() {
               {/* Live Streaming */}
               <button 
                 onClick={() => window.location.href = '/live-streams'} 
-                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-purple-600/90 to-cyan-600/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-purple-500/20 hover:border-cyan-400/40 hover:shadow-lg hover:shadow-cyan-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-purple-600/90 to-cyan-600/90 backdrop-blur-sm rounded-xl border border-purple-500/25 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/25 active:scale-[0.98] transition-all duration-200 min-h-[88px] sm:min-h-[100px]"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -201,7 +204,7 @@ export default function Home() {
               {/* Student Ambassador */}
               <button 
                 onClick={() => window.location.href = '/signup/student-ambassador'} 
-                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-red-600/90 to-orange-500/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-red-500/20 hover:border-orange-400/40 hover:shadow-lg hover:shadow-orange-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-red-600/90 to-orange-500/90 backdrop-blur-sm rounded-xl border border-red-500/25 hover:border-orange-400/50 hover:shadow-lg hover:shadow-orange-500/25 active:scale-[0.98] transition-all duration-200 min-h-[88px] sm:min-h-[100px]"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
@@ -215,7 +218,7 @@ export default function Home() {
               {/* Events */}
               <button 
                 onClick={() => window.location.href = '/event'} 
-                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-purple-600/90 to-indigo-700/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-purple-500/20 hover:border-purple-400/40 hover:shadow-lg hover:shadow-purple-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-purple-600/90 to-indigo-700/90 backdrop-blur-sm rounded-xl border border-purple-500/25 hover:border-purple-400/50 hover:shadow-lg hover:shadow-purple-500/25 active:scale-[0.98] transition-all duration-200 min-h-[88px] sm:min-h-[100px]"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -228,7 +231,7 @@ export default function Home() {
               {/* Film Production */}
               <button 
                 onClick={() => window.location.href = '/production'} 
-                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-blue-500/90 to-cyan-500/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-blue-500/20 hover:border-cyan-400/40 hover:shadow-lg hover:shadow-cyan-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-blue-500/90 to-cyan-500/90 backdrop-blur-sm rounded-xl border border-blue-500/25 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/25 active:scale-[0.98] transition-all duration-200 min-h-[88px] sm:min-h-[100px]"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -242,7 +245,7 @@ export default function Home() {
               {showMoreServices && (
                 <button
                   onClick={() => window.location.href = "/advertisement"}
-                  className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-yellow-500/90 to-amber-500/90 backdrop-blur-sm rounded-lg sm:rounded-xl border border-yellow-500/20 hover:border-amber-400/40 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all duration-200 min-h-[85px] sm:min-h-[95px]"
+                  className="group flex flex-col items-center justify-center px-4 py-2 bg-gradient-to-br from-yellow-500/90 to-amber-500/90 backdrop-blur-sm rounded-xl border border-yellow-500/25 hover:border-amber-400/50 hover:shadow-lg hover:shadow-amber-500/25 active:scale-[0.98] transition-all duration-200 min-h-[88px] sm:min-h-[100px]"
                 >
                   <div className="w-7 h-7 sm:w-8 sm:h-8 mb-2 text-white/90 group-hover:text-white group-hover:scale-110 transition-transform duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -252,18 +255,16 @@ export default function Home() {
                   <span className="text-white text-[11px] sm:text-xs font-medium text-center leading-tight">Advertisement</span>
                 </button>
               )}
-
-              {/* See more / See less */}
-            </div>
-            <div className="flex items-center justify-center py-2">
-              <button
-                onClick={() => setShowMoreServices((prev) => !prev)}
-                className="flex items-center justify-center text-white text-[11px] sm:text-xs font-medium text-center leading-tight bg-main rounded-lg sm:rounded-xl border border-slate-500/30 hover:border-slate-400/50 hover:shadow-lg hover:shadow-slate-500/20 active:scale-95 transition-all duration-200 px-2 py-1"
-                >
-                <span className="text-white text-[11px] sm:text-xs font-medium text-center leading-tight">
-                  {showMoreServices ? "See less" : "See more"}
-                </span>
-              </button>
+                </div>
+                <div className="flex items-center justify-center pt-4">
+                  <button
+                    onClick={() => setShowMoreServices((prev) => !prev)}
+                    className="flex items-center gap-2 text-white/95 text-sm font-medium bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl px-5 py-2.5 transition-all duration-200 hover:border-purple-400/50"
+                  >
+                    {showMoreServices ? "See less" : "See more"}
+                  </button>
+                </div>
+              </div>
             </div>
 
             <Suspense fallback={<CategorySkeleton />}>
@@ -428,12 +429,11 @@ export default function Home() {
           </Suspense>
 
           {/* Directors section */}
-          <div className="lg:px-4 px-2">
+          <div className="lg:px-4 px-2 pt-2 pb-6">
             <Suspense fallback={<DirectorsSkeleton />}>
               <DirectorsCarousel displayCount={3} showViewAll={true} />
             </Suspense>
           </div>
-
         </section>
       </div>
     </main>

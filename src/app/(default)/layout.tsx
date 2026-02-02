@@ -71,7 +71,7 @@ export default function Layout({
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
         />
       </Head>
-      <div className="bg-background-dark text-white">
+      <div className="bg-[#0f0e1a] text-white min-h-screen">
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       </div>
     </>
