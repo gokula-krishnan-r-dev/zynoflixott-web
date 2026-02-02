@@ -162,9 +162,9 @@ function TrendingSection({ activeTab, setActiveTab, refetch }: { activeTab: stri
   return (
     <div className="px-4 lg:px-12 lg:hidden block pt-4 lg:pt-8 w-full max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
+        <Link href="/explore" className="flex items-center">
           <h2 className="text-white text-xl lg:text-xl font-bold uppercase bg-main px-4 py-2 rounded-xl tracking-wide">Let's Explore</h2>
-        </div>
+        </Link>
       </div>
       <div className="flex space-x-3 duration-200 overflow-x-auto pb-2 no-scrollbar max-w-full">
         {tabs.map((tab) => (
