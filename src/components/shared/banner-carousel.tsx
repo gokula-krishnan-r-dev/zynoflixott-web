@@ -371,7 +371,7 @@ function BannerCarousel() {
                             {video.title}
                           </h2>
                           
-                          <div className="flex hidden lg:block items-center gap-2">
+                          <div className=" hidden lg:flex items-center gap-2">
                             <div className="bg-black/60 backdrop-blur-sm px-2.5 py-1 lg:px-4 lg:py-2 rounded-full flex items-center gap-1.5 lg:gap-2">
                               <FlagIcon language={video.language} />
                               <span className="text-white capitalize text-[10px] lg:text-sm font-medium whitespace-nowrap">
