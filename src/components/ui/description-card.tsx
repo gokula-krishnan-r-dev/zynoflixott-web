@@ -22,9 +22,9 @@ export default function DescriptionCard({
 
     return (
         <div
-            className={`text-white bg-gradient-to-r from-[#2c1157] to-[#3c1973] rounded-2xl p-5 shadow-lg backdrop-blur-sm ${className}`}
+            className={`text-white bg-gradient-to-r from-[#2c1157] to-[#3c1973] rounded-2xl p-5 shadow-lg backdrop-blur-sm overflow-hidden min-w-0 ${className}`}
         >
-            <p className="text-[#e0e0e8] text-sm leading-relaxed">
+            <p className="text-[#e0e0e8] text-sm leading-relaxed break-words">
                 {displayText}
             </p>
 

@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import { FacebookIcon, LinkedinIcon, YoutubeIcon, Eye } from "lucide-react";
 import Link from "next/link";
+import { cleanImageUrl } from "@/lib/utils";
 
 // Define the interface for a production company
 interface ProductionCompany {
@@ -93,7 +94,7 @@ const ListProduction = ({ url, title }: any) => {
 
   return (
     <div className="">
-      <h1 className="lg:text-xl text-base font-semibold mb-6">{title}</h1>
+   <p className="!text-sm font-bold lg:text-xl">{title || 'Recommended'}</p>
       {url === "production" ? (
         <div className="w-full">
           <Carousel className="w-full max-w-[91vw] basis-12 lg:max-w-[94vw]">
@@ -130,7 +131,7 @@ const ListProduction = ({ url, title }: any) => {
                           <img
                             width={180}
                             height={180}
-                            src={company.logo.split('?')[0]}
+                            src={cleanImageUrl(company.logo)}
                             className="hover:scale-105 transition-transform lg:w-24 w-12 h-12 lg:h-24 rounded-full object-cover object-center duration-300 ease-in-out"
                             alt={`${company.name} Logo`}
                           />
@@ -272,7 +273,7 @@ const ListProduction = ({ url, title }: any) => {
                           <Image
                             width={180}
                             height={180}
-                            src={company.logo}
+                            src={cleanImageUrl(company.logo)}
                             className="hover:scale-105 transition-transform lg:w-24 w-12 h-12 lg:h-24 rounded-full object-cover object-center duration-300 ease-in-out"
                             alt={`${company.name} Logo`}
                           />

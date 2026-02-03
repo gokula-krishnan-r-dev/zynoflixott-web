@@ -16,7 +16,7 @@ const LanguageList = () => {
     <section>
       <div className="px-4">
         <div className="pb-8">
-          <h2 className="lg:text-xl text-base font-semibold uppercase">Languages</h2>
+        <p className="!text-sm font-bold lg:text-xl">Languages</p>
         </div>
         <Carousel className={cn("w-full  max-w-[91vw] lg:max-w-[94vw]")}>
           <CarouselContent className="ml-12">

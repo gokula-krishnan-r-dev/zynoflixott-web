@@ -129,7 +129,7 @@ const VideoCard = ({ video, index, hiddenNew, isLarge = false }: any) => {
             )}
 
             {/* Overlay with gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/20"></div>
+            {/* <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/20"></div> */}
 
             {/* Play button overlay that appears on hover */}
             <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
@@ -148,12 +148,12 @@ const VideoCard = ({ video, index, hiddenNew, isLarge = false }: any) => {
 
       {/* Desktop view card */}
       <div
-        className="hidden sm:block card-hover-effect"
+        className="hidden sm:block"
         key={index}
         onMouseEnter={() => setHoveredIndex(index)}
         onMouseLeave={() => setHoveredIndex(null)}
       >
-        <div className="h-auto rounded-3xl overflow-hidden shadow-lg bg-background-medium">
+        <div className="h-auto rounded-3xl overflow-hidden shadow-lg">
           {/* Heart button with pulse effect */}
           <button
             onClick={(e) => {
@@ -201,7 +201,7 @@ const VideoCard = ({ video, index, hiddenNew, isLarge = false }: any) => {
                 )}
 
                 {/* Overlay with gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 opacity-70 rounded-3xl"></div>
+                {/* <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 opacity-70 rounded-3xl"></div> */}
 
                 {/* Play button overlay that appears on hover */}
                 <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
