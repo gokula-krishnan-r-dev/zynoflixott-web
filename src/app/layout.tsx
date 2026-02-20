@@ -1,5 +1,4 @@
 import Script from "next/script";
-"use client";
 import Header from "@/components/layout/header";
 import "./globals.css";
 
