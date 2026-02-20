@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster, toast } from "sonner";
 import { AuthProvider } from "@/components/provider/AuthProvider";
 import Footer from "@/components/shared/footer";
+import Script from "next/script";
 
 export default function RootLayout({
   children,
