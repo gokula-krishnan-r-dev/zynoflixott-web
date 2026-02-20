@@ -14,15 +14,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RYRQECYM7L"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RYRQECYM7L');
-</script>
+      <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-RYRQECYM7L"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', 'G-RYRQECYM7L');
+          `}
+        </Script>
       </head>
       <body>
         <Header />
