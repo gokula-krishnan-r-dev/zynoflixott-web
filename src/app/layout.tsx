@@ -14,8 +14,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-      <Script
+      <body>
+        <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-3T38F16FTX"
           strategy="afterInteractive"
         />
@@ -25,12 +25,9 @@ export default function RootLayout({
             function gtag(){dataLayer.push(arguments);}
             window.gtag = gtag;
             gtag('js', new Date());
-            gtag('config', 'G-RYRQECYM7L');
             gtag('config', 'G-3T38F16FTX');
           `}
         </Script>
-      </head>
-      <body>
         <Header />
         <AuthProvider>{children}</AuthProvider>
         <Toaster richColors />
