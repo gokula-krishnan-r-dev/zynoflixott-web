@@ -29,6 +29,13 @@ export default function RootLayout({
             `,
           }}
         />
+        <Script
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-R345YQREV9');
+        />
 
         {/* Optional: NoScript fallback */}
         <noscript>
