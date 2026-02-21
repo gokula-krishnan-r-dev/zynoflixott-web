@@ -14,8 +14,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        {/* Google Tag Manager */}
+      <head>
+        {/* GTM Script moved to Head for better tracking accuracy */}
         <Script
           id="gtm-script"
           strategy="afterInteractive"
@@ -29,8 +29,9 @@ export default function RootLayout({
             `,
           }}
         />
-
-        {/* Optional: NoScript fallback */}
+      </head>
+      <body>
+        {/* NoScript fallback stays in Body */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-TS6RTR54"
