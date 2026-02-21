@@ -253,7 +253,7 @@ export default function ProductionPage() {
     <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
 
       {/* Google tag (gtag.js) */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"></script>
+      {/*    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"></script>
       <script
         dangerouslySetInnerHTML={{
           __html: `
@@ -263,7 +263,7 @@ export default function ProductionPage() {
             gtag('config', 'G-R92MZPEMQD');
           `
         }}
-      />
+      /> */}
       <div className="max-w-5xl pt-12 mx-auto">
         {/* Header */}
         <motion.div
