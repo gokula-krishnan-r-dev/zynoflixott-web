@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* GTM Noscript (Must be first in body) */}
         <noscript>
           <iframe 
-            src="https://www.googletagmanager.com/ns.html?id=GTM-P7RJCDB2"
+            src="https://www.googletagmanager.com/ns.html?id=GTM-TS6RTR54"
             height="0" width="0" style={{display: 'none', visibility: 'hidden'}}
           />
         </noscript>
