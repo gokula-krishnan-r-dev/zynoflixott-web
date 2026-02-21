@@ -25,92 +25,42 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-        />
-      </head>
       <body className={inter.className}>
-       
-
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              <!-- Google Tag Manager -->
-              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','GTM-P7RJCDB2');
-              <!-- End Google Tag Manager -->
-            `
-          }}
-        />
-
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.fbAsyncInit = function() {
-                FB.init({
-                  appId      : '1635424287121165',
-                  xfbml      : true,
-                  version    : 'v23.0'
-                });
-                FB.AppEvents.logPageView();
-              };
-
-              (function(d, s, id){
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) {return;}
-                js = d.createElement(s); js.id = id;
-                js.src = "https://connect.facebook.net/en_US/sdk.js";
-                fjs.parentNode.insertBefore(js, fjs);
-              }(document, 'script', 'facebook-jssdk'));
-            `
-          }}
-        />
-
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-R92MZPEMQD');
-            `
-          }}
-        />
-
-        <script src="https://analytics.ahrefs.com/analytics.js" data-key="y/Hp6qltaCCSITbY89/pqg" async></script>
-        <Header />
+        {/* GTM Noscript (First in body) */}
         <noscript>
           <iframe 
-            src="https://www.googletagmanager.com/ns.html?id=GTM-P7RJCDB2"
-            height="0" 
-            width="0" 
-            style={{display: 'none', visibility: 'hidden'}}
+            src="https://www.googletagmanager.com"
+            height="0" width="0" style={{display: 'none', visibility: 'hidden'}}
           />
         </noscript>
+
+        {/* Google Tag Manager */}
+        <Script id="gtm-script" strategy="afterInteractive">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-TS6RTR54');`}
+        </Script>
+
+        {/* Ahrefs Analytics */}
+        <Script 
+          src="https://analytics.ahrefs.com/analytics.js" 
+          data-key="y/Hp6qltaCCSITbY89/pqg" 
+          strategy="lazyOnload" 
+        />
+
+        <Header />
         <AuthProvider>
-          <ClientLayout>
-            {children}
-          </ClientLayout>
+          <ClientLayout>{children}</ClientLayout>
         </AuthProvider>
         <Toaster richColors />
         <Footer />
       </body>
     </html>
   );
+}
 }
