@@ -7,16 +7,16 @@ import "./globals.css";
 import ClientLayout from "@/components/layout/ClientLayout";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script"; // 1. Added missing import
 
 const inter = Inter({ subsets: ["latin"] });
 
-// App Router metadata configuration
 export const metadata: Metadata = {
   title: "ZynoflixOTT - Premier Platform for Short Films & Independent Filmmakers",
   description: "Discover, watch and upload high-quality short films on ZynoflixOTT. The leading OTT platform for independent filmmakers featuring curated content in multiple languages.",
   viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
   keywords: "OTT, short films, independent films, streaming",
-  authors: { name: "ZynoflixOTT" },
+  authors: [{ name: "ZynoflixOTT" }],
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* GTM Noscript (First in body) */}
+        {/* 2. Fixed GTM Noscript URL */}
         <noscript>
           <iframe 
             src="https://www.googletagmanager.com"
@@ -62,5 +62,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </body>
     </html>
   );
-}
 }
