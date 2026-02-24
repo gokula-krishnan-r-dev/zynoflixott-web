@@ -78,7 +78,7 @@ export default function RootLayout({
           }}
         />
 
-        <script
+        {/* <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"
         />
@@ -91,7 +91,7 @@ export default function RootLayout({
               gtag('config', 'G-3T38F16FTX');
             `
           }}
-        />
+        /> */}
 
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="y/Hp6qltaCCSITbY89/pqg" async></script>
         <Header />

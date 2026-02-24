@@ -74,39 +74,39 @@ export default function ProductionPage() {
     setPoster(selectedFile);
   };
 
-  // Google Analytics conversion tracking
-  useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17096022152/fRVVCIyWjecaEIixgtg_'
-      });
-    }
-  }, []);
+  // // Google Analytics conversion tracking
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined' && (window as any).gtag) {
+  //     (window as any).gtag('event', 'conversion', {
+  //       'send_to': 'AW-17096022152/fRVVCIyWjecaEIixgtg_'
+  //     });
+  //   }
+  // }, []);
 
-   // Google Analytics conversion tracking
-   useEffect(() => {
-    if (typeof window !== 'undefined') {
-        // Google Tag Manager
-        (function(w: Window, d: Document, s: string, l: string, i: string) {
-            const wl = w as any;
-            wl[l] = wl[l] || [];
-            wl[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
-            const f = d.getElementsByTagName(s)[0];
-            const j = d.createElement(s) as HTMLScriptElement;
-            const dl = l !== 'dataLayer' ? '&l='+l : '';
-            j.async = true;
-            j.src = 'https://www.googletagmanager.com/gtm.js?id='+i+dl;
-            f.parentNode?.insertBefore(j,f);
-        })(window, document, 'script', 'dataLayer', 'GTM-P7RJCDB2');
+//    // Google Analytics conversion tracking
+//    useEffect(() => {
+//     if (typeof window !== 'undefined') {
+//         // Google Tag Manager
+//         (function(w: Window, d: Document, s: string, l: string, i: string) {
+//             const wl = w as any;
+//             wl[l] = wl[l] || [];
+//             wl[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+//             const f = d.getElementsByTagName(s)[0];
+//             const j = d.createElement(s) as HTMLScriptElement;
+//             const dl = l !== 'dataLayer' ? '&l='+l : '';
+//             j.async = true;
+//             j.src = 'https://www.googletagmanager.com/gtm.js?id='+i+dl;
+//             f.parentNode?.insertBefore(j,f);
+//         })(window, document, 'script', 'dataLayer', 'GTM-P7RJCDB2');
         
-        // Google Ads conversion tracking
-        if ((window as any).gtag) {
-            (window as any).gtag('event', 'conversion', {
-                'send_to': 'AW-17096022152/J8kWCP3PlucaEIixgtg_'
-            });
-        }
-    }
-}, []);
+//         // Google Ads conversion tracking
+//         if ((window as any).gtag) {
+//             (window as any).gtag('event', 'conversion', {
+//                 'send_to': 'AW-17096022152/J8kWCP3PlucaEIixgtg_'
+//             });
+//         }
+//     }
+// }, []);
 
   // Remove selected poster
   const removePoster = () => {
@@ -253,7 +253,7 @@ export default function ProductionPage() {
     <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
 
       {/* Google tag (gtag.js) */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"></script>
+      {/* <script async src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD"></script>
       <script
         dangerouslySetInnerHTML={{
           __html: `
@@ -263,7 +263,7 @@ export default function ProductionPage() {
             gtag('config', 'G-R92MZPEMQD');
           `
         }}
-      />
+      /> */}
       <div className="max-w-5xl pt-12 mx-auto">
         {/* Header */}
         <motion.div
