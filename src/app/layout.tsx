@@ -34,6 +34,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           'https://www.googletagmanager.com;
           })(window,document,'script','dataLayer','GTM-TS6RTR54');`}
         </Script>
+        <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3T38F16FTX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3T38F16FTX');
+</script>
       </head>
       <body className={inter.className}>
         {/* GTM Noscript (Required for non-JS tracking) */}
