@@ -37,14 +37,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <GoogleTagManager gtmId="GTM-TS6RTR54" />
       <GoogleAnalytics gaId="G-3T38F16FTX" />
       <body className={inter.className}>
-        {/* GTM Noscript */}
-        <noscript>
-          <iframe 
-            src="https://www.googletagmanager.com"
-            height="0" width="0" style={{display: 'none', visibility: 'hidden'}}
-          />
-        </noscript>
-
         {/* Facebook SDK */}
         <Script id="fb-sdk" strategy="afterInteractive">
           {`window.fbAsyncInit = function() {
