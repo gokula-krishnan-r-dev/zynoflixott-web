@@ -33,10 +33,34 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      {/* 2. Using @next/third-parties handles GTM & GA initialization correctly for VMs */}
-      <GoogleTagManager gtmId="GTM-TS6RTR54" />
-      <GoogleAnalytics gaId="G-3T38F16FTX" />
+      <head>
+        {/* 1. GTM Script - Must be as high in <head> as possible */}
+        <Script id="gtm-script" strategy="afterInteractive">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com;
+          })(window,document,'script','dataLayer','GTM-TS6RTR54');`}
+        </Script>
+      </head>
       <body className={inter.className}>
+        {/* 2. GTM Noscript - Critical for verification crawlers */}
+        <noscript>
+          <iframe 
+            src="https://www.googletagmanager.com"
+            height="0" width="0" style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+
+        <Header />
+        <AuthProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </AuthProvider>
+        <Toaster richColors />
+        <Footer />
+
+        {/* 3. Load GA and FB below the fold to keep the VM responsive */}
+        <GoogleAnalytics gaId="G-3T38F16FTX" />
         {/* Facebook SDK */}
         <Script id="fb-sdk" strategy="afterInteractive">
           {`window.fbAsyncInit = function() {
