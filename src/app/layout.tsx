@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: "Discover, watch and upload high-quality short films on ZynoflixOTT.",
   viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
   keywords: "OTT, short films, independent films, streaming",
-  authors: [{ name: "ZynoflixOTT" }], // Fixed authors format
+  authors: [{ name: "ZynoflixOTT" }],
   icons: {
     icon: ["/favicon.ico", "/logo_sm.png"],
   }
@@ -25,23 +25,24 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {/* GTM Noscript (Must be first in body) */}
-        <noscript>
-          <iframe 
-            src="https://www.googletagmanager.com/ns.html?id=GTM-TS6RTR54"
-            height="0" width="0" style={{display: 'none', visibility: 'hidden'}}
-          />
-        </noscript>
-
-        {/* Google Tag Manager */}
+      <head>
+        {/* Google Tag Manager - Loading in Head for better detection */}
         <Script id="gtm-script" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          'https://www.googletagmanager.com;
           })(window,document,'script','dataLayer','GTM-TS6RTR54');`}
         </Script>
+      </head>
+      <body className={inter.className}>
+        {/* GTM Noscript (Required for non-JS tracking) */}
+        <noscript>
+          <iframe 
+            src="https://www.googletagmanager.com"
+            height="0" width="0" style={{display: 'none', visibility: 'hidden'}}
+          />
+        </noscript>
 
         {/* Facebook SDK */}
         <Script id="fb-sdk" strategy="afterInteractive">
