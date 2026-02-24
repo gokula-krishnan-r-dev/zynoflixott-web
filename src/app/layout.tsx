@@ -53,15 +53,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
         <Script src="https://connect.facebook.net/en_US/sdk.js" strategy="afterInteractive" />
 
-        {/* Google Analytics */}
-        {/*<Script src="https://www.googletagmanager.com/gtag/js?id=G-R92MZPEMQD" strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-R92MZPEMQD');`}
-        </Script> */}
-
         {/* Ahrefs Analytics */}
         <Script 
           src="https://analytics.ahrefs.com/analytics.js" 
