@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* Google Tag Manager - Loading in Head for better detection */}
+        {/* Google Tag Manager (GTM-TS6RTR54) */}
         <Script id="gtm-script" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -34,18 +34,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           'https://www.googletagmanager.com;
           })(window,document,'script','dataLayer','GTM-TS6RTR54');`}
         </Script>
-        <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3T38F16FTX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-3T38F16FTX');
-</script>
+        {/* Google Analytics (G-3T38F16FTX) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-3T38F16FTX"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-3T38F16FTX');
+          `}
+        </Script>
       </head>
       <body className={inter.className}>
-        {/* GTM Noscript (Required for non-JS tracking) */}
+        {/* GTM Noscript */}
         <noscript>
           <iframe 
             src="https://www.googletagmanager.com"
