@@ -8,7 +8,6 @@ import ClientLayout from "@/components/layout/ClientLayout";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-import { GoogleAnalytics } from '@next/third-parties/google'; 
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,25 +31,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        {/* FIXED: Correct GTM script syntax and URL */}
-        <Script id="gtm-script" strategy="afterInteractive">
-          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com;
-          })(window,document,'script','dataLayer','GTM-TS6RTR54');`}
-        </Script>
-      </head>
       <body className={inter.className}>
-        {/* FIXED: Correct GTM Noscript path for verification */}
-        <noscript>
-          <iframe 
-            src="https://www.googletagmanager.com"
-            height="0" width="0" style={{ display: 'none', visibility: 'hidden' }}
-          />
-        </noscript>
-
         <Header />
         <AuthProvider>
           <ClientLayout>{children}</ClientLayout>
@@ -58,9 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster richColors />
         <Footer />
 
-        {/* Third Party Scripts Loaded After Content */}
-        <GoogleAnalytics gaId="G-3T38F16FTX" />
-        
+        {/* Facebook SDK remain as they are not Google tags */}
         <Script id="fb-sdk-init" strategy="afterInteractive">
           {`window.fbAsyncInit = function() {
             FB.init({ appId: '1635424287121165', xfbml: true, version: 'v23.0' });
