@@ -1,5 +1,3 @@
-"use client";
-
 import Header from "@/components/layout/header";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -15,7 +13,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Tag Manager Script */}
         <Script
           id="gtm-script"
           strategy="afterInteractive"
@@ -32,7 +29,6 @@ export default function RootLayout({
       </head>
 
       <body>
-        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-TS6RTR54"
